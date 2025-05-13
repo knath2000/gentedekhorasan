@@ -1,75 +1,62 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// app/(tabs)/index.tsx
+import React from 'react';
+import { ImageBackground, Platform, Text, View } from 'react-native'; // Import Platform, ImageBackground, StyleSheet
+import styled from 'styled-components/native';
+import AnimatedBackground from '../../src/components/AnimatedBackground'; // Import AnimatedBackground
+import { Theme } from '../../src/theme/theme'; // Adjust path if necessary
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// For web, ScreenContainer will be an ImageBackground
+// For native, it will be a View that contains AnimatedBackground
+const BaseScreenContainer = styled(Platform.OS === 'web' ? ImageBackground : View)<{ theme: Theme }>`
+  flex: 1;
+  width: 100%;
+  padding-bottom: ${Platform.OS === 'ios' ? 90 : 70}px; /* Added padding for floating tab bar */
+  ${Platform.OS === 'web' ? `
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+  ` : `
+    /* Native styles directly - temporarily remove background color for debugging */
+    /* background-color: ${ ({ theme }: { theme: Theme }) => theme.colors.background}; */
+    /* justifyContent and alignItems are not needed here for native if children are absolute */
+  `}
+`;
+
+const ScreenText = styled(Text)<{ theme: Theme }>`
+  font-size: ${({ theme }) => theme.typography.fontSizes.xl}px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-family: ${({ theme }) => theme.typography.fonts.englishBold};
+  text-align: center; /* Ensure text is centered */
+  ${Platform.OS === 'web' && `
+    /* Add some shadow or outline for better readability on web background image if needed */
+    text-shadow: 0px 0px 5px rgba(0,0,0,0.7);
+  `}
+`;
+
+const webImageSource = require('../../assets/images/webtest.png');
 
 export default function HomeScreen() {
+  if (Platform.OS === 'web') {
+    return (
+      <BaseScreenContainer
+        source={webImageSource}
+        resizeMode="cover" // Or 'stretch', 'contain'
+        // style={styles.fullWidthBackground} // Optional: if more styles needed than styled-component provides
+      >
+        <ScreenText>Home Screen</ScreenText>
+      </BaseScreenContainer>
+    );
+  }
+
+  // Native rendering
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <BaseScreenContainer>
+      <AnimatedBackground />
+      {/* ScreenText needs to be on top of AnimatedBackground */}
+      {/* This View will cover the entire BaseScreenContainer and center the text */ }
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: 1 }}>
+        <ScreenText>Home Screen</ScreenText>
+      </View>
+    </BaseScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

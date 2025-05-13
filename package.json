@@ -5,17 +5,27 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
-    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@lottiefiles/dotlottie-react": "^0.6.5",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-community/slider": "^4.5.6",
+    "@react-navigation/bottom-tabs": "^7.3.12",
     "@react-navigation/elements": "^2.3.8",
-    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/native": "^7.1.8",
+    "@supabase/supabase-js": "^2.49.4",
+    "@vercel/blob": "^1.0.1",
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "crypto-browserify": "^3.12.1",
+    "events": "^3.3.0",
     "expo": "~53.0.9",
+    "expo-av": "^15.1.4",
     "expo-blur": "~14.1.4",
     "expo-constants": "~17.1.6",
     "expo-font": "~13.3.1",
@@ -28,6 +38,11 @@
     "expo-symbols": "~0.4.4",
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
+    "https-browserify": "^1.0.0",
+    "lottie-ios": "4.5.0",
+    "lottie-react-native": "^7.2.2",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
@@ -35,15 +50,21 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
+    "react-native-tcp-socket": "^6.3.0",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "readable-stream": "^4.7.0",
+    "stream-http": "^3.2.0",
+    "styled-components": "^6.1.18",
+    "url": "^0.11.4",
+    "vm-browserify": "^1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
-    "typescript": "~5.8.3",
     "eslint": "^9.25.0",
-    "eslint-config-expo": "~9.2.0"
+    "eslint-config-expo": "~9.2.0",
+    "typescript": "~5.8.3"
   },
   "private": true
 }
