@@ -1,5 +1,5 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { Pool } = require('pg');
 
 // Initialize the connection pool
 // Ensure NEON_DATABASE_URL is set in your Vercel project's environment variables
@@ -18,7 +18,7 @@ pool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client in pool (get-verse)', err);
 });
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     return res.status(405).end('Method Not Allowed');
