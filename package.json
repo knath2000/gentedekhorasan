@@ -21,6 +21,7 @@
     "@react-navigation/native": "^7.1.6",
     "@supabase/supabase-js": "^2.49.4",
     "@vercel/blob": "^1.0.1",
+    "@vercel/node": "^5.1.16",
     "ajv": "^8.17.1",
     "assert": "^2.1.0",
     "browserify-zlib": "^0.2.0",
@@ -45,6 +46,7 @@
     "lottie-react-native": "^7.2.2",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "pg": "^8.16.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
@@ -63,6 +65,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@types/pg": "^8.15.2",
     "@types/react": "~19.0.10",
     "dotenv": "^16.5.0",
     "eslint": "^9.25.0",

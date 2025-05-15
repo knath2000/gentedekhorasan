@@ -14,7 +14,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
-pool.on('error', (err) => {
+pool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client in pool (get-verse)', err);
 });
 
@@ -61,8 +61,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     return res.status(200).json(verse);
   } catch (err: any) {
-    console.error(`Error fetching verse ${surah}:${ayah} from DB:`, err);
-    return res.status(500).json({ error: 'Database error', details: err.message });
+    console.error(`Detailed error in get-verse for Surah ${surah}, Ayah ${ayah}:`, {
+      message: err.message,
+      code: err.code, // PG error code, if available
+      stack: err.stack,
+      errno: err.errno, // System error number, if relevant
+      syscall: err.syscall // System call, if relevant
+    });
+    return res.status(500).json({
+      error: 'Database error',
+      details: err.message,
+      code: err.code // Optionally send code to client, be cautious with sensitive info
+    });
   } finally {
     if (client) {
       client.release();

@@ -14,7 +14,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
-pool.on('error', (err) => {
+pool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client in pool (get-verses)', err);
 });
 
@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await client.query(query, [surah]);
     
     // Map to the expected client-side Verse structure (without translation yet)
-    const verses = result.rows.map(row => ({
+    const verses = result.rows.map((row: { id: string; sura: string; aya: string; text: string }) => ({
       id: parseInt(row.id, 10),
       surahId: parseInt(row.sura, 10),
       numberInSurah: parseInt(row.aya, 10),
@@ -52,8 +52,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     return res.status(200).json(verses);
   } catch (err: any) {
-    console.error(`Error fetching verses for Surah ${surah} from DB:`, err);
-    return res.status(500).json({ error: 'Database error', details: err.message });
+    console.error(`Detailed error in get-verses for Surah ${surah}:`, {
+      message: err.message,
+      code: err.code, // PG error code, if available
+      stack: err.stack,
+      errno: err.errno, // System error number, if relevant
+      syscall: err.syscall // System call, if relevant
+    });
+    return res.status(500).json({
+      error: 'Database error',
+      details: err.message,
+      code: err.code // Optionally send code to client, be cautious with sensitive info
+    });
   } finally {
     if (client) {
       client.release();
