@@ -19,164 +19,188 @@
 -   **Asset Organization:** `assets/` directory with subfolders for `animations`, `fonts`, `images`.
 
 ### 2. Key Technologies & Integration Patterns:
--   **Supabase:** Primary backend for data.
+-   **Supabase:** Used for dynamic data needs (planned: user accounts, bookmarks). Previously used for static Quran data.
     -   Client initialization: `src/lib/supabaseClient.ts`.
-    -   Data fetching: `async/await` within `useEffect` in screen components.
-    -   Requires Node.js core module polyfills for web/native compatibility.
+-   **Vercel Blob:** Primary store for static Quranic content (Arabic text, Surah list, translations) served as JSON files.
 -   **Lottie Animations:**
     -   `lottie-react-native` for native.
-    -   `@lottiefiles/dotlottie-react` for web (or alternatives if issues arise).
+    -   `@lottiefiles/dotlottie-react` for web.
     -   Current issue: Native Lottie animation plays once and freezes on Home screen.
 -   **Custom Fonts:** Loaded via `expo-font` in the root layout.
--   **Audio Playback:** `expo-av` is used, managed primarily through the `useAudioPlayer` custom hook.
--   **Metro Bundler Polyfills:** Critical for cross-platform compatibility of certain libraries (especially Supabase). Configuration in `metro.config.js` (`resolver.extraNodeModules`). This is a key troubleshooting area if new libraries cause web/native build issues.
-
+-   **Audio Playback:** `expo-audio` is used, managed via `src/hooks/useQuranAudioPlayer.ts` which utilizes the library-provided `useAudioPlayer` hook. UI interaction (tap-to-play/pause) is handled in `src/components/VerseCard.tsx`.
+-   **Metro Bundler Polyfills:** Critical for cross-platform compatibility of certain libraries. Configuration in `metro.config.js`.
+-   **TypeScript DOM Lib:** `tsconfig.json` updated to include `"dom"` in `compilerOptions.lib` for web-specific typings (e.g., `HTMLInputElement` in `PlatformSlider.tsx`).
 ### 3. Development Workflow & Preferences:
--   **Memory Bank:** Essential for project continuity. All core documents (`projectbrief.md`, `productContext.md`, `techContext.md`, `systemPatterns.md`, `progress.md`, `activeContext.md`) are to be maintained.
--   **Iterative Development:** Features are built screen by screen, with initial placeholders and gradual refinement. Bug fixing often involves iterative diagnosis with extensive logging.
--   **Cross-Platform First (with caveats):** Aim for maximum code sharing, but acknowledge platform-specific needs (e.g., Home screen background currently differs between native and web).
--   **Clear Documentation:** Emphasis on documenting current state, next steps, and decisions (as seen in Memory Bank files).
--   **Debugging:** Heavy reliance on `console.log` for tracing state changes and asynchronous operations, especially when dealing with audio or complex hook interactions.
+-   **Memory Bank:** Essential for project continuity. All core documents are to be maintained.
+-   **Iterative Development:** Features are built screen by screen. Bug fixing often involves iterative diagnosis.
+-   **Cross-Platform First (with caveats):** Aim for maximum code sharing.
+-   **Clear Documentation:** Emphasis on documenting current state, next steps, and decisions.
+-   **Debugging:** Heavy reliance on `console.log`.
 
-### 4. Tool Usage Patterns (Observed during Memory Bank setup):
--   `write_to_file`: Primary tool for creating/updating documentation and code files, especially when `apply_diff` fails.
--   `read_file`: Essential before any modification to ensure context.
--   `apply_diff`: Can be problematic with complex diffs or specific content patterns. `write_to_file` is a more reliable fallback.
--   `sequential-thinking` MCP: Used for planning complex multi-step tasks.
-    -   *Note: Encountered issues with large JSON arguments when trying to pass extensive `previous_steps` or full file content within `suggested_inputs`. Simpler arguments are preferred.*
+### 4. Tool Usage Patterns:
+-   `write_to_file`: Primary tool for creating/updating documentation and code files.
+-   `read_file`: Essential before any modification.
+-   `apply_diff`: Can be problematic; `write_to_file` is a more reliable fallback. `apply_diff` requires exact string matches for search blocks.
+-   `sequential-thinking` MCP: Used for planning complex multi-step tasks, especially debugging.
+-   `execute_command`: Used for running scripts.
 
 ### 5. Potential Challenges / Areas to Watch:
--   **Cross-platform UI consistency:** Maintaining the "Desert Oasis at Night" theme faithfully across iOS, Android, and Web.
--   **Performance:** Lottie animations, data fetching, and general app responsiveness, especially on lower-end devices or web.
--   **Supabase Data Management:** Efficiently populating and managing the full Quran dataset.
--   **State Management Complexity:** As features grow (audio, user preferences), current React Context/`useState`/custom hook approach might need to evolve for global state.
--   **Metro Bundler Configuration:** New dependencies might require further polyfill adjustments.
--   **Asynchronous Operations & State Sync:** Ensuring robust synchronization between async tasks (audio, network requests) and React state to prevent race conditions and stale UI.
-
+-   **Cross-platform UI consistency.**
+-   **Performance:** Lottie animations, data fetching.
+-   **State Management Complexity:** As features grow.
+-   **Metro Bundler Configuration.**
+-   **Asynchronous Operations & State Sync:** Especially critical for audio. `useQuranAudioPlayer.ts` handles this.
+-   **`expo-audio` Reliability:** The previous playback failure with `createAudioPlayer` was a major concern. The switch to the library-provided `useAudioPlayer` hook in `useQuranAudioPlayer.ts` is intended to address this.
+-   **Accessibility Implementation:** Ensuring `AccessibilityInfo.announceForAccessibility` and correct ARIA props are used and effective across platforms.
 ## Layout & UI Development Patterns (2025-05-10)
 
 ### 6. Precise FlatList Sizing with Tab Bars & Safe Areas:
--   **Challenge:** Ensuring a `FlatList` uses all available vertical space above a floating tab bar without being obscured by it or by status bars/notches.
--   **Iterative Solution Path:**
-    1.  Initial attempts with `FlatList` `paddingBottom` and `ListFooterComponent` proved insufficient for precise boundary control.
-    2.  Integrating `react-native-safe-area-context` (`SafeAreaProvider` in root, `useSafeAreaInsets` in screen) helped manage status bar/notch areas but didn't perfectly align the list bottom with the tab bar.
-    3.  **Successful Pattern:**
-        -   Wrap the screen's main content in a `View` (e.g., `MainContainer`) that applies `paddingTop: insets.top`, `paddingLeft: insets.left`, `paddingRight: insets.right` using `useSafeAreaInsets()`.
-        -   Nest another `View` inside `MainContainer` specifically for the `FlatList`.
-        -   Calculate the height for this `FlatList` container explicitly:
-            ```typescript
-            const windowHeight = Dimensions.get('window').height;
-            const insets = useSafeAreaInsets();
-            const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 70; // Or a more dynamic value
-            const listContainerHeight = windowHeight - insets.top - insets.bottom - TAB_BAR_HEIGHT;
-            // Optional: Fine-tune with a small addition, e.g., + theme.spacing.md
-            ```
-        -   Apply this `listContainerHeight` to the `View` wrapping the `FlatList`.
-        -   The `FlatList` itself can then use a simple `ListHeaderComponent` for internal top padding and `contentContainerStyle.paddingBottom` for a small margin for the last item.
--   **Key Takeaway:** For precise control over scrollable content boundaries with tab bars, direct height calculation using `Dimensions` and `useSafeAreaInsets` for the container is more reliable than relying solely on `FlatList` internal padding or `SafeAreaView` component for the list itself.
+-   **Pattern:** For precise control over scrollable content boundaries with tab bars, direct height calculation using `Dimensions` and `useSafeAreaInsets` for the container is more reliable.
 
-### 7. Development Workflow Insights:
--   **Visual Feedback Loop:** UI layout adjustments, especially for cross-platform and varying screen sizes/insets, benefit greatly from an iterative approach with frequent visual checks (screenshots, simulator/device testing).
--   **Error Vigilance (Imports):** When applying diffs or refactoring, pay close attention to ensuring all necessary imports (especially for new hooks or components like those from `react-native-safe-area-context`) are correctly added or retained to avoid TypeScript/ESLint errors.
+## Audio Playback & Asynchronous State Management Patterns (2025-05-11 to 2025-05-13)
+## Audio Playback & UI Interaction Patterns (2025-05-14 Refactor)
 
-### 8. Tool Usage Notes:
--   `apply_diff`: Can be unreliable; `write_to_file` is often preferred for robustness after reading the file.
--   `read_file`: Crucial before any modification to ensure context.
+### 7. Audio Hook (`src/hooks/useQuranAudioPlayer.ts`):
+-   **Pattern:** Uses the library-provided `useAudioPlayer` hook from `expo-audio` to manage core audio state (loading, playing, duration, position, errors, etc.).
+-   **Responsibilities:** Provides functions like `toggleAudio`, `stopAudio`, `seekAudio`, `setAutoplayEnabled`.
 
-## Audio Playback & Asynchronous State Management Patterns (2025-05-11)
+### 8. Stabilizing Callback References for `useEffect` Dependencies:
+-   **Pattern:** Use `useCallback` with appropriate dependency arrays.
 
-### 9. Custom Hook for Complex Asynchronous Logic (`useAudioPlayer.ts`):
--   **Pattern:** Encapsulate complex, stateful, asynchronous logic (like audio playback with `expo-av`) within a custom React hook.
-    -   **Benefits:**
-        -   **Separation of Concerns:** Keeps screen components cleaner and focused on UI.
-        -   **Reusability:** Though currently used by `ReaderScreen`, it's structured for potential reuse.
-        -   **Testability:** Easier to test the hook's logic in isolation (future consideration).
--   **Key Elements in `useAudioPlayer`:**
-    -   Manages `Audio.Sound` object lifecycle (loading, unloading, status updates).
-    -   Handles internal states like `isPlaying`, `isLoading`, `isBuffering`, `durationMillis`, `positionMillis`, `playingVerseNumber`.
-    -   Provides memoized callback functions (`toggleAudio`, `seekAudio`, `skipToNextVerse`, `stopAudio`) to the consuming component.
+### 9. Managing Stale Closures and State with Refs:
+-   **Pattern:** For stable callbacks needing current state, use a `useRef` updated by a separate `useEffect`.
 
-### 10. Stabilizing Callback References for `useEffect` Dependencies:
--   **Challenge:** Callbacks (like `stopAudio`) passed from a custom hook to a `useEffect` dependency array in a screen component can cause the effect to re-run if the callback's reference changes unnecessarily. This was a root cause of premature audio stop/reset.
--   **Solution:**
-    -   Ensure callbacks returned from custom hooks, especially those used in `useEffect` cleanups or frequent re-renders, have stable references.
-    -   Use `useCallback` with an empty dependency array (`[]`) if the callback does not rely on props or state from the hook's scope that would necessitate re-creation, or if it's designed to always use the latest state via `useState` (which is guaranteed by React).
-    -   For `stopCurrentAudioAndReset` in `useAudioPlayer`, changing its `useCallback` dependency array from `[currentSound]` to `[]` stabilized its reference, preventing `ReaderScreen`'s cleanup `useEffect` from firing at incorrect times.
+### 10. Sequencing State Updates and Asynchronous Operations:
+-   **Pattern:** Update UI-driving state immediately on user interaction, then call async functions. Hooks set "intent" state, initiate async ops, and rely on callbacks/status updates for definitive state changes.
 
-### 11. Managing Stale Closures and State with Refs:
--   **Challenge:** Callbacks (especially those memoized with `useCallback([])` or event handlers like `onPlaybackStatusUpdate`) can capture stale state values if they are not re-created when that state changes.
--   **Solution:**
-    -   For `onPlaybackStatusUpdate` (which is a `useCallback([])`), direct access to `playingVerseNumber` state would be stale.
-    -   Introduced a `useRef` (e.g., `currentPlayingVerseRef`) that is updated via a separate `useEffect` whenever the corresponding state (`playingVerseNumber`) changes.
-    -   The stable callback (`onPlaybackStatusUpdate`) can then safely access `currentPlayingVerseRef.current` to get the latest value without needing the state variable in its own dependency array.
-    -   This pattern is crucial for event handlers set on external objects (like `Audio.Sound`) where the handler function itself needs to be stable but must operate on current component/hook state.
+### 11. `useEffect` Cleanup Functions:
+-   **Vigilance Required:** Ensure cleanup functions correctly manage resources (e.g., audio player instances, event listeners, timers).
 
-### 12. Sequencing State Updates and Asynchronous Operations:
--   **Challenge:** When dealing with asynchronous operations (e.g., `sound.playAsync()`), UI-related state updates in the calling component (`ReaderScreen`) and internal state updates in the hook (`useAudioPlayer`) need careful sequencing.
--   **Pattern Observed/Reinforced:**
-    1.  **User Interaction (e.g., `handleVersePress` in `ReaderScreen`):**
-        -   Immediately update UI-driving state (e.g., `setCurrentVerseNumber` for highlighting, `setShowAudioControls` to true) to provide instant feedback.
-        -   Then, call the asynchronous function from the hook (e.g., `toggleAudio`).
-    2.  **Custom Hook (`toggleAudio` in `useAudioPlayer`):**
-        -   Set loading states (`setIsLoading(true)`).
-        -   Handle cleanup of previous operations (e.g., stop/unload old sound).
-        -   Set "intent" state (e.g., `setPlayingVerseNumber` to the new verse being targeted) *before* the async operation if it helps drive logic or UI immediately.
-        -   Initiate the asynchronous operation (e.g., `loadAudio`, `sound.playAsync()`).
-        -   Rely on status update callbacks (e.g., `onPlaybackStatusUpdate`) to set definitive states like `isPlaying`, `durationMillis` once the async operation confirms its status. Avoid optimistically setting these if the callback provides a more reliable source of truth.
--   **Logging:** Extensive `console.log` statements were invaluable for diagnosing timing issues and race conditions between state updates and async events. This is a key debugging strategy for such complex interactions.
-
-### 13. `useEffect` Cleanup Functions:
--   **Vigilance Required:** Ensure `useEffect` cleanup functions correctly manage resources (e.g., detaching listeners, unloading sounds) and do not cause unintended side effects due to changing dependencies of the effect or the cleanup function itself.
--   The stabilization of `stopAudio` (via `useCallback(..., [])`) in `useAudioPlayer` was key to fixing a cleanup-related bug in `ReaderScreen`.
-
-## UI Consistency & Error Handling Patterns (2025-05-11)
-
-### 14. CSS Syntax Errors in Styled Components:
--   **Hidden Culprits:** Even correctly formatted JavaScript comments (e.g., `// comment`) within styled-component template literals can sometimes lead to PostCSS parsing errors like "Unknown word". Removing such comments can be a quick fix (e.g., issue in `PlaybackSliderContainer` in `VerseCard.tsx`).
--   **Theme Path Vigilance:** Incorrect theme paths in styled-component interpolations (e.g., `props.theme.colors.nonExistentColor`) can inject `undefined` into the CSS, which might stringify to the word "undefined". This can cause "Unknown word" errors or invalid CSS values. Always double-check theme paths against `theme.ts`.
-
-### 15. Expo AV Interruption Modes:
--   **Correct Usage:** Import `InterruptionModeIOS` and `InterruptionModeAndroid` directly from `expo-av`.
-    ```typescript
-    import { Audio, AVPlaybackStatus, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
-    // ...
-    await Audio.setAudioModeAsync({
-      // ...
-      interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-      interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
-    });
-    ```
-
-### 16. State Management for UI Consistency (Loading/Playing States):
--   **Persistent UI Elements:** For components like audio sliders that appear upon interaction and have loading/playing states, it's often better to keep the main container visible once activated. Use overlays (e.g., `ActivityIndicator`) or style changes (opacity, disabled state) to indicate loading/buffering, rather than conditionally rendering the entire element based on `isLoading || isPlaying`. This prevents UI flickering (e.g., `VerseCard.tsx` slider logic).
--   **Careful `isLoading` Management:** In custom hooks managing asynchronous operations (like `useAudioPlayer`), the `setIsLoading(false)` call should ideally be tied to the actual completion or readiness of the operation (e.g., in `onPlaybackStatusUpdate` when audio is playing and not buffering). Avoid setting `setIsLoading(false)` prematurely in `finally` blocks if the operation was successful, as this can cause brief UI inconsistencies. The `finally` block is more appropriate for setting `setIsLoading(false)` if an error occurred during the primary operation.
-
-### 17. Distinguishing User Intent vs. Engine State in Hooks:
--   **Dual State Variables:** For complex interactions like audio playback, consider using two related state variables in a custom hook:
-    -   One for the user's *intended* active item (e.g., `activeVerseNumber` in `useAudioPlayer`, set immediately on user press). This drives immediate UI feedback like highlighting.
-    -   Another for the item the *engine* is currently processing (e.g., `playingVerseNumber` in `useAudioPlayer`, set when the audio for that verse actually starts loading/playing). This drives engine-dependent UI like playback status icons.
--   This separation helps synchronize UI more accurately with both user intent and the underlying system's state.
-
-## Audio UI & Hook Refinements (2025-05-12)
-
-### 18. UI Component Responsibility for Audio Controls:
+### 12. UI Component Responsibility for Audio Controls:
 -   **`VerseCard.tsx`:**
-    -   **Responsibility:** Displays verse content, its playback slider, and a buffering indicator *only* during the initial audio load for that verse (driven by `isLoadingAudio` prop).
-    -   **Interaction:** Tapping the card toggles play/pause for its associated verse.
--   **`AudioControlBar.tsx`:**
-    -   **Responsibility:** Provides global audio controls: Stop button (stops and resets all audio playback) and Skip Next button. Also displays current playback time.
-    -   **No Play/Pause:** Does *not* contain a play/pause button; this is handled by tapping the `VerseCard`.
-    -   **No Buffering Indicator:** Does not display its own buffering indicator.
--   **Rationale:** This separation clarifies user interaction (tap verse to play/pause, use bar for stop/skip) and centralizes the visual feedback for loading/playback within the `VerseCard` itself.
+    -   Displays verse, translation, and playback slider (if active).
+    -   Handles tap-to-play/pause interaction directly on the card.
+    -   Manages visual state for active/playing/paused states.
+    -   Implements accessibility features (ARIA props, announcements, haptics).
+-   **`AudioControlBar.tsx`:** Global controls (Stop, Skip Next), time display. (Remains largely unchanged by this refactor phase).
+-   **`PlatformSlider.tsx`:**
+    -   Provides a cross-platform slider component.
+    -   Updated to accept and pass through accessibility props.
 
-### 19. `useAudioPlayer.ts` - Tap-to-Toggle (Play/Pause) Logic:
--   **Challenge:** Tapping a playing verse sometimes failed to pause, or tapping a paused verse failed to resume. Subsequent taps could also be blocked.
--   **Root Cause Analysis (via extensive logging):**
-    1.  **Stale `operationInProgressRef`:** The `operationInProgressRef.current` flag, set to `true` at the beginning of `toggleAudio` and `internalPlayVerse`, was not being reliably reset to `false` after the initial `internalPlayVerse` (when a new verse is played) completed. This caused the guard clause `if (operationInProgressRef.current || cleanupInProgressRef.current)` at the start of `toggleAudio` to block subsequent taps intended for pause/resume.
-    2.  **Delayed `isPlaybackActiveRef` Update:** The `isPlaybackActiveRef.current` (which `toggleAudio` uses to decide whether to call `pauseAsync` or `playAsync`) was updated by the `onPlaybackStatusUpdate` callback. This slight delay meant that on a quick second tap (to pause or resume), the ref might not yet reflect the true state change from the first tap's action.
--   **Solution Implemented:**
-    1.  **Reset `operationInProgressRef` in `internalPlayVerse`:** Added a `finally` block to the `try...catch` in `internalPlayVerse`. This block sets `operationInProgressRef.current = false;` *only if* the verse loading and initial play was successful (i.e., `!isLoading && !error && retryCount === 0`). This ensures the lock is released for subsequent `toggleAudio` calls.
-    2.  **Immediate `isPlaybackActiveRef` Update in `toggleAudio`:** When `toggleAudio` handles a tap on the *same* verse (for pause/resume), `isPlaybackActiveRef.current` is now updated *immediately* after the `await currentSound.pauseAsync()` or `await currentSound.playAsync()` call completes. This ensures the ref accurately reflects the new playback state for the next tap.
--   **Key Takeaway:** For complex asynchronous operations involving user interaction and state flags (like `operationInProgressRef`), ensure all code paths correctly reset these flags. For UI-driving refs that depend on async results (like `isPlaybackActiveRef`), consider immediate updates after an action if the callback-driven update might lag and cause inconsistent behavior on rapid subsequent interactions. Extensive logging is crucial for diagnosing such race conditions and state management issues.
+### 13. Tap-to-Play/Pause Interaction (`VerseCard.tsx` & `ReaderScreen.tsx`):
+-   **Pattern:**
+    -   `ReaderScreen.tsx` passes `onPress` (for selection) and `onTogglePlayback` (for play/pause) to `VerseCard.tsx`. Both are often mapped to the same handler (`handleVersePress` in `ReaderScreen`).
+    -   `VerseCard.tsx`'s `handleCardPress` function determines if the card is already active.
+        -   If active, it calls `onTogglePlayback`.
+        -   If not active, it calls `onPress` (which typically makes the card active and may also trigger playback via `toggleAudio` in `ReaderScreen`).
+
+### 14. Accessibility for Audio Components:
+-   **`VerseCard.tsx`:**
+    -   `accessibilityRole="button"`.
+    -   Dynamic `accessibilityLabel` indicating verse number and playback state (e.g., "Verse 1, playing").
+    -   `accessibilityHint` to guide users.
+    -   `accessibilityState` including `selected`, `busy`, `checked` (for play/pause).
+    -   `AccessibilityInfo.announceForAccessibility` for detailed state changes (loading, buffering, playing, paused, selected).
+-   **`PlatformSlider.tsx`:**
+    -   Passes `accessibilityLabel`, `accessibilityHint`, `accessibilityRole="adjustable"`, and `accessibilityValue` to the underlying native/web sliders.
+
+## Data Migration & Static Asset Handling (Vercel Blob) (2025-05-13)
+
+### 15. Static Data Strategy:
+-   **Pattern:** Use static JSON files on Vercel Blob for Quranic text, translations, surah lists.
+
+### 16. Migration Script Structure (Node.js):
+-   **Pattern:** Scripts use `dotenv`, Supabase client, `@vercel/blob` client. Specify `access: 'public'`, `contentType: 'application/json; charset=utf-8'`, `addRandomSuffix: false`.
+
+### 17. Environment Variable Consistency:
+-   **Rule:** Ensure consistency for `VERCEL_BLOB_URL_BASE` etc., across `.env.local`, `app.json`, and scripts.
+
+### 18. Application Service Layer Refactoring for Blob Data:
+-   **Pattern:** Update services to `fetch` from Blob URLs and parse JSON.
+
+### 19. Data Organization in Blob Storage:
+-   **Pattern:** Hierarchical paths (e.g., `quran-text/arabic/[surahId].json`).
+
+### 20. Idempotency and Error Handling in Migration Scripts:
+-   **Rule:** Scripts should be idempotent and handle errors gracefully.
+
+### 21. Shared UI Components for Consistency:
+-   **Pattern:** Use shared components like `ScreenBackground.tsx`.
+
+## `expo-audio` Playback Learnings (Pre-Refactor & Current)
+
+### 15. Previous Issue: Playback Stalls with `createAudioPlayer`
+-   **Observation:** The prior custom hook (`src/hooks/useAudioPlayer.ts`, now presumably deprecated or replaced by `useQuranAudioPlayer.ts`) using `expo-audio`'s `createAudioPlayer` consistently failed to start playback. `isLoaded` and `isPlaying` remained `false`.
+-   **Resolution Path Taken:** The diagnostic plan involved testing the library-provided `useAudioPlayer` hook. The current `src/hooks/useQuranAudioPlayer.ts` successfully implements this, forming the basis of the current (refactored) audio system.
+
+### 16. Current Approach: Library's `useAudioPlayer` Hook
+-   **Pattern:** The `src/hooks/useQuranAudioPlayer.ts` now correctly uses `useAudioPlayer(source, updateInterval)` from `expo-audio`. This hook manages the `AudioPlayer` instance and its status.
+-   **Benefit:** This approach is generally more stable and aligns with `expo-audio`'s intended usage, abstracting away some of the complexities of manual player creation and management.
+
+### 17. TypeScript Configuration for Web (`tsconfig.json`):
+-   **Rule:** When implementing web-specific features that use DOM elements (like `input type="range"` in `PlatformSlider.tsx`), ensure `"dom"` is included in the `compilerOptions.lib` array in `tsconfig.json` to provide correct typings for `HTMLInputElement` and other DOM APIs.
+
+### 18. Tool Usage for Refactoring:
+-   **Pattern:**
+    -   `read_file` to understand existing components before modification.
+    -   `apply_diff` or `write_to_file` for applying changes.
+    -   Careful review of TypeScript errors post-modification to catch type mismatches or missing configurations (like the `tsconfig.json` `lib` update).
+
+## Numeric Precision with Native Components (React Native Bridge) (2025-05-14)
+
+### 19. Issue: "Loss of precision during arithmetic conversion"
+-   **Observation:** Passing floating-point numbers (e.g., millisecond timestamps derived from seconds) to native UI components (like Sliders) or accessibility props (e.g., `accessibilityValue.min`, `.max`, `.now`) that expect integer values can cause crashes or warnings related to precision loss when these values cross the React Native bridge.
+-   **Impact:** This primarily affects components that interact with native modules and can lead to unreliable behavior or app instability, especially noticeable with accessibility services.
+
+### 20. Rule: Round Numeric Values Before Passing to Native Modules/Components
+-   **Pattern:** Always use `Math.round()` (or `Math.floor()` / `Math.ceil()` if appropriate for the specific logic) on numeric values that:
+    1.  Originate from calculations that might produce floats (e.g., `seconds * 1000`).
+    2.  Are intended to be passed as props to native-backed UI components.
+    3.  Are used in `accessibilityValue` or other accessibility props that are bridged to native.
+-   **Implementation Points:**
+    -   **Hooks:** Perform rounding within custom hooks that manage or calculate these values (e.g., `useQuranAudioPlayer.ts` now rounds `durationMillis` and `positionMillis`).
+    -   **Component Props:** When passing props directly to native components (like `SliderIOS` in `PlatformSlider.tsx`) or to web equivalents that might have similar sensitivities (`input type="range"`), ensure the values are rounded.
+    -   **Event Handlers:** When receiving values from native component events (e.g., slider `onValueChange`), if these values might be floats and are used in further calculations or state updates that feed back into native components, consider rounding them at the point of receipt or before use.
+    -   **Utility Functions:** For common conversions (like `formatTime`), ensure the input is rounded if it's used in calculations that are sensitive to float vs. integer distinctions.
+
+### 21. Defensive Programming in Consuming Components:
+-   **Pattern:** Components that receive potentially problematic numeric props (e.g., `VerseCard.tsx` receiving `positionMillis`, `durationMillis`) should also apply `Math.round()` before using these values with child components (like `PlatformSlider`) or in internal calculations that feed into UI elements. This provides an extra layer of safety.
+
+### 22. Logging for Precision Issues:
+-   **Pattern:** In custom hooks or complex components dealing with these values, add specific `console.warn` or error logging if a precision-related error code or message is detected from underlying libraries (e.g., `expo-audio`). This logging should include the raw and rounded values to aid debugging. (Implemented in `useQuranAudioPlayer.ts`).
 
 This file will be updated as new patterns, preferences, or critical project intelligence emerge.
+
+## Robust Audio Playback & UI Synchronization Patterns (Expo Audio - 2025-05-14)
+
+### 23. Rule: Event-Driven UI State for Audio
+-   **Pattern:** UI state for audio playback (e.g., playing, paused, buffering, current time, slider position, verse highlighting) MUST be driven by actual events from the `expo-audio` player (specifically, `onPlaybackStatusUpdate` via the `useAudioPlayer` hook). Do not rely on optimistic updates or action intent alone. The reducer should transition to definitive states like 'playing' or 'paused' only *after* receiving confirmation from a player event.
+-   **Rationale:** This ensures the UI is a source of truth reflecting the actual player status, preventing desynchronization issues like stuck buffering icons or inaccurate control states. (Reference: Expo community discussions, e.g., [Expo GitHub Issue #19788](https://github.com/expo/expo/issues/19788) regarding AV status, general React state synchronization best practices).
+
+### 24. Rule: Mono-Instance 'Play-on-Create' Player Lifecycle
+-   **Pattern:** Enforce a single, active `AudioPlayer` instance at any time. When a new verse/audio track is requested for playback:
+    1.  Any existing player instance MUST be fully removed (including its event listeners and any associated timers like stall timers).
+    2.  A new `AudioPlayer` instance is then created for the new source.
+    3.  The `onPlaybackStatusUpdate` listener is attached to the new instance.
+    4.  Playback is initiated immediately on the new instance (e.g., `await player.play()`).
+-   **Rationale:** This 'play-on-create' or 'kill-and-replace' strategy prevents race conditions, stale listeners from previous players, multiple audio sources playing simultaneously, and simplifies state management by always dealing with a fresh player instance.
+
+### 25. Rule: Reliable Toggle Logic (Play/Pause/Resume)
+-   **Pattern:** Implement `toggleAudio` logic that correctly dispatches distinct actions based on the current player and UI state:
+    -   If player is actively playing: Dispatch `REQUEST_PAUSE`.
+    -   If player is loaded and paused (or UI state indicates paused/pausing for the same track): Dispatch `REQUEST_RESUME`.
+    -   If player is in a loading or buffering state for the current track and user taps again: Dispatch `REQUEST_STOP` (to cancel current operation and reset).
+    -   For new tracks or other unhandled states: Dispatch `REQUEST_PLAY` (which triggers the 'play-on-create' lifecycle).
+-   **Rationale:** Avoid simple boolean flips for play/pause state. Using distinct actions and corresponding reducer states ensures clarity and correct handling of each user interaction and player state transition.
+
+### 26. Learning: Resolving Stuck Buffering/Slider UI & State Desynchronization
+-   **Observation:** Persistent 'buffering' UI (e.g., spinner not disappearing) or desynchronized controls (e.g., slider not updating, play/pause button showing wrong state) are typically symptoms of UI state not being correctly and unconditionally updated by player events.
+-   **Solution:** The fix is to ensure that the `onPlaybackStatusUpdate` handler in the audio hook *always* dispatches an action to the reducer that sets the UI state to accurately reflect the player's current status (e.g., set to 'playing' when `event.isPlaying` is true and `event.isLoaded` is true, *regardless* of the previous UI state like 'buffering' or 'loading_requested'). The reducer case for this action should then directly set the `status: 'playing'`.
+
+### 27. Learning: `expo-audio` Nuances & Best Practices
+-   **Key Insight:** While `expo-audio`'s `useAudioPlayer` hook (or direct `createAudioPlayer` usage) provides the core player functionality, robust state synchronization with a React `useReducer` pattern and meticulous handling of the `onPlaybackStatusUpdate` event stream are critical for building a reliable and predictable audio user experience.
+-   **Community Wisdom:** Adhering to patterns discussed in Expo forums and GitHub issues (such as ensuring event-driven state updates) is crucial for avoiding common pitfalls.
+
+### 28. Pattern: Defensive Numeric Handling for Native Modules (Reiteration)
+-   **Rule:** (This reiterates Rule #20 for emphasis in the audio context) Always use `Math.round()` on numeric values (especially time in milliseconds derived from seconds) *before* passing them as props to native UI components (like Sliders) or into `accessibilityValue` objects.
+-   **Rationale:** Prevents "loss of precision during arithmetic conversion" errors when values cross the React Native bridge, ensuring stability and correct behavior of native elements and accessibility services.

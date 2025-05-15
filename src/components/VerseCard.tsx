@@ -1,5 +1,7 @@
-import React from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
+import React, { useEffect } from 'react';
+import { AccessibilityInfo, ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import styled, { useTheme } from 'styled-components/native';
 import { Theme } from '../theme/theme';
 import { Verse } from '../types/quran';
@@ -8,33 +10,47 @@ import PlatformSlider from './PlatformSlider';
 interface VerseCardProps {
   verse: Verse;
   showTranslation?: boolean;
-  isActive?: boolean;         // This prop indicates if the card is the "active" one
-  isAudioPlaying?: boolean;   // Is audio currently playing for THIS verse
-  isLoadingAudio?: boolean;   // Is audio currently loading for THIS verse
-  isBuffering?: boolean;      // Is audio currently buffering for THIS verse
-  durationMillis?: number;    
-  positionMillis?: number;    
-  onPress?: (verse: Verse) => void;
+  isActive?: boolean;
+  isPlaying?: boolean;
+  isLoading?: boolean;
+  isBuffering?: boolean;
+  durationMillis?: number;
+  positionMillis?: number;
+  onPress?: (verseNumber: number) => void;
   onLongPress?: (verse: Verse) => void;
-  // onSeek is now handled internally by this component if it has the slider
+  onSeek?: (positionMillis: number) => void;
+  onTogglePlayback?: (verseNumber: number) => void; // New prop for toggling playback
 }
 
-const CardContainer = styled(TouchableOpacity).attrs<{ theme: Theme }>(props => ({
+const CardContainer = styled(TouchableOpacity).attrs<{ 
+  isActive?: boolean;
+  isPlaying?: boolean;
+}>(props => ({
   activeOpacity: props.onPress ? 0.7 : 1,
-}))<{ theme: Theme; isActive?: boolean }>`
-  background-color: ${({ theme, isActive }) =>
-    isActive ? theme.colors.skyIndigo : theme.colors.cardBackground};
-  border-radius: ${({ theme }) => theme.radii.md}px;
-  padding: ${({ theme }) => theme.spacing.md}px;
-  margin-bottom: ${({ theme }) => theme.spacing.sm}px;
-  border-width: ${({ isActive }) => (isActive ? '2px' : '0px')};
-  border-color: ${({ theme, isActive }) => (isActive ? theme.colors.desertHighlightGold : 'transparent')};
-`;
+}))(({ theme, isActive, isPlaying }: { 
+  theme: Theme; 
+  isActive?: boolean;
+  isPlaying?: boolean;
+}) => ({
+  borderRadius: theme.radii.md,
+  padding: theme.spacing.md,
+  marginBottom: theme.spacing.sm,
+  flexDirection: 'column',
+  borderWidth: isActive ? 2 : 1,
+  borderColor: isActive 
+    ? isPlaying 
+      ? theme.colors.playingGreen // Use new theme color for playing state
+      : theme.colors.desertHighlightGold 
+    : 'rgba(255, 255, 255, 0.18)',
+  overflow: 'hidden',
+}));
 
-const VerseContent = styled(View)`
+const VerseContentRow = styled(View)`
   flex-direction: row;
   align-items: flex-start;
-  /* margin-bottom is removed as slider will be below if active */
+  width: 100%;
+  z-index: 1;
+  background-color: transparent;
 `;
 
 const VerseNumberContainer = styled(View)<{ theme: Theme }>`
@@ -44,7 +60,8 @@ const VerseNumberContainer = styled(View)<{ theme: Theme }>`
   background-color: ${({ theme }) => theme.colors.desertHighlightGold};
   justify-content: center;
   align-items: center;
-  margin-right: ${({ theme }) => theme.spacing.md}px;
+  margin-right: ${({ theme }) => theme.spacing.md}px; 
+  z-index: 2; 
 `;
 
 const VerseNumberText = styled(Text)<{ theme: Theme }>`
@@ -55,6 +72,7 @@ const VerseNumberText = styled(Text)<{ theme: Theme }>`
 
 const TextContainer = styled(View)`
   flex: 1;
+  background-color: transparent;
 `;
 
 const ArabicText = styled(Text)<{ theme: Theme }>`
@@ -64,7 +82,7 @@ const ArabicText = styled(Text)<{ theme: Theme }>`
   text-align: right;
   writing-direction: rtl;
   line-height: ${({ theme }) => theme.typography.fontSizes.arabicBody * theme.typography.lineHeights.loose}px;
-  margin-bottom: ${({ theme }) => theme.spacing.sm}px;
+  margin-bottom: ${({ theme }) => theme.spacing.sm}px; 
 `;
 
 const TranslationText = styled(Text)<{ theme: Theme }>`
@@ -72,31 +90,35 @@ const TranslationText = styled(Text)<{ theme: Theme }>`
   font-size: ${({ theme }) => theme.typography.fontSizes.md}px;
   color: ${({ theme }) => theme.colors.textEnglish};
   line-height: ${({ theme }) => theme.typography.fontSizes.md * theme.typography.lineHeights.normal}px;
-  margin-top: ${({ theme }) => theme.spacing.sm}px;
+  margin-top: ${({ theme }) => theme.spacing.sm}px; 
   font-style: italic;
 `;
 
-// Styles for the playback elements now within VerseCard
 const PlaybackContainer = styled(View)<{ theme: Theme }>`
+  width: 100%;
   margin-top: ${({ theme }) => theme.spacing.md}px;
+  z-index: 1;
+  background-color: transparent;
 `;
 
 const SliderContainer = styled(View)`
-  /* Styles for the slider's container if needed, e.g., padding */
+  width: 100%;
+  height: 40px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs}px;
 `;
 
 const BufferingDisplayContainer = styled(View)`
   flex-direction: row;
   align-items: center;
-  justify-content: center; /* Center buffering text/spinner */
-  height: 40px; /* Approx height of slider for consistent layout */
-  margin-bottom: ${({ theme }) => theme.spacing.xs}px; /* Space before time text */
+  justify-content: center; 
+  height: 40px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs}px; 
 `;
 
 const BufferingDisplayText = styled(Text)<{ theme: Theme }>`
   font-size: ${({ theme }) => theme.typography.fontSizes.sm}px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-left: ${({ theme }) => theme.spacing.sm}px;
+  margin-left: ${({ theme }) => theme.spacing.sm}px; 
 `;
 
 const TimeText = styled(Text)<{ theme: Theme }>`
@@ -104,89 +126,168 @@ const TimeText = styled(Text)<{ theme: Theme }>`
   font-size: ${({ theme }) => theme.typography.fontSizes.xs}px;
   color: ${({ theme }) => theme.colors.textSecondary};
   text-align: center;
-  margin-top: ${({ theme }) => theme.spacing.xs}px;
+  margin-top: ${({ theme }) => theme.spacing.xs}px; 
 `;
 
-// Removed PlaybackStatusContainer, PlayingContainer, PlayingIndicator, BufferingContainer, BufferingText
-// as their logic is now integrated into PlaybackContainer or handled differently.
-
 const formatTime = (millis: number = 0): string => {
-  const totalSeconds = Math.floor(millis / 1000);
+  const roundedMillis = Math.round(millis); // Ensure millis is an integer
+  const totalSeconds = Math.floor(roundedMillis / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
+const styles = StyleSheet.create({
+  slider: {
+    width: '100%',
+    height: 40,
+  }
+});
+
 const VerseCard: React.FC<VerseCardProps> = ({
   verse,
   showTranslation = false,
   isActive = false, 
-  isAudioPlaying = false,
-  isLoadingAudio = false, 
+  isPlaying = false,
+  isLoading = false,
   isBuffering = false,    
   durationMillis = 0,
   positionMillis = 0,
   onPress,
   onLongPress,
-  // onSeek is no longer a prop, handled internally
+  onSeek,
+  onTogglePlayback,
 }) => {
   const theme = useTheme();
-
-  const handleInternalSeek = (value: number) => {
-    // If ReaderScreen needs to know about seek completion, a new prop could be added.
-    // For now, this is internal to the card's slider.
-    console.log(`VerseCard: Seek complete for verse ${verse.id} to ${value}`);
-    // Potentially call a global seek function if needed:
-    // globalSeekFunction(verse.surahId, verse.numberInSurah, value);
-  };
   
-  // isCurrentPlaying in the plan is equivalent to isActive here for showing controls
-  const showPlaybackElements = isActive; 
+  // Ensure millisecond values are integers before use
+  const currentPositionMillis = Math.round(positionMillis);
+  const currentDurationMillis = Math.round(durationMillis);
+
+  const showPlaybackElements = isActive;
+
+  useEffect(() => {
+    if (isActive) {
+      let message = '';
+      if (isLoading) {
+        message = `Loading audio for verse ${verse.numberInSurah}`;
+      } else if (isBuffering) {
+        message = `Buffering audio for verse ${verse.numberInSurah}`;
+      } else if (isPlaying) {
+        message = `Playing verse ${verse.numberInSurah}`;
+      } else {
+        // Only announce "paused" if it was previously playing or loading/buffering
+        // This avoids announcing "paused" when a verse is just selected but not yet played.
+        if (currentDurationMillis > 0) { // A simple check if audio has been interacted with
+             message = `Paused at verse ${verse.numberInSurah}`;
+        } else {
+            message = `Verse ${verse.numberInSurah} selected`;
+        }
+      }
+      AccessibilityInfo.announceForAccessibility(message);
+    }
+  }, [isActive, isPlaying, isLoading, isBuffering, verse.numberInSurah, currentDurationMillis]);
+
+  const handleCardPress = () => {
+    console.log(`[VerseCard] handleCardPress: verse ${verse.numberInSurah}, isActive: ${isActive}, isPlaying: ${isPlaying}`);
+    if (isActive && Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    
+    if (isActive) {
+      console.log(`[VerseCard] Calling onTogglePlayback for verse ${verse.numberInSurah}`);
+      onTogglePlayback && onTogglePlayback(verse.numberInSurah);
+    } else {
+      console.log(`[VerseCard] Calling onPress for verse ${verse.numberInSurah}`);
+      onPress && onPress(verse.numberInSurah);
+    }
+  };
 
   return (
     <CardContainer
-      onPress={() => onPress && onPress(verse)}
+      onPress={handleCardPress}
       onLongPress={() => onLongPress && onLongPress(verse)}
-      isActive={isActive} 
+      isActive={isActive}
+      isPlaying={isPlaying}
+      accessibilityRole="button"
+      accessibilityLabel={`Verse ${verse.numberInSurah}${isActive ? (isPlaying ? ', playing' : ', paused') : ''}`}
+      accessibilityHint={isActive ? "Double tap to toggle playback" : "Double tap to select this verse"}
+      accessibilityState={{ 
+        selected: isActive,
+        busy: isLoading || isBuffering,
+        checked: isPlaying // 'checked' can represent play/pause state for a toggle button
+      }}
     >
-      <VerseContent theme={theme}>
-        <VerseNumberContainer>
-          <VerseNumberText>{verse.numberInSurah}</VerseNumberText>
+      {Platform.OS !== 'web' && (
+        <BlurView
+          style={[StyleSheet.absoluteFill, { borderRadius: theme.radii.md }]}
+          tint="dark"
+          intensity={Platform.OS === 'ios' ? 60 : 80} 
+        />
+      )}
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: isActive 
+              ? isPlaying
+                ? (Platform.OS === 'web' ? 'rgba(45, 85, 65, 0.75)' : 'rgba(35, 70, 55, 0.45)') // Greenish for playing
+                : (Platform.OS === 'web' ? 'rgba(60, 45, 90, 0.75)' : 'rgba(45, 35, 65, 0.45)') // Original purple for active/paused
+              : (Platform.OS === 'web' ? 'rgba(40, 25, 70, 0.65)' : 'rgba(25, 15, 45, 0.30)'), // Original for inactive
+            borderRadius: theme.radii.md,
+          },
+        ]}
+      />
+      <VerseContentRow>
+        <VerseNumberContainer theme={theme}>
+          <VerseNumberText theme={theme}>{verse.numberInSurah}</VerseNumberText>
         </VerseNumberContainer>
         <TextContainer>
-          <ArabicText>{verse.text}</ArabicText>
+          <ArabicText theme={theme}>{verse.text}</ArabicText>
           {showTranslation && verse.translation && (
-            <TranslationText>{verse.translation}</TranslationText>
+            <TranslationText theme={theme}>{verse.translation}</TranslationText>
           )}
         </TextContainer>
-      </VerseContent>
+      </VerseContentRow>
       
-      {/* Plan Step 2: Playback elements (slider, buffering) moved into VerseCard */}
       {showPlaybackElements && (
-        <PlaybackContainer theme={theme}>
+        <PlaybackContainer
+          theme={theme}
+          accessibilityLabel={`Audio controls for verse ${verse.numberInSurah}`}
+        >
           <SliderContainer>
-            {/* Show slider when playing/paused, or buffering text during initial load/buffering */}
-            {isLoadingAudio ? ( // Simplified: Only show buffering indicator during initial load
+            {isLoading || isBuffering ? (
               <BufferingDisplayContainer theme={theme}>
                 <ActivityIndicator size="small" color={theme.colors.desertHighlightGold} />
-                <BufferingDisplayText theme={theme}>Buffering...</BufferingDisplayText>
+                <BufferingDisplayText theme={theme}>
+                  {isLoading ? "Loading..." : "Buffering..."}
+                </BufferingDisplayText>
               </BufferingDisplayContainer>
             ) : (
               <PlatformSlider
-                style={{ width: '100%', height: 40 }} 
-                value={positionMillis}
+                style={styles.slider}
+                value={currentPositionMillis}
                 minimumValue={0}
-                maximumValue={Math.max(durationMillis || 1, 1)}
-                onSlidingComplete={handleInternalSeek} // Use internal or pass up if needed
-                minimumTrackTintColor={theme.colors.desertHighlightGold} // Plan uses theme.colors.primary
-                maximumTrackTintColor={theme.colors.textSecondary} // Plan uses theme.colors.grey
-                thumbTintColor={theme.colors.desertHighlightGold}    // Plan uses theme.colors.primary
-                disabled={isLoadingAudio || isBuffering} // Disable slider if loading or buffering
+                maximumValue={Math.max(currentDurationMillis || 1, 1)} // Ensure maximumValue is at least 1
+                onSlidingComplete={(value) => onSeek && onSeek(Math.round(value))} // Ensure seek value is rounded
+                minimumTrackTintColor={theme.colors.desertHighlightGold}
+                maximumTrackTintColor={theme.colors.textSecondary}
+                thumbTintColor={theme.colors.desertHighlightGold}
+                disabled={isLoading || isBuffering}
+                accessibilityLabel={`Audio timeline, current position ${formatTime(currentPositionMillis)}`}
+                accessibilityHint="Drag to seek through audio"
+                accessibilityRole="adjustable" // Correct role for slider
+                accessibilityValue={{ // Provide min, max, now, and text for screen readers
+                  min: 0,
+                  max: currentDurationMillis,
+                  now: currentPositionMillis,
+                  text: `${formatTime(currentPositionMillis)} of ${formatTime(currentDurationMillis)}`
+                }}
               />
             )}
           </SliderContainer>
           <TimeText theme={theme}>
-            {`${formatTime(positionMillis)} / ${formatTime(durationMillis)}`}
+            {`${formatTime(currentPositionMillis)} / ${formatTime(currentDurationMillis)}`}
           </TimeText>
         </PlaybackContainer>
       )}

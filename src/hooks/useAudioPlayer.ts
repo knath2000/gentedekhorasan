@@ -1,11 +1,17 @@
 // src/hooks/useAudioPlayer.ts
-import { Audio, AVPlaybackStatus, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
+import { AudioModule, AudioPlayer, AudioStatus, createAudioPlayer } from 'expo-audio';
+// AudioModule for setAudioModeAsync.
+// AudioPlayer is the class for player instances.
+// AudioStatus is the type for playbackStatusUpdate events.
+// InterruptionMode is the type for interruption mode string literals.
 import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { getAudioUrl as getAudioUrlFromService } from '../services/audioService';
 
 // --- Constants ---
 const MAX_RETRY_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 1000;
-const DEBUG = false; // Debug mode toggle
+const DEBUG = true;
+const UPDATE_INTERVAL_MS = 250;
+const PLAYBACK_STALL_TIMEOUT_MS = 10000; // 10 seconds for playback to start or error
 
 // --- Helper Functions ---
 const isNetworkError = (error: any): boolean => {
@@ -13,10 +19,8 @@ const isNetworkError = (error: any): boolean => {
   return errorMessage.includes('network') || errorMessage.includes('connection') || errorMessage.includes('timeout');
 };
 
-const formatAudioUrl = (surahId: number, verseNumber: number) => {
-  const formattedSurah = surahId.toString().padStart(3, '0');
-  const formattedVerse = verseNumber.toString().padStart(3, '0');
-  return `https://everyayah.com/data/Alafasy_128kbps/${formattedSurah}${formattedVerse}.mp3`;
+const formatAudioUrl = (surahId: number, verseNumber: number): string => {
+  return getAudioUrlFromService(surahId, verseNumber);
 };
 
 const getVerseKey = (surah: number, verse: number) => `${surah}-${verse}`;
@@ -30,34 +34,32 @@ const parseVerseKey = (key: string | null): { surah: number; verse: number } | n
   return { surah, verse };
 };
 
-
 // --- State, Actions, Reducer ---
-type AudioPlayerStatus =
+type AudioPlayerUiStatus =
   | 'idle'
-  | 'loading_requested' // User requested play, about to load
-  | 'loading_audio'     // Audio is actively loading
+  | 'loading_requested'
+  | 'loading_audio'
   | 'buffering'
   | 'playing'
-  | 'pausing_requested' // User requested pause
+  | 'pausing_requested'
   | 'paused'
-  | 'resuming_requested'// User requested resume
-  | 'stopping_requested'// User requested stop
-  | 'stopped'           // Playback completed naturally
-  | 'seeking_requested' // User requested seek
+  | 'resuming_requested'
+  | 'stopping_requested'
+  | 'seeking_requested'
   | 'error';
 
 type AudioState = {
-  activeVerseKey: string | null; // Verse user intends to play or is interacting with
-  loadedVerseKey: string | null; // Verse currently loaded/loading in sound object
-  status: AudioPlayerStatus;
+  activeVerseKey: string | null;
+  loadedVerseKey: string | null;
+  status: AudioPlayerUiStatus;
   positionMillis: number;
   durationMillis: number;
   error: string | null;
   autoplayEnabled: boolean;
   surahNumber: number;
   totalVersesInSurah: number;
-  retryCount: number; // For retrying a specific verse load
-  pendingSeekPosition: number | null; // Store seek position when requested
+  retryCount: number;
+  pendingSeekPosition: number | null;
 };
 
 type AudioAction =
@@ -66,25 +68,24 @@ type AudioAction =
   | { type: 'REQUEST_RESUME' }
   | { type: 'REQUEST_STOP' }
   | { type: 'REQUEST_SEEK'; positionMillis: number }
-  | { type: 'AUDIO_LOADING_INITIATED'; key: string } // Sound object is about to load
-  | { type: 'AUDIO_LOADED_AND_PLAYING'; key: string; durationMillis: number }
-  | { type: 'AUDIO_PAUSE_INITIATED' } // Sound object is about to pause
-  | { type: 'AUDIO_PAUSED_SUCCESS' }
-  | { type: 'AUDIO_RESUME_INITIATED' } // Sound object is about to resume
+  | { type: 'AUDIO_LOADING_INITIATED'; key: string }
+  | { type: 'AUDIO_LOADED_AND_PLAYING'; key: string; durationMillis: number; positionMillis?: number } 
+  | { type: 'AUDIO_PAUSE_INITIATED' }
+  | { type: 'AUDIO_PAUSED_SUCCESS'; positionMillis: number } 
+  | { type: 'AUDIO_RESUME_INITIATED' }
   | { type: 'AUDIO_RESUMED_SUCCESS' }
-  | { type: 'AUDIO_STOP_INITIATED' } // Sound object is about to stop/unload
-  | { type: 'AUDIO_STOPPED_OR_COMPLETED'; didJustFinish: boolean } // Stopped (manual) or completed (natural)
+  | { type: 'AUDIO_STOP_INITIATED' }
+  | { type: 'AUDIO_STOPPED_OR_COMPLETED'; didJustFinish: boolean }
   | { type: 'AUDIO_SEEK_INITIATED'; positionMillis: number }
-  | { type: 'AUDIO_SEEK_COMPLETED'; positionMillis: number }
-  | { type: 'AUDIO_BUFFERING_UPDATE'; isBuffering: boolean }
+  | { type: 'AUDIO_SEEK_COMPLETED'; positionMillis: number; currentUiStatusIfBuffering: AudioPlayerUiStatus }
+  | { type: 'AUDIO_BUFFERING_UPDATE'; isBuffering: boolean; previousStatusHint?: AudioPlayerUiStatus }
   | { type: 'AUDIO_POSITION_UPDATE'; positionMillis: number; durationMillis?: number }
-  | { type: 'AUDIO_ERROR'; error: string; key?: string }
+  | { type: 'AUDIO_ERROR'; error: string; key?: string | null } // Allow key to be null from state
   | { type: 'SET_AUTOPLAY'; enabled: boolean }
   | { type: 'SET_SURAH_CONTEXT'; surah: number; totalVerses: number }
   | { type: 'RESET_PLAYER' }
   | { type: 'INCREMENT_RETRY'; key: string }
   | { type: 'CLEAR_RETRY'; key: string };
-
 
 const initialStateFactory = (
   initialSurahNumber: number,
@@ -104,6 +105,7 @@ const initialStateFactory = (
   pendingSeekPosition: null,
 });
 
+// Reducer should be pure and not access playerRef
 function audioReducer(state: AudioState, action: AudioAction): AudioState {
   if (DEBUG) console.log(`[Reducer] Action: ${action.type}`, action, 'Current State:', state);
   switch (action.type) {
@@ -121,192 +123,167 @@ function audioReducer(state: AudioState, action: AudioAction): AudioState {
 
     case 'REQUEST_PLAY': {
       const key = getVerseKey(action.surah, action.verse);
-      if (state.status === 'loading_requested' || state.status === 'loading_audio') {
-        if (DEBUG) console.log(`[Reducer] Play request for ${key} while already loading ${state.activeVerseKey}. Ignoring.`);
-        return state; // Already processing a load
-      }
-      if (state.loadedVerseKey === key && state.status === 'paused') {
+      if (state.loadedVerseKey === key && 
+          (state.status === 'paused' || state.status === 'pausing_requested' || 
+           (state.status === 'buffering' && state.activeVerseKey === key) 
+          )
+         ) {
+        if (DEBUG) console.log(`[Reducer] REQUEST_PLAY for already loaded/paused key ${key}. Transitioning to resuming_requested.`);
         return { ...state, status: 'resuming_requested', activeVerseKey: key };
       }
+      if (state.activeVerseKey === key && state.status === 'playing') {
+        if (DEBUG) console.log(`[Reducer] REQUEST_PLAY for already playing key ${key}. No change.`);
+        return state;
+      }
+      if (DEBUG) console.log(`[Reducer] REQUEST_PLAY for new/different key ${key}. Transitioning to loading_requested.`);
       return {
         ...state,
         activeVerseKey: key,
         status: 'loading_requested',
         error: null,
-        positionMillis: 0,
+        positionMillis: 0, 
         durationMillis: 0,
         retryCount: 0,
-        loadedVerseKey: null, // Will be set by AUDIO_LOADING_INITIATED
+        loadedVerseKey: null, 
       };
     }
     case 'REQUEST_PAUSE':
-      if (state.status === 'playing') {
+      if (['playing', 'buffering', 'resuming_requested'].includes(state.status) && state.loadedVerseKey) {
+         if (state.status === 'loading_audio' && !state.loadedVerseKey) return state; 
         return { ...state, status: 'pausing_requested' };
       }
       return state;
     case 'REQUEST_RESUME':
-      if (state.status === 'paused' && state.loadedVerseKey) {
+      if ((state.status === 'paused' || state.status === 'pausing_requested') && state.loadedVerseKey) {
         return { ...state, status: 'resuming_requested' };
       }
       return state;
     case 'REQUEST_STOP':
-      if (state.status !== 'idle' && state.status !== 'stopped' && state.status !== 'stopping_requested') {
+      if (!['idle', 'stopping_requested'].includes(state.status)) {
         return { ...state, status: 'stopping_requested' };
       }
       return state;
-    
     case 'REQUEST_SEEK':
-      if (state.status === 'playing' || state.status === 'paused' || state.status === 'buffering') {
+      if (['playing', 'paused', 'buffering'].includes(state.status) && state.loadedVerseKey) {
         return { ...state, status: 'seeking_requested', pendingSeekPosition: action.positionMillis };
       }
       return state;
-
     case 'AUDIO_LOADING_INITIATED':
       return { ...state, status: 'loading_audio', loadedVerseKey: action.key, error: null, retryCount: 0 };
-
-    case 'AUDIO_LOADED_AND_PLAYING':
+    case 'AUDIO_LOADED_AND_PLAYING': 
       return {
         ...state,
         status: 'playing',
         loadedVerseKey: action.key,
-        activeVerseKey: action.key,
+        activeVerseKey: action.key, 
         durationMillis: action.durationMillis,
-        positionMillis: 0,
+        positionMillis: action.positionMillis !== undefined ? action.positionMillis : 0,
         error: null,
         retryCount: 0,
       };
     case 'AUDIO_PAUSE_INITIATED':
-      return { ...state, status: 'buffering' }; // Or a more specific 'pausing_audio' if needed
+      return { ...state, status: 'buffering' }; 
     case 'AUDIO_PAUSED_SUCCESS':
-      return { ...state, status: 'paused' };
+      return { ...state, status: 'paused', positionMillis: action.positionMillis };
     case 'AUDIO_RESUME_INITIATED':
-      return { ...state, status: 'buffering' }; // Or a more specific 'resuming_audio'
-    case 'AUDIO_RESUMED_SUCCESS':
+      return { ...state, status: 'buffering' }; 
+    case 'AUDIO_RESUMED_SUCCESS': 
       return { ...state, status: 'playing' };
     case 'AUDIO_STOP_INITIATED':
-      return { ...state, status: 'buffering' }; // Or 'stopping_audio'
-
+      return { ...state, status: 'buffering' }; 
     case 'AUDIO_STOPPED_OR_COMPLETED':
-      const baseNextState: AudioState = {
-        ...state,
-        positionMillis: 0,
-        loadedVerseKey: action.didJustFinish ? null : state.loadedVerseKey,
-        activeVerseKey: action.didJustFinish ? null : state.activeVerseKey,
-        // status will be set below
-      };
-
       if (action.didJustFinish && state.autoplayEnabled && state.loadedVerseKey) {
         const current = parseVerseKey(state.loadedVerseKey);
         if (current && current.verse < state.totalVersesInSurah) {
           const nextVerse = current.verse + 1;
+          if (DEBUG) console.log(`[Reducer] Autoplay: Next verse ${nextVerse} in surah ${current.surah}`);
           return {
-            ...baseNextState,
+            ...state,
             activeVerseKey: getVerseKey(current.surah, nextVerse),
-            status: 'loading_requested', // Trigger autoplay
+            status: 'loading_requested',
             retryCount: 0,
-            loadedVerseKey: null, // Important to reset for next load
+            loadedVerseKey: null,
+            positionMillis: 0,
+            durationMillis: 0,
+            error: null,
           };
         } else {
-           if (DEBUG) console.log(`[Reducer] Autoplay: End of surah or invalid current verse.`);
-           return { ...baseNextState, status: 'idle', activeVerseKey: null, loadedVerseKey: null };
+          if (DEBUG) console.log(`[Reducer] Autoplay: End of surah ${state.surahNumber} or invalid current verse.`);
+          return {
+            ...state,
+            activeVerseKey: null,
+            loadedVerseKey: null,
+            status: 'idle',
+            positionMillis: 0,
+            durationMillis: 0,
+            error: null,
+          };
         }
-      } else if (action.didJustFinish) { // Finished and no autoplay, or manual stop that completed
-        return { ...baseNextState, status: 'idle', activeVerseKey: null, loadedVerseKey: null };
-      } else { // Manual stop that didn't "finish" a track (e.g. stopped mid-play)
-        return { ...baseNextState, status: 'idle' };
-      }
-
-    case 'AUDIO_SEEK_INITIATED':
-        // When seek is initiated, we often go into a buffering state until seek is complete.
-        // The actual sound object's status will confirm via onPlaybackStatusUpdate.
-        return { ...state, status: 'buffering', pendingSeekPosition: action.positionMillis };
-    case 'AUDIO_SEEK_COMPLETED':
-        // After seek, determine if it should be playing or paused.
-        // This might depend on whether it was playing before the seek.
-        // For now, assume if a seek was pending, it should attempt to play.
-        // onPlaybackStatusUpdate will provide the definitive status.
-        // If it was paused and seeked, it should remain paused unless explicitly played.
-        // Let's assume it was playing or intended to play if a seek was done.
-        // A better approach might be to store preSeekStatus in state.
-        const statusBeforeSeek = state.status; // This is 'seeking_requested' or 'buffering'
-                                              // We need to know the status *before* 'seeking_requested'
-                                              // For now, if a seek happened, assume it should be playing or paused based on prior state.
-                                              // This is tricky. Let's simplify: if it was playing/buffering, it's playing. Else paused.
-                                              // This logic is better handled by the effect calling this.
-                                              // The reducer should just update based on action.
+      } else {
+        if (DEBUG) console.log(`[Reducer] Audio stopped (manual or no autoplay). DidJustFinish: ${action.didJustFinish}. Resetting to idle.`);
         return {
           ...state,
-          // If it was playing or buffering (implying it wanted to play), set to playing. Else, paused.
-          // This is still not perfect. The effect that calls setPositionAsync should decide the next state.
-          // For now, let's assume it goes to 'paused', and onPlaybackStatusUpdate will correct to 'playing' if needed.
-          status: 'paused', // Tentative, onPlaybackStatusUpdate will confirm.
-          positionMillis: action.positionMillis,
-          pendingSeekPosition: null
+          activeVerseKey: null,
+          loadedVerseKey: null,
+          status: 'idle',
+          positionMillis: 0,
+          durationMillis: 0, 
+          error: null, 
         };
-
-
+      }
+    case 'AUDIO_SEEK_INITIATED':
+      return { ...state, status: 'buffering', pendingSeekPosition: action.positionMillis };
+    case 'AUDIO_SEEK_COMPLETED':
+      return {
+        ...state,
+        status: action.currentUiStatusIfBuffering, 
+        positionMillis: action.positionMillis,
+        pendingSeekPosition: null,
+      };
     case 'AUDIO_BUFFERING_UPDATE':
       if (action.isBuffering) {
-        // Only transition to 'buffering' if we are in a state that can buffer
-        if (state.status === 'playing' || state.status === 'loading_audio' || state.status === 'paused' || state.status === 'resuming_requested' || state.status === 'seeking_requested' || state.status === 'pausing_requested') {
+        if (['playing', 'loading_audio', 'paused', 'resuming_requested', 'seeking_requested', 'pausing_requested'].includes(state.status)) {
           return { ...state, status: 'buffering' };
         }
-      } else { // action.isBuffering is false (buffering stopped)
+      } else { 
         if (state.status === 'buffering') {
-          // If buffering stops, what was the intended state?
-          // If a seek was pending, it might now be 'playing' or 'paused'.
-          // If loading, it might be 'playing'.
-          // If resuming, it might be 'playing'.
-          // If pausing, it might be 'paused'.
-          // This is best determined by onPlaybackStatusUpdate.
-          // Tentatively set to 'paused'; onPlaybackStatusUpdate will clarify.
-          return { ...state, status: 'paused' };
+          return { ...state, status: action.previousStatusHint || 'paused' };
         }
       }
       return state;
-
     case 'AUDIO_POSITION_UPDATE':
-      let resolvedStatus = state.status;
-      // If we are buffering (and not because of a pending seek operation),
-      // and we receive a position update, it implies playback is happening or has resumed.
-      if (state.status === 'buffering' && state.pendingSeekPosition === null) {
-          resolvedStatus = 'playing';
+      let newPlayerUiStatus = state.status;
+      if (state.status === 'buffering' && state.pendingSeekPosition === null && action.positionMillis > 0 ) {
+        // Let onPlaybackStatusUpdate determine if it's 'playing'
       }
       return {
         ...state,
         positionMillis: action.positionMillis,
         durationMillis: action.durationMillis !== undefined ? action.durationMillis : state.durationMillis,
-        status: resolvedStatus,
+        status: newPlayerUiStatus, 
       };
-
     case 'AUDIO_ERROR':
       return {
         ...state,
         status: 'error',
         error: action.error,
-        retryCount: action.key === state.activeVerseKey ? state.retryCount : 0,
-        pendingSeekPosition: null, // Clear any pending seek on error
+        retryCount: action.key === state.activeVerseKey ? state.retryCount : 0, 
+        pendingSeekPosition: null,
       };
-    
     case 'INCREMENT_RETRY':
-      if (state.activeVerseKey === action.key && state.status === 'loading_audio') { // Only increment if actively loading this key
+      if (state.activeVerseKey === action.key && state.status === 'loading_audio') {
         return { ...state, retryCount: state.retryCount + 1 };
       }
       return state;
     case 'CLEAR_RETRY':
-      // Clear retry if the key matches the currently loaded/active one and we are no longer in an error or loading state for it.
-      if ((state.loadedVerseKey === action.key || state.activeVerseKey === action.key) && state.status !== 'error' && state.status !== 'loading_audio') {
+      if ((state.loadedVerseKey === action.key || state.activeVerseKey === action.key) && !['error', 'loading_audio', 'loading_requested'].includes(state.status)) {
         return { ...state, retryCount: 0 };
       }
       return state;
-
     case 'RESET_PLAYER':
       return initialStateFactory(state.surahNumber, state.totalVersesInSurah, state.autoplayEnabled);
-
     default:
-      // https://github.com/typescript-eslint/typescript-eslint/issues/6505
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const exhaustiveCheck: never = action; // Ensures all actions are handled
+      const exhaustiveCheck: never = action; // eslint-disable-line
       return state;
   }
 }
@@ -322,105 +299,217 @@ export function useAudioPlayer(
     initialStateFactory(initialSurahNumber, initialTotalVersesInSurah, initialAutoplayEnabled)
   );
 
-  const soundRef = useRef<Audio.Sound | null>(null);
-  // Ref to track if an operation (load, stop, pause, resume) is in progress to prevent race conditions
-  const operationLockRef = useRef<boolean>(false); 
-  const lastPlayedVerseKeyRef = useRef<string | null>(null);
+  const playerRef = useRef<AudioPlayer | null>(null);
+  const operationLockRef = useRef<boolean>(false);
+  const statusListenerSubscription = useRef<ReturnType<AudioPlayer['addListener']> | null>(null);
+  const preSeekStatusRef = useRef<AudioPlayerUiStatus>(state.status);
+  const playbackStallTimerRef = useRef<number | null>(null); 
 
-
-  // Update surah context from props
   useEffect(() => {
     dispatch({ type: 'SET_SURAH_CONTEXT', surah: initialSurahNumber, totalVerses: initialTotalVersesInSurah });
   }, [initialSurahNumber, initialTotalVersesInSurah]);
 
-  // Update autoplay from props
   useEffect(() => {
     dispatch({ type: 'SET_AUTOPLAY', enabled: initialAutoplayEnabled });
   }, [initialAutoplayEnabled]);
 
+  const onPlaybackStatusUpdate = useCallback(async (status: AudioStatus) => {
+    const currentKeyForLog = state.loadedVerseKey || state.activeVerseKey || 'unknown_key';
+    if (DEBUG) console.log(`[onPlaybackStatusUpdate] Received status update for verse ${currentKeyForLog}:`, JSON.stringify(status, null, 2));
 
-  const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
-    if (!soundRef.current) return; // Sound might have been unloaded
-
-    if (!status.isLoaded) {
-      if (status.error) {
-        if (DEBUG) console.error(`[onPlaybackStatusUpdate] Playback Error: ${status.error} for ${state.loadedVerseKey}`);
-        dispatch({ type: 'AUDIO_ERROR', error: status.error, key: state.loadedVerseKey || undefined });
-      } else {
-        // Sound unloaded, e.g. after stopAsync or if it failed to load.
-        if (state.status === 'playing' || state.status === 'loading_audio' || state.status === 'buffering' || state.status === 'pausing_requested' || state.status === 'resuming_requested' || state.status === 'stopping_requested' || state.status === 'seeking_requested' ) {
-            if (DEBUG) console.log(`[onPlaybackStatusUpdate] Sound unloaded unexpectedly for ${state.loadedVerseKey}. Current status: ${state.status}`);
-            // If we were trying to do something, and it unloaded, it's an error or an implicit stop.
-            // dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: false }); // Or an error
-        }
-      }
+    if (!playerRef.current) {
+      if (DEBUG) console.warn("[onPlaybackStatusUpdate] No player ref, returning. This might indicate a race condition or premature cleanup.");
       return;
     }
 
-    dispatch({
-      type: 'AUDIO_POSITION_UPDATE',
-      positionMillis: status.positionMillis,
-      durationMillis: status.durationMillis,
-    });
+    // Destructure all relevant properties from the status event
+    const {
+      isLoaded: eventIsLoaded,
+      isBuffering: eventIsBufferingRaw,
+      playing: eventIsPlaying,
+      didJustFinish: eventDidJustFinish,
+      // NOTE: 'error' is not a standard property on AudioStatus from expo-audio docs.
+      // Errors are typically caught via try/catch on player methods or specific error events if available.
+      // We will rely on try/catch blocks for now.
+      // const eventErrorMsg = 'error' in status ? status.error : undefined;
+      duration: eventDurationSec,
+      currentTime: eventCurrentTimeSec,
+      reasonForWaitingToPlay, // This might provide clues for playback issues.
+    } = status;
 
-    if (status.isBuffering && state.status !== 'loading_audio' && state.status !== 'loading_requested') {
-      if (state.status !== 'buffering') dispatch({ type: 'AUDIO_BUFFERING_UPDATE', isBuffering: true });
-    } else if (!status.isBuffering && state.status === 'buffering') {
-      dispatch({ type: 'AUDIO_BUFFERING_UPDATE', isBuffering: false });
+    const eventIsBuffering = eventIsBufferingRaw ?? false; // Ensure boolean
+
+    if (reasonForWaitingToPlay && reasonForWaitingToPlay !== 'PLAYER_IS_NOT_PLAYING') {
+        // PLAYER_IS_NOT_PLAYING is normal when paused or stopped. Other reasons might indicate an issue.
+        if (DEBUG) console.warn(`[onPlaybackStatusUpdate] ReasonForWaitingToPlay for ${currentKeyForLog}: ${reasonForWaitingToPlay}`);
+        // Potentially dispatch an error or a specific status if this indicates a problem (e.g., "NO_ITEM_TO_PLAY", "PLAYER_NOT_READY")
+        // For now, just logging. If specific reasons consistently map to errors, they can be handled.
     }
     
-    if (status.isPlaying && state.status !== 'playing') {
-        if (state.status === 'loading_audio' || state.status === 'buffering' || state.status === 'resuming_requested') {
-            if (state.loadedVerseKey) {
-                 dispatch({ type: 'AUDIO_LOADED_AND_PLAYING', key: state.loadedVerseKey, durationMillis: status.durationMillis || 0 });
+    const eventDurationMillis = eventDurationSec !== undefined && eventDurationSec !== null ? eventDurationSec * 1000 : undefined;
+    const eventPositionMillis = eventCurrentTimeSec !== undefined && eventCurrentTimeSec !== null ? eventCurrentTimeSec * 1000 : undefined;
+    
+    const currentDurationMillis = eventDurationMillis ?? (playerRef.current?.isLoaded && playerRef.current.duration ? playerRef.current.duration * 1000 : state.durationMillis);
+    const currentPositionMillis = eventPositionMillis ?? (playerRef.current?.isLoaded && playerRef.current.currentTime ? playerRef.current.currentTime * 1000 : state.positionMillis);
+
+    if (DEBUG) console.log(`[onPlaybackStatusUpdate] Calculated Times for ${currentKeyForLog} - Duration: ${currentDurationMillis}, Position: ${currentPositionMillis}. Event raw: durationSec=${eventDurationSec}, currentTimeSec=${eventCurrentTimeSec}`);
+
+    // Check if player became unloaded unexpectedly
+    if (!eventIsLoaded &&
+        state.status !== 'idle' &&
+        state.status !== 'error' &&
+        state.status !== 'loading_requested' &&
+        state.status !== 'loading_audio' &&
+        state.status !== 'stopping_requested' // Allow stopping_requested to lead to unloaded
+       ) {
+      if (DEBUG) console.warn(`[onPlaybackStatusUpdate] Player for ${currentKeyForLog} reported NOT LOADED (eventIsLoaded=${eventIsLoaded}) unexpectedly. UI status: ${state.status}. Full event:`, JSON.stringify(status, null, 2));
+      // Dispatch an error if player becomes unloaded when it shouldn't be.
+      dispatch({ type: 'AUDIO_ERROR', error: `Player became unloaded unexpectedly for ${currentKeyForLog} (UI status: ${state.status})`, key: currentKeyForLog });
+      return; // Critical state, further processing might be unreliable
+    }
+    
+    dispatch({
+      type: 'AUDIO_POSITION_UPDATE',
+      positionMillis: currentPositionMillis,
+      durationMillis: currentDurationMillis,
+    });
+
+    if (eventIsBuffering) {
+      if (state.status !== 'buffering') {
+        if (DEBUG) console.log(`[onPlaybackStatusUpdate] Buffering started for ${currentKeyForLog}. Previous UI status: ${state.status}`);
+        preSeekStatusRef.current = state.status;
+        dispatch({ type: 'AUDIO_BUFFERING_UPDATE', isBuffering: true });
+      }
+    } else {
+      if (state.status === 'buffering') {
+        // Patch B: Determine next status based on current eventIsPlaying
+        let nextStatusAfterBuffering: AudioPlayerUiStatus = eventIsPlaying ? 'playing' : 'paused';
+        if (DEBUG) console.log(`[onPlaybackStatusUpdate] Buffering ended for ${currentKeyForLog}. Restoring to UI status: ${nextStatusAfterBuffering}. Event: isLoaded=${eventIsLoaded}, isPlaying=${eventIsPlaying}`);
+        dispatch({ type: 'AUDIO_BUFFERING_UPDATE', isBuffering: false, previousStatusHint: nextStatusAfterBuffering });
+      }
+    }
+    
+    // Core logic for transitioning to 'playing' state after loading
+    // PLAN STEP 1 & 2: Call play() directly when loaded and ready, if a play was requested.
+    if (eventIsLoaded && status.playbackState === 'readyToPlay' &&
+        (state.status === 'loading_audio' || state.status === 'loading_requested') &&
+        state.activeVerseKey === state.loadedVerseKey && // Ensure we are trying to play the correct loaded verse
+        playerRef.current && !playerRef.current.playing // Only attempt if not already playing
+       ) {
+      if (DEBUG) console.log(`[onPlaybackStatusUpdate] Player for ${state.loadedVerseKey} is LOADED & READY_TO_PLAY (eventIsLoaded=${eventIsLoaded}, playbackState=${status.playbackState}). UI state is ${state.status}. Attempting to set mode and play.`);
+      
+      if (playbackStallTimerRef.current) {
+        clearTimeout(playbackStallTimerRef.current);
+        playbackStallTimerRef.current = null;
+        if (DEBUG) console.log(`[onPlaybackStatusUpdate] Cleared playbackStallTimer for ${state.loadedVerseKey} before attempting play.`);
+      }
+
+      // Wrapped in an async IIFE to use await for setAudioModeAsync
+      (async () => {
+        try {
+          if (playerRef.current) { // Double check playerRef still exists
+            if (DEBUG) console.log(`[onPlaybackStatusUpdate - IIFE] Setting audio mode for ${state.loadedVerseKey} before direct play()`);
+            await AudioModule.setAudioModeAsync({
+              allowsRecording: false,
+              interruptionMode: 'doNotMix',
+              playsInSilentMode: false,
+              shouldPlayInBackground: false,
+            });
+            if (DEBUG) console.log(`[onPlaybackStatusUpdate - IIFE] Audio mode set for ${state.loadedVerseKey}. Calling player.play() directly.`);
+            
+            playerRef.current.play();
+            // Log current player status immediately after calling play to see if it reflects synchronously (it might not)
+            if (DEBUG) {
+                const p = playerRef.current;
+                console.log(`[onPlaybackStatusUpdate - IIFE] player.play() has been called for ${state.loadedVerseKey}. Player ref status: isLoaded=${p?.isLoaded}, playing=${p?.playing}, paused=${p?.paused}, currentTime=${p?.currentTime}, duration=${p?.duration}`);
             }
-        } else if (state.status === 'paused') { // This case should be handled by REQUEST_RESUME -> resuming_requested
-            dispatch({ type: 'AUDIO_RESUMED_SUCCESS' });
+            // The actual transition to 'playing' state in the reducer will still be driven by the *next* onPlaybackStatusUpdate event that shows eventIsPlaying = true.
+            // This direct call here is to ensure the native play command is issued.
+          } else {
+            if (DEBUG) console.error(`[onPlaybackStatusUpdate - IIFE] CRITICAL: playerRef.current became null before direct play attempt for ${state.loadedVerseKey}.`);
+            dispatch({ type: 'AUDIO_ERROR', error: `Player instance lost before direct play for ${state.loadedVerseKey}`, key: state.loadedVerseKey });
+          }
+        } catch (playAttemptError: any) {
+          if (DEBUG) console.error(`[onPlaybackStatusUpdate - IIFE] EXCEPTION during direct setAudioModeAsync or player.play() for ${state.loadedVerseKey}:`, playAttemptError.message, playAttemptError.code, playAttemptError);
+          dispatch({ type: 'AUDIO_ERROR', error: `Direct play command or pre-play setup failed for ${state.loadedVerseKey}: ${playAttemptError.message}`, key: state.loadedVerseKey });
         }
-    } else if (!status.isPlaying && (state.status === 'playing' || state.status === 'buffering' || state.status === 'pausing_requested')) {
-        if (!status.isBuffering && !status.didJustFinish) { // if it's not buffering and didn't just finish, it's paused.
-            dispatch({ type: 'AUDIO_PAUSED_SUCCESS' });
-        }
+      })();
     }
 
-    if (status.didJustFinish) {
-      if (DEBUG) console.log(`[onPlaybackStatusUpdate] Verse ${state.loadedVerseKey} finished.`);
-      lastPlayedVerseKeyRef.current = state.loadedVerseKey;
+    // This block handles the state transition to 'playing' or 'paused' once the event confirms it.
+    // Patch A: Unconditionally dispatch AUDIO_LOADED_AND_PLAYING if event says playing and state is not already playing.
+    if (eventIsLoaded && eventIsPlaying && state.status !== 'playing') {
+      if (DEBUG) console.log(`[onPlaybackStatusUpdate] Event indicates PLAYING (isLoaded=${eventIsLoaded}, isPlaying=${eventIsPlaying}). Current UI state is ${state.status}. Dispatching AUDIO_LOADED_AND_PLAYING for ${state.loadedVerseKey || currentKeyForLog}.`);
+      if (playbackStallTimerRef.current) {
+        clearTimeout(playbackStallTimerRef.current);
+        playbackStallTimerRef.current = null;
+      }
+      dispatch({
+        type: 'AUDIO_LOADED_AND_PLAYING',
+        key: state.loadedVerseKey || currentKeyForLog, // Ensure a key is provided
+        durationMillis: currentDurationMillis,
+        positionMillis: currentPositionMillis
+      });
+    } else if (eventIsLoaded && !eventIsPlaying && !eventDidJustFinish) {
+      // This handles transitions to paused state if the event says not playing, not finished, and loaded.
+      // It's important this doesn't conflict with buffering state.
+      if (state.status === 'playing' || state.status === 'pausing_requested' || (state.status === 'buffering' && !eventIsBuffering)) {
+        if (DEBUG) console.log(`[onPlaybackStatusUpdate] Event indicates NOT PLAYING (isLoaded=${eventIsLoaded}, isPlaying=${eventIsPlaying}, didJustFinish=${eventDidJustFinish}). Current UI state is ${state.status}. Dispatching AUDIO_PAUSED_SUCCESS for ${state.loadedVerseKey || currentKeyForLog}.`);
+        dispatch({ type: 'AUDIO_PAUSED_SUCCESS', positionMillis: currentPositionMillis });
+      }
+    }
+
+    if (eventDidJustFinish) {
+      if (DEBUG) console.log(`[onPlaybackStatusUpdate] Verse ${state.loadedVerseKey} FINISHED (player ended according to event).`);
+      if (playbackStallTimerRef.current) {
+        clearTimeout(playbackStallTimerRef.current);
+        playbackStallTimerRef.current = null;
+      }
       dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: true });
     }
-  }, [state.status, state.loadedVerseKey, state.autoplayEnabled, state.totalVersesInSurah, state.surahNumber]);
+  }, [state.status, state.activeVerseKey, state.loadedVerseKey, state.durationMillis, state.positionMillis, state.autoplayEnabled]);
 
-  // Effect to manage Audio.Sound object based on state
+
   useEffect(() => {
-    const loadPlayAudio = async (keyToLoad: string) => {
-      if (operationLockRef.current) {
-        if (DEBUG) console.log(`[Effect LoadPlay] Operation lock active for ${keyToLoad}, skipping.`);
+    const removePlayer = () => { 
+        if (playerRef.current) {
+            const verseKeyForLog = state.loadedVerseKey || state.activeVerseKey || 'unknown';
+            if (DEBUG) console.log(`[removePlayerEffect] Removing existing player for verse key: ${verseKeyForLog}.`);
+            if (statusListenerSubscription.current) {
+                statusListenerSubscription.current.remove();
+                statusListenerSubscription.current = null;
+            }
+            try {
+                playerRef.current.remove();
+            } catch (e: any) {
+                 if (DEBUG) console.error('[removePlayerEffect] Error removing player:', e.message);
+            }
+            playerRef.current = null;
+        }
+        if (playbackStallTimerRef.current) { 
+            clearTimeout(playbackStallTimerRef.current);
+            playbackStallTimerRef.current = null;
+        }
+    };
+
+    const loadPlayAudio = async () => { 
+      const keyToLoad = state.activeVerseKey;
+      if (!keyToLoad) {
+        if (DEBUG) console.log(`[Effect LoadPlay] No activeVerseKey to load.`);
+        operationLockRef.current = false; 
         return;
       }
-      operationLockRef.current = true;
-      if (DEBUG) console.log(`[Effect LoadPlay] Attempting to load: ${keyToLoad}, current sound: ${soundRef.current ? 'exists' : 'null'}`);
-
-      // Unload previous sound if it exists and is for a different verse
-      if (soundRef.current && state.loadedVerseKey && state.loadedVerseKey !== keyToLoad) {
-        if (DEBUG) console.log(`[Effect LoadPlay] Unloading previous sound for ${state.loadedVerseKey}`);
-        try {
-          soundRef.current.setOnPlaybackStatusUpdate(null);
-          await soundRef.current.unloadAsync();
-        } catch (e) {
-          if (DEBUG) console.error('[Effect LoadPlay] Error unloading previous sound:', e);
-        }
-        soundRef.current = null;
-      } else if (soundRef.current && !state.loadedVerseKey) { // Sound exists but no loadedVerseKey (e.g. after manual stop)
-         if (DEBUG) console.log(`[Effect LoadPlay] Unloading existing sound as loadedVerseKey is null.`);
-        try {
-          soundRef.current.setOnPlaybackStatusUpdate(null);
-          await soundRef.current.unloadAsync();
-        } catch (e) {
-          if (DEBUG) console.error('[Effect LoadPlay] Error unloading sound (no loadedVerseKey):', e);
-        }
-        soundRef.current = null;
+      if (DEBUG) console.log(`[Effect LoadPlay] Status: ${state.status}. ActiveKey: ${keyToLoad}. LoadedKey: ${state.loadedVerseKey}`);
+      
+      if (operationLockRef.current) {
+         if (DEBUG) console.log(`[Effect LoadPlay] Operation lock active for ${keyToLoad}, skipping.`);
+         return;
       }
+      operationLockRef.current = true;
+      
+      if (DEBUG) console.log(`[Effect LoadPlay] Attempting to load: ${keyToLoad}. Current player: ${playerRef.current ? 'exists' : 'null'}`);
 
+      removePlayer(); 
 
       const parsedKey = parseVerseKey(keyToLoad);
       if (!parsedKey) {
@@ -429,251 +518,352 @@ export function useAudioPlayer(
         return;
       }
 
-      dispatch({ type: 'AUDIO_LOADING_INITIATED', key: keyToLoad });
-      const audioUrl = formatAudioUrl(parsedKey.surah, parsedKey.verse);
-      if (DEBUG) console.log(`[Effect LoadPlay] Loading URL: ${audioUrl}`);
-
       try {
-        const newSound = new Audio.Sound();
-        newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-        await newSound.loadAsync({ uri: audioUrl }, { shouldPlay: true, progressUpdateIntervalMillis: 250 });
-        soundRef.current = newSound;
-        // onPlaybackStatusUpdate will dispatch AUDIO_LOADED_AND_PLAYING
-        if (DEBUG) console.log(`[Effect LoadPlay] ${keyToLoad} load initiated.`);
-      } catch (err: any) {
-        if (DEBUG) console.error(`[Effect LoadPlay] Error loading ${keyToLoad}:`, err);
-        if (state.retryCount < MAX_RETRY_ATTEMPTS && isNetworkError(err) && state.status === 'loading_audio' && state.activeVerseKey === keyToLoad) {
-          dispatch({ type: 'INCREMENT_RETRY', key: keyToLoad });
-          // No need for setTimeout and re-check, the effect will re-run due to retryCount change if status is still loading_audio
+        if (DEBUG) console.log(`[Effect LoadPlay] Setting audio mode for ${keyToLoad}...`);
+        await AudioModule.setAudioModeAsync({
+          allowsRecording: false,
+          interruptionMode: 'doNotMix',
+          playsInSilentMode: false, // Reverted from diagnostic true
+          shouldPlayInBackground: false,
+        });
+        if (DEBUG) console.log(`[Effect LoadPlay] Audio mode set for ${keyToLoad} (playsInSilentMode: false, shouldPlayInBackground: false).`);
+
+        dispatch({ type: 'AUDIO_LOADING_INITIATED', key: keyToLoad });
+        const audioUrl = formatAudioUrl(parsedKey.surah, parsedKey.verse);
+        if (DEBUG) console.log(`[Effect LoadPlay] Attempting to create player with URL: ${audioUrl}`);
+
+        // Wrap createAudioPlayer in try-catch as it might throw directly
+        try {
+            playerRef.current = createAudioPlayer({ uri: audioUrl }, UPDATE_INTERVAL_MS);
+        } catch (creationError: any) {
+            if (DEBUG) console.error(`[Effect LoadPlay] CRITICAL: createAudioPlayer for ${keyToLoad} threw an error:`, creationError.message, creationError.code, creationError);
+            dispatch({ type: 'AUDIO_ERROR', error: `Player creation failed for ${keyToLoad}: ${creationError.message}`, key: keyToLoad });
+            operationLockRef.current = false;
+            return;
+        }
+        
+        if (playerRef.current) {
+            if (DEBUG) console.log(`[Effect LoadPlay] Player for ${keyToLoad} created. Adding status listener.`);
+            statusListenerSubscription.current = playerRef.current.addListener('playbackStatusUpdate', onPlaybackStatusUpdate);
+            
+            if (DEBUG) console.log(`[Effect LoadPlay] Listener attached for ${keyToLoad}. Attempting to play immediately.`);
+
+            // Immediately attempt to play
+            try {
+                // Ensure audio mode is set just before this crucial play call as well
+                if (DEBUG) console.log(`[Effect LoadPlay] Setting audio mode for ${keyToLoad} before immediate play().`);
+                await AudioModule.setAudioModeAsync({
+                    allowsRecording: false,
+                    interruptionMode: 'doNotMix',
+                    playsInSilentMode: false,
+                    shouldPlayInBackground: false,
+                });
+                if (DEBUG) console.log(`[Effect LoadPlay] Audio mode set. Calling player.play() for ${keyToLoad} immediately after creation.`);
+                
+                await playerRef.current.play();
+                if (DEBUG) console.log(`[Effect LoadPlay] player.play() called for ${keyToLoad}. Waiting for status updates.`);
+                
+                if (playbackStallTimerRef.current) clearTimeout(playbackStallTimerRef.current);
+                playbackStallTimerRef.current = setTimeout(() => {
+                    if (playerRef.current && state.activeVerseKey === keyToLoad && !playerRef.current.playing && playerRef.current.isLoaded) {
+                        if (DEBUG) console.warn(`[Effect LoadPlay] Playback STALL detected for ${keyToLoad} after immediate play attempt. Player: isLoaded=${playerRef.current.isLoaded}, isPlaying=${playerRef.current.playing}. UI Status: ${state.status}.`);
+                        dispatch({ type: 'AUDIO_ERROR', error: `Playback stalled for ${keyToLoad} after play() call`, key: keyToLoad });
+                    }
+                }, PLAYBACK_STALL_TIMEOUT_MS) as unknown as number;
+
+            } catch (immediatePlayError: any) {
+                if (DEBUG) console.error(`[Effect LoadPlay] EXCEPTION during immediate setAudioModeAsync or player.play() for ${keyToLoad}:`, immediatePlayError.message, immediatePlayError.code, immediatePlayError);
+                dispatch({ type: 'AUDIO_ERROR', error: `Immediate play/setup failed for ${keyToLoad}: ${immediatePlayError.message}`, key: keyToLoad });
+            }
+            
         } else {
-          dispatch({ type: 'AUDIO_ERROR', error: `Failed to load ${keyToLoad}: ${err.message}`, key: keyToLoad });
+            if (DEBUG) console.error(`[Effect LoadPlay] CRITICAL: playerRef.current is null after createAudioPlayer call for ${keyToLoad}, cannot attach listener or play.`);
+            dispatch({ type: 'AUDIO_ERROR', error: `Player instance is null after creation for ${keyToLoad}`, key: keyToLoad });
+        }
+      } catch (err: any) { // Catch errors from setAudioModeAsync, createAudioPlayer, or rethrown errors
+        const errorMessage = `Setup error for ${keyToLoad}: ${err.message || 'Unknown error'}. Code: ${err.code}. NativeError: ${err.nativeError ? JSON.stringify(err.nativeError) : 'N/A'}`;
+        if (DEBUG) console.error(`[Effect LoadPlay] Outer catch block for ${keyToLoad}:`, errorMessage, err, err.code, err.nativeError);
+        
+        if (playbackStallTimerRef.current) {
+            clearTimeout(playbackStallTimerRef.current);
+            playbackStallTimerRef.current = null;
+        }
+        
+        if (playerRef.current) { // Cleanup if player was partially created
+            if (statusListenerSubscription.current) {
+                statusListenerSubscription.current.remove();
+                statusListenerSubscription.current = null;
+            }
+            try {
+                if (DEBUG) console.log(`[Effect LoadPlay - Outer Catch] Removing player due to error for ${keyToLoad}`);
+                playerRef.current.remove();
+            } catch (removeError: any) {
+                if (DEBUG) console.error('[Effect LoadPlay - Outer Catch] Error removing player after error:', removeError.message);
+            }
+            playerRef.current = null;
+        }
+
+        if (state.retryCount < MAX_RETRY_ATTEMPTS && isNetworkError(err) && state.status === 'loading_audio' && state.activeVerseKey === keyToLoad) {
+          if (DEBUG) console.log(`[Effect LoadPlay - Outer Catch] Network error for ${keyToLoad}. Incrementing retry.`);
+          dispatch({ type: 'INCREMENT_RETRY', key: keyToLoad });
+        } else {
+          if (DEBUG) console.log(`[Effect LoadPlay - Outer Catch] Non-network or max retries for ${keyToLoad}. Dispatching AUDIO_ERROR: ${errorMessage}`);
+          dispatch({ type: 'AUDIO_ERROR', error: errorMessage, key: keyToLoad });
         }
       } finally {
         operationLockRef.current = false;
       }
     };
-    
-    const pauseAudio = async () => {
+
+    const pauseAudio = () => {
       if (operationLockRef.current) return;
-      if (soundRef.current && state.status === 'pausing_requested') {
+      if (playerRef.current) {
         operationLockRef.current = true;
-        dispatch({ type: 'AUDIO_PAUSE_INITIATED' });
         try {
-          await soundRef.current.pauseAsync();
-          // onPlaybackStatusUpdate will dispatch AUDIO_PAUSED_SUCCESS
-        } catch (e) {
+          if (DEBUG) console.log(`[Effect pauseAudio] Attempting to pause player for ${state.loadedVerseKey}`);
+          const currentPositionBeforePause = playerRef.current.currentTime; 
+          playerRef.current.pause();
+          if (playbackStallTimerRef.current) { 
+            clearTimeout(playbackStallTimerRef.current);
+            playbackStallTimerRef.current = null;
+          }
+          dispatch({ type: 'AUDIO_PAUSED_SUCCESS', positionMillis: (currentPositionBeforePause || state.positionMillis || 0) * 1000 });
+        } catch (e: any) {
+          if (DEBUG) console.error(`[Effect pauseAudio] Error pausing player:`, e.message);
           dispatch({ type: 'AUDIO_ERROR', error: 'Failed to pause' });
         } finally {
           operationLockRef.current = false;
         }
+      } else if (state.status === 'pausing_requested' && !playerRef.current) {
+        if (DEBUG) console.log(`[Effect pauseAudio] No player object to pause. Transitioning to idle/paused.`);
+        dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: false });
       }
     };
 
-    const resumeAudio = async () => {
+    const resumeAudio = async () => { 
       if (operationLockRef.current) return;
-      if (soundRef.current && state.status === 'resuming_requested') {
+      if (playerRef.current) {
         operationLockRef.current = true;
         dispatch({ type: 'AUDIO_RESUME_INITIATED' });
         try {
-          await soundRef.current.playAsync();
-          // onPlaybackStatusUpdate will dispatch AUDIO_RESUMED_SUCCESS
-        } catch (e) {
+          if (DEBUG) console.log(`[Effect resumeAudio] Setting audio mode for ${state.loadedVerseKey}...`);
+          await AudioModule.setAudioModeAsync({
+            allowsRecording: false,
+            interruptionMode: 'doNotMix',
+            playsInSilentMode: false, // Reverted from diagnostic true
+            shouldPlayInBackground: false,
+          });
+          if (DEBUG) console.log(`[Effect resumeAudio] Audio mode set for ${state.loadedVerseKey} (playsInSilentMode: false, shouldPlayInBackground: false). Background play disabled.`);
+
+          if (DEBUG) console.log(`[Effect resumeAudio] Resuming player for ${state.loadedVerseKey} from ${state.positionMillis}ms`);
+          const playerCurrentTimeSec = playerRef.current.currentTime || 0;
+          const statePositionSec = state.positionMillis / 1000;
+          if (Math.abs(playerCurrentTimeSec - statePositionSec) > 0.5 && state.positionMillis > 0 && playerRef.current.isLoaded) { 
+             if (DEBUG) console.log(`[Effect resumeAudio] Discrepancy in position. Player at ${playerCurrentTimeSec}s, state at ${statePositionSec}s. Seeking before play.`);
+             await playerRef.current.seekTo(statePositionSec); 
+          }
+          
+          if (playbackStallTimerRef.current) clearTimeout(playbackStallTimerRef.current);
+          playbackStallTimerRef.current = setTimeout(() => {
+              if (playerRef.current && !playerRef.current.playing && (state.status === 'resuming_requested' || state.status === 'buffering')) {
+                  if (DEBUG) console.warn(`[Effect resumeAudio] Playback stall detected for ${state.loadedVerseKey} on resume. Player state: isLoaded=${playerRef.current.isLoaded}, isPlaying=${playerRef.current.playing}`);
+                  dispatch({ type: 'AUDIO_ERROR', error: `Playback stalled on resume for ${state.loadedVerseKey}`, key: state.loadedVerseKey || undefined });
+              }
+          }, PLAYBACK_STALL_TIMEOUT_MS) as unknown as number; 
+
+          try {
+            await playerRef.current.play();
+            if (DEBUG) console.log(`[Effect resumeAudio] ${state.loadedVerseKey} resume play() call promise resolved.`);
+          } catch (resumePlayError: any) {
+            if (DEBUG) console.error(`[Effect resumeAudio] EXCEPTION during player.play() call for ${state.loadedVerseKey}:`, resumePlayError.message, resumePlayError.code, resumePlayError);
+            dispatch({ type: 'AUDIO_ERROR', error: `Resume play command failed for ${state.loadedVerseKey}: ${resumePlayError.message}`, key: state.loadedVerseKey });
+          }
+
+        } catch (e: any) {
+          if (DEBUG) console.error(`[Effect resumeAudio] Error setting audio mode or resuming player:`, e.message, e.code, e.nativeError, e);
+           if (playbackStallTimerRef.current) {
+            clearTimeout(playbackStallTimerRef.current);
+            playbackStallTimerRef.current = null;
+          }
           dispatch({ type: 'AUDIO_ERROR', error: 'Failed to resume' });
         } finally {
           operationLockRef.current = false;
         }
+      } else {
+         if (DEBUG) console.log(`[Effect resumeAudio] No player to resume. Requesting new play for ${state.activeVerseKey}`);
+         if (state.activeVerseKey) {
+            const parsed = parseVerseKey(state.activeVerseKey);
+            if (parsed) dispatch({type: 'REQUEST_PLAY', surah: parsed.surah, verse: parsed.verse});
+         }
       }
     };
 
-    const stopAudioInternal = async () => {
-        if (operationLockRef.current) return;
-        if (soundRef.current && state.status === 'stopping_requested') {
-            operationLockRef.current = true;
-            dispatch({ type: 'AUDIO_STOP_INITIATED' });
-            try {
-                soundRef.current.setOnPlaybackStatusUpdate(null); // Detach listener before unload
-                await soundRef.current.unloadAsync();
-                soundRef.current = null;
-                dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: false }); // Manual stop
-            } catch (e) {
-                dispatch({ type: 'AUDIO_ERROR', error: 'Failed to stop/unload audio' });
-            } finally {
-                operationLockRef.current = false;
-            }
-        } else if (state.status === 'stopping_requested' && !soundRef.current) {
-            // If trying to stop but no sound, just go to idle
-            dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: false });
+    const stopAndResetPlayer = async () => {
+      if (DEBUG) console.log(`[stopAndResetPlayer] Called. Status: ${state.status}, Player exists: ${!!playerRef.current}`);
+      if (operationLockRef.current && state.status !== 'stopping_requested') return; 
+      operationLockRef.current = true;
+      dispatch({ type: 'AUDIO_STOP_INITIATED' });
+      if (playbackStallTimerRef.current) { 
+        clearTimeout(playbackStallTimerRef.current);
+        playbackStallTimerRef.current = null;
+      }
+      try {
+        if (playerRef.current) {
+          if (DEBUG) console.log(`[stopAndResetPlayer] Pausing and seeking to 0 for ${state.loadedVerseKey}`);
+          playerRef.current.pause();
+          if (playerRef.current.isLoaded) { 
+            await playerRef.current.seekTo(0); 
+          }
+          dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: false }); 
+        } else {
+          dispatch({ type: 'AUDIO_STOPPED_OR_COMPLETED', didJustFinish: false });
         }
+      } catch (e: any) {
+        if (DEBUG) console.error('[stopAndResetPlayer] Error stopping player:', e.message);
+        dispatch({ type: 'AUDIO_ERROR', error: 'Failed to stop audio' });
+      } finally {
+        operationLockRef.current = false;
+      }
     };
     
     const seekAudioInternal = async () => {
-        if (operationLockRef.current) return;
-        if (soundRef.current && state.status === 'seeking_requested' && state.pendingSeekPosition !== null) {
-            operationLockRef.current = true;
-            const seekPos = state.pendingSeekPosition;
-            dispatch({ type: 'AUDIO_SEEK_INITIATED', positionMillis: seekPos });
-            try {
-                await soundRef.current.setPositionAsync(seekPos);
-                // onPlaybackStatusUpdate will handle the transition to playing/paused
-                // We can dispatch AUDIO_SEEK_COMPLETED here to clear pendingSeekPosition
-                dispatch({ type: 'AUDIO_SEEK_COMPLETED', positionMillis: seekPos });
-            } catch (e) {
-                dispatch({ type: 'AUDIO_ERROR', error: 'Failed to seek audio' });
-            } finally {
-                operationLockRef.current = false;
-            }
-        }
-    };
-
-
-    // Main logic based on state.status
-    if (state.status === 'loading_requested' && state.activeVerseKey) {
-        loadPlayAudio(state.activeVerseKey);
-    } else if (state.status === 'loading_audio' && state.activeVerseKey && state.retryCount > 0 && state.retryCount <= MAX_RETRY_ATTEMPTS) {
-        // This handles retries. If INCREMENT_RETRY was dispatched, and status is still loading_audio, this effect re-runs.
-        if (DEBUG) console.log(`[Effect Main] Retrying load for ${state.activeVerseKey}, attempt ${state.retryCount}`);
-        loadPlayAudio(state.activeVerseKey); // Will use existing soundRef if it's for the same key
-    } else if (state.status === 'pausing_requested') {
-        pauseAudio();
-    } else if (state.status === 'resuming_requested') {
-        resumeAudio();
-    } else if (state.status === 'stopping_requested') {
-        stopAudioInternal();
-    } else if (state.status === 'seeking_requested') {
-        seekAudioInternal();
-    } else if (state.status === 'playing' && state.activeVerseKey && state.activeVerseKey !== state.loadedVerseKey) {
-        // User requested a new verse while another was playing.
-        // REQUEST_PLAY should have changed status to 'loading'. This indicates a potential state mismatch.
-        if (DEBUG) console.warn(`[Effect Main] State mismatch: Playing ${state.loadedVerseKey} but active is ${state.activeVerseKey}. Requesting play for active.`);
-        const parsedKey = parseVerseKey(state.activeVerseKey);
-        if (parsedKey) {
-            dispatch({ type: 'REQUEST_PLAY', surah: parsedKey.surah, verse: parsedKey.verse });
-        }
-    }
-
-    // Cleanup effect for when the hook is unmounted or surah changes
-    return () => {
-      if (soundRef.current) {
-        if (DEBUG) console.log('[Effect Cleanup] Unloading sound on unmount/surah change.');
+      if (operationLockRef.current) return;
+      if (playerRef.current && state.pendingSeekPosition !== null) {
         operationLockRef.current = true;
-        soundRef.current.setOnPlaybackStatusUpdate(null);
-        soundRef.current.unloadAsync()
-          .catch(e => { if (DEBUG) console.error('Error unloading sound on cleanup:', e); })
-          .finally(() => {
-            soundRef.current = null;
-            operationLockRef.current = false;
-          });
+        const seekPosSeconds = state.pendingSeekPosition / 1000;
+        
+        preSeekStatusRef.current = playerRef.current.playing ? 'playing' : (playerRef.current.paused ? 'paused' : state.status);
+
+        dispatch({ type: 'AUDIO_SEEK_INITIATED', positionMillis: state.pendingSeekPosition });
+        try {
+          // It's good practice to ensure audio mode is set before operations like seek too,
+          // though less critical than before play/resume if already playing/paused.
+          // For simplicity, we'll assume mode is set if player exists.
+          await playerRef.current.seekTo(seekPosSeconds);
+          dispatch({ type: 'AUDIO_SEEK_COMPLETED', positionMillis: state.pendingSeekPosition, currentUiStatusIfBuffering: preSeekStatusRef.current });
+        } catch (e: any) {
+          if (DEBUG) console.error('[Effect seekAudioInternal] Error seeking audio:', e.message);
+          dispatch({ type: 'AUDIO_ERROR', error: 'Failed to seek audio' });
+          dispatch({ type: 'AUDIO_BUFFERING_UPDATE', isBuffering: false, previousStatusHint: preSeekStatusRef.current });
+        } finally {
+          operationLockRef.current = false;
+        }
+      } else if (state.status === 'seeking_requested' && !playerRef.current) {
+         if (DEBUG) console.warn(`[Effect seekAudioInternal] Seek requested but no player. Resetting.`);
+         dispatch({ type: 'AUDIO_ERROR', error: 'Cannot seek, no player.' });
       }
     };
-  }, [state.status, state.activeVerseKey, state.loadedVerseKey, state.retryCount, onPlaybackStatusUpdate]); // Dependencies are crucial
 
-  // Audio Mode Setup
+    if (state.status === 'loading_requested') {
+      loadPlayAudio();
+    } else if (state.status === 'pausing_requested') {
+      pauseAudio();
+    } else if (state.status === 'resuming_requested') {
+      resumeAudio();
+    } else if (state.status === 'stopping_requested') {
+      stopAndResetPlayer();
+    } else if (state.status === 'seeking_requested') {
+      seekAudioInternal();
+    }
+  }, [state.status, state.activeVerseKey, state.loadedVerseKey, state.retryCount, onPlaybackStatusUpdate, state.pendingSeekPosition, state.positionMillis]); 
+
+
   useEffect(() => {
-    if (DEBUG) console.log(`useAudioPlayer: Setting up audio mode for surah ${state.surahNumber}`);
-    Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      staysActiveInBackground: true,
-      interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
-      playThroughEarpieceAndroid: false,
-    }).then(() => { if (DEBUG) console.log("Audio mode set."); })
-      .catch(e => {
-        console.error("Error setting audio mode:", e);
-        dispatch({ type: 'AUDIO_ERROR', error: 'Failed to set audio mode' });
-      });
-    // No specific cleanup for audio mode needed here, it's a global setting.
-  }, []); // Runs once
+    const playerInstanceToRemove = playerRef.current;
+    const listenerToUnsubscribe = statusListenerSubscription.current;
+    const stallTimerToClear = playbackStallTimerRef.current;
+    return () => {
+      if (listenerToUnsubscribe) {
+        listenerToUnsubscribe.remove();
+      }
+      if (playerInstanceToRemove) {
+        if (DEBUG) console.log('[Hook Unmount] Removing player.');
+        try {
+            playerInstanceToRemove.remove();
+        } catch (e: any) {
+            if (DEBUG) console.error('Error removing player on hook unmount:', e);
+        }
+      }
+      if (stallTimerToClear) {
+        clearTimeout(stallTimerToClear);
+      }
+      playerRef.current = null;
+      statusListenerSubscription.current = null;
+      playbackStallTimerRef.current = null;
+    };
+  }, []);
 
-  // --- Control Functions ---
-  const toggleAudio = useCallback(async (verseNumber: number) => {
-    if (DEBUG) console.log(`[toggleAudio] Verse: ${verseNumber}, Current Surah: ${state.surahNumber}`);
+  // Removed the top-level useEffect for AudioModule.setAudioModeAsync
+  // It's now handled within loadPlayAudio and resumeAudio
+
+  const toggleAudio = useCallback((verseNumber: number) => {
+    if (DEBUG) console.log(`[toggleAudio] Verse tap: ${verseNumber}, Current Surah: ${state.surahNumber}, Current Status: ${state.status}, ActiveKey: ${state.activeVerseKey}, LoadedKey: ${state.loadedVerseKey}, Pos: ${state.positionMillis}`);
     const targetKey = getVerseKey(state.surahNumber, verseNumber);
 
     if (operationLockRef.current) {
-        if (DEBUG) console.log(`[toggleAudio] Operation lock active for ${targetKey}, ignoring.`);
-        return;
+      if (DEBUG) console.log(`[toggleAudio] Operation lock active for ${targetKey}, ignoring tap.`);
+      return;
     }
 
-    if (state.loadedVerseKey === targetKey) {
-      if (state.status === 'playing') {
-        if (DEBUG) console.log(`[toggleAudio] Requesting PAUSE for ${targetKey}`);
-        operationLockRef.current = true;
-        try {
-            // No direct dispatch here, onPlaybackStatusUpdate handles AUDIO_PAUSED_SUCCESS
-            if(soundRef.current) await soundRef.current.pauseAsync();
-        } catch(e) { dispatch({type: 'AUDIO_ERROR', error: 'Failed to pause'})}
-        finally { operationLockRef.current = false; } // Release lock after async op
-
-      } else if (state.status === 'paused') {
-        if (DEBUG) console.log(`[toggleAudio] Dispatching REQUEST_RESUME for ${targetKey}`);
-        dispatch({ type: 'REQUEST_RESUME' }); // Reducer will change status to 'resuming_requested'
-      } else if (state.status === 'stopped' || state.status === 'idle' || state.status === 'error') {
-        if (DEBUG) console.log(`[toggleAudio] Dispatching REQUEST_PLAY for ${targetKey} (was ${state.status})`);
+    if (state.activeVerseKey === targetKey && state.loadedVerseKey === targetKey) { 
+      if (playerRef.current?.playing) {
+        if (DEBUG) console.log(`[toggleAudio] Player is playing. Requesting PAUSE for ${targetKey}`);
+        dispatch({ type: 'REQUEST_PAUSE' });
+      } else if (playerRef.current?.isLoaded && (playerRef.current?.paused || state.status === 'paused' || state.status === 'pausing_requested')) {
+        if (DEBUG) console.log(`[toggleAudio] Player is loaded and paused/pausing. Requesting RESUME for ${targetKey}`);
+        dispatch({ type: 'REQUEST_RESUME' });
+      } else if (state.status === 'loading_requested' || state.status === 'loading_audio' || state.status === 'buffering') {
+        if (DEBUG) console.log(`[toggleAudio] Player is loading/buffering. Requesting STOP for ${targetKey}`);
+        dispatch({ type: 'REQUEST_STOP' });
+      } else { 
+        if (DEBUG) console.log(`[toggleAudio] Fallback for same key ${targetKey} (current status: ${state.status}). Requesting PLAY.`);
         dispatch({ type: 'REQUEST_PLAY', surah: state.surahNumber, verse: verseNumber });
       }
-    } else {
-      // Different verse or no verse loaded
-      if (DEBUG) console.log(`[toggleAudio] Dispatching REQUEST_PLAY for new verse ${targetKey}`);
+    } else { 
+      if (DEBUG) console.log(`[toggleAudio] Different verse or no matching active/loaded. Requesting PLAY for ${targetKey}`);
       dispatch({ type: 'REQUEST_PLAY', surah: state.surahNumber, verse: verseNumber });
     }
-  }, [state.surahNumber, state.status, state.loadedVerseKey, state.activeVerseKey]);
+  }, [state.surahNumber, state.status, state.activeVerseKey, state.loadedVerseKey, state.positionMillis]);
 
   const stopAudio = useCallback(() => {
-    if (DEBUG) console.log(`[stopAudio] Dispatching REQUEST_STOP for ${state.loadedVerseKey}`);
-    // No direct async sound manipulation here. Dispatch an action.
-    // The effect listening to 'stopping_requested' will handle the sound object.
-    if (state.status !== 'idle' && state.status !== 'stopped' && state.status !== 'stopping_requested') {
-        dispatch({ type: 'REQUEST_STOP' });
-    }
-  }, [state.status, state.loadedVerseKey]);
+    if (DEBUG) console.log(`[stopAudio] User requested stop. Current Status: ${state.status}. Dispatching REQUEST_STOP.`);
+    dispatch({ type: 'REQUEST_STOP' });
+  }, []); 
 
   const seekAudio = useCallback((newPositionMillis: number) => {
     if (DEBUG) console.log(`[seekAudio] Dispatching REQUEST_SEEK to ${newPositionMillis} for ${state.loadedVerseKey}`);
-    // No direct async sound manipulation here. Dispatch an action.
-    // The effect listening to 'seeking_requested' will handle the sound object.
-    if (state.status === 'playing' || state.status === 'paused' || state.status === 'buffering') {
-        dispatch({ type: 'REQUEST_SEEK', positionMillis: newPositionMillis });
+    if (playerRef.current && playerRef.current.isLoaded && state.loadedVerseKey) { 
+      dispatch({ type: 'REQUEST_SEEK', positionMillis: newPositionMillis });
+    } else {
+        if (DEBUG) console.log(`[seekAudio] Cannot seek. Player not loaded or no loaded verse. Status: ${state.status}, Loaded: ${state.loadedVerseKey}`);
     }
-  }, [state.status, state.loadedVerseKey]);
-  
+  }, [state.loadedVerseKey, state.status]); 
+
   const resetActiveVerse = useCallback(() => {
-    // This function's purpose might change. If it's about UI highlighting,
-    // it might be separate from player state.
-    // For now, let's assume it means to clear any 'active' (but not necessarily playing) verse.
-    // This is more of a UI concern than a player state concern with the new model.
-    // If it means "stop playing and clear active verse", then:
-    // stopAudio(); // then dispatch to clear activeVerseKey if needed.
-    // This function might be deprecated or rethought.
-    if (DEBUG) console.log("[resetActiveVerse] Called. Consider purpose with new state model.");
+    if (DEBUG) console.log("[resetActiveVerse] Called. Current implementation does nothing. Consider purpose.");
   }, []);
 
-
-  // Derived state for UI
   const currentVerseDetails = parseVerseKey(state.activeVerseKey);
-  const playingVerseNumber = currentVerseDetails?.verse || 0;
-  const activeVerseNumber = currentVerseDetails?.verse || 0; // Or a separate UI state for "selected"
+  const activeVerseNumber = currentVerseDetails?.verse || 0; 
+
+  const isActuallyPlaying = playerRef.current ? playerRef.current.playing : (state.status === 'playing' && !state.error);
+  const currentPosition = playerRef.current?.isLoaded ? (playerRef.current.currentTime * 1000) : state.positionMillis;
+  const currentDuration = playerRef.current?.isLoaded ? (playerRef.current.duration * 1000) : state.durationMillis;
+
 
   return {
-    // State values from reducer
-    playingVerseNumber, // Derived from activeVerseKey
-    activeVerseNumber,  // Derived from activeVerseKey (or could be separate UI concern)
+    playingVerseNumber: activeVerseNumber, 
+    activeVerseNumber, 
     isLoading: state.status === 'loading_requested' || state.status === 'loading_audio',
-    isBuffering: state.status === 'buffering',
-    // isPlaying should be true if status is 'playing' or 'resuming_requested' (optimistic)
-    // or even 'seeking_requested' if it was playing before.
-    // For simplicity now, just 'playing'. onPlaybackStatusUpdate is the source of truth.
-    isPlaying: state.status === 'playing',
+    isBuffering: state.status === 'buffering' || (playerRef.current?.isBuffering ?? false),
+    isPlaying: isActuallyPlaying,
     error: state.error,
-    durationMillis: state.durationMillis,
-    positionMillis: state.positionMillis,
-    autoplayEnabled: state.autoplayEnabled, // From prop, reflected in state
-
-    // Control functions
+    durationMillis: currentDuration,
+    positionMillis: currentPosition,
+    autoplayEnabled: state.autoplayEnabled,
     toggleAudio,
     stopAudio,
-    seekAudio, // New seek function
-    resetActiveVerse, // Review purpose
+    seekAudio,
+    resetActiveVerse,
   };
 }

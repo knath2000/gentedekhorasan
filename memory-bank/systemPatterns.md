@@ -1,7 +1,7 @@
 # System Patterns: Luminous Verses (Expo App)
 
-**Version:** 0.4 (Robust Audio & Slider Fixes)
-**Date:** 2025-05-11
+**Version:** 0.9.2 (Stable Audio Playback & UI Sync)
+**Date:** 2025-05-14
 **Related Brief:** `docs/projectbrief.md`
 **Original iOS Native Port Patterns:** (This document adapts system patterns for the current Expo-based project.)
 
@@ -12,7 +12,7 @@ graph TD
     AppEntry[Expo App Entry (`app/_layout.tsx`)] --> SafeAreaProv[SafeAreaProvider (`react-native-safe-area-context`)]
     SafeAreaProv --> ThemeProv[ThemeProvider (`styled-components`)]
     ThemeProv --> FontLoader[Font Loading (`expo-font`)]
-    FontLoader --> SupabaseInit([Supabase Client Init (`src/lib/supabaseClient.ts`)])
+    FontLoader --> SupabaseInit([Supabase Client Init (`src/lib/supabaseClient.ts`)]) %% For dynamic data
     FontLoader --> ExpoRouter[Expo Router (`SplashScreen`, `Stack`)]
 
     ExpoRouter --> TabNav[Tab Navigator (`app/(tabs)/_layout.tsx`)]
@@ -24,112 +24,143 @@ graph TD
 
     subgraph Screens & Components
         HomeScreen --> AnimBG[AnimatedBackground (`src/components/AnimatedBackground.tsx`)]
+        HomeScreen --> ScreenBGComp[ScreenBackground (`src/components/ScreenBackground.tsx`)] %% For web
         SurahsScreen -- Uses --> SurahCard[SurahCard (`src/components/SurahCard.tsx`)]
-        SurahsScreen -- Fetches List --> SupabaseServices[Supabase Services (`src/services/surahService.ts`)]
+        SurahsScreen -- Fetches List --> AppServices[App Services (`src/services/surahService.ts`)]
+        SurahsScreen -- Uses --> ScreenBGComp
         SurahsScreen -- Uses Insets --> SafeAreaContext[useSafeAreaInsets]
         SurahsScreen -- Uses Dimensions --> RNDimensions[Dimensions API]
-        ReaderScreen -- Fetches Data --> SupabaseDB[(Supabase `surah1_text` table)]
+        
+        ReaderScreen -- Fetches Data --> AppServices
         ReaderScreen -- Uses Hook --> AudioPlayerHook[useAudioPlayer (`src/hooks/useAudioPlayer.ts`)]
         ReaderScreen -- Uses Component --> AudioCtrlBar[AudioControlBar (`src/components/AudioControlBar.tsx`)]
         ReaderScreen -- Uses Component --> VerseCardComp[VerseCard (`src/components/VerseCard.tsx`)]
+        ReaderScreen -- Uses --> ScreenBGComp
+        
+        BookmarksScreen -- Uses --> ScreenBGComp
+        SettingsScreen -- Uses --> ScreenBGComp
+        
         GenericScreenComponent --> ReusableComponent[Reusable UI Components (e.g., ThemedText, ThemedView)]
     end
 
-    subgraph Services & Data
-        SupabaseInit --> SupabaseClient[Supabase Client Instance]
-        SupabaseServices --> SupabaseClient
-        ReaderScreen --> SupabaseClient
+    subgraph "Services & Data (Audio)"
+        SupabaseInit --> SupabaseClient[Supabase Client Instance] %% For dynamic data
+        AppServices -- Fetches Static Content --> VercelBlob[Vercel Blob (JSON files)]
+        AppServices -- Fetches Dynamic (Planned) --> SupabaseClient %% e.g., user data
         AudioPlayerHook -- Uses Service --> AudioService[Audio Service (`src/services/audioService.ts`)]
+        AudioService -- Uses SDK --> ExpoAudio[Expo Audio (`expo-audio`)]
     end
 
     subgraph Styling & Theme
         ThemeProv --> AppTheme[App Theme (`src/theme/theme.ts`)]
         GenericScreenComponent -- Uses Theme --> AppTheme
         ReusableComponent -- Uses Theme --> AppTheme
+        ScreenBGComp -- May Use Theme --> AppTheme
     end
     
     subgraph Platform Integration
         SafeAreaProv --> SafeAreaContext
         GenericScreenComponent --> RNDimensions
-        AudioPlayerHook -- Uses SDK --> ExpoAV[Expo AV (`expo-av`)]
+        AudioPlayerHook -- Uses SDK --> ExpoAudio
     end
 
     style AppEntry fill:#f9f,stroke:#333,stroke-width:2px
     style ExpoRouter fill:#ccf,stroke:#333,stroke-width:2px
     style TabNav fill:#cdf,stroke:#333,stroke-width:2px
-    style SupabaseDB fill:#fdb,stroke:#333,stroke-width:2px
-    style SupabaseServices fill:#fdb,stroke:#333,stroke-width:2px
+    style VercelBlob fill:#dff,stroke:#333,stroke-width:2px
+    style SupabaseClient fill:#fdb,stroke:#333,stroke-width:1px
+    style AppServices fill:#bdc,stroke:#333,stroke-width:2px
     style SafeAreaProv fill:#cfc,stroke:#333,stroke-width:2px
     style AudioPlayerHook fill:#fcf,stroke:#333,stroke-width:2px
+    style ExpoAudio fill:#fcf,stroke:#333,stroke-width:1px
 ```
 
 -   **Client-Side Application:** Expo (React Native) app targeting iOS, Android, and Web.
--   **API Driven Content (Data):**
-    -   Quranic Text & Surah List: Supabase (PostgreSQL) - tables like `surah1_text` and a table for the Surah list (e.g., `surahs`). Data fetched via `src/services/surahService.ts`.
+-   **Static Quranic Content (Arabic Text, Surah List, Yusuf Ali Translations):** Vercel Blob (JSON files). Data fetched via `src/services/surahService.ts`.
+-   **Dynamic Data (User Accounts, Bookmarks - Planned):** Supabase (PostgreSQL).
 -   **UI Framework:** React Native with custom components.
 -   **Architectural Pattern (Loosely):** MVVM-like, where:
-    -   **Models:** Data structures/types (e.g., `Surah` type in `src/types/quran.ts`).
+    -   **Models:** Data structures/types (e.g., `Surah`, `Verse` type in `src/types/quran.ts`).
     -   **Views:** React Native components (JSX/TSX files in `app/` and `src/components/` like `SurahCard.tsx`).
-    -   **ViewModels (Logic):** Primarily handled by React Hooks (`useState`, `useEffect`, `useTheme`, `useSafeAreaInsets`, `useRef`, custom hooks) within screen components for managing state, side effects (data fetching), and presentation logic.
+    -   **ViewModels (Logic):** Primarily handled by React Hooks within screen components and custom hooks.
 -   **Dependency Management:** npm (via `package.json`).
 -   **Global State/Context:**
-    -   `SafeAreaProvider` from `react-native-safe-area-context` provides safe area insets globally.
-    -   `ThemeProvider` from `styled-components` provides theme globally.
-    -   React Context API can be used for other global states (e.g., authentication, user preferences).
+    -   `SafeAreaProvider` from `react-native-safe-area-context`.
+    -   `ThemeProvider` from `styled-components`.
 
 ## 2. Key Design Patterns (Expo Project)
 
 -   **State Management Pattern:**
-    -   React Hooks (`useState`, `useEffect`, `useContext`, `useTheme`, `useSafeAreaInsets`, `useRef`) for local and shared state.
-    -   React Context API for global state (e.g., `SafeAreaProvider`, `ThemeProvider`).
-    -   **Custom Hooks for Complex Logic:** Encapsulating complex stateful logic and side effects related to specific features (e.g., `useAudioPlayer` in `src/hooks/useAudioPlayer.ts` manages audio playback state, sound object lifecycle, and interactions with `expo-av`). This promotes reusability and separation of concerns from screen components.
+    -   React Hooks (`useState`, `useEffect`, `useContext`, `useTheme`, `useSafeAreaInsets`, `useRef`, `useReducer`).
+    -   React Context API for global state.
+    -   **Custom Hooks for Complex Logic:**
+        -   `useAudioPlayer` in `src/hooks/useAudioPlayer.ts` manages audio playback state using `expo-audio`'s library-provided `useAudioPlayer` hook, coupled with a `useReducer` pattern for robust state transitions. It enforces a mono-instance 'play-on-create' audio player lifecycle. UI state is strictly synchronized via player events (`onPlaybackStatusUpdate`) to ensure reliability, as per `expo-audio` best practices.
 -   **Navigation Pattern:**
-    -   **Expo Router:** File-system based routing for screens and navigation structure.
-    -   Tab-based navigation for main sections defined in `app/(tabs)/_layout.tsx`.
-    -   Stack navigation for drill-down views (default with Expo Router).
+    -   **Expo Router:** File-system based routing.
+    -   Tab-based navigation for main sections.
 -   **Data Fetching Pattern:**
-    -   `@supabase/supabase-js` client for interacting with Supabase, initialized in `src/lib/supabaseClient.ts`.
-    -   Service layer for data fetching logic (e.g., `src/services/surahService.ts`).
-    -   `async/await` with `useEffect` hook in components for fetching data (e.g., in `app/(tabs)/reader.tsx` and `app/(tabs)/surahs.tsx`).
-    -   Loading and error states managed within components.
+    -   **Static Content:** Fetched as JSON files from Vercel Blob URLs via `src/services/surahService.ts`.
+    -   **Dynamic Content (Planned):** `@supabase/supabase-js` client.
+    -   `async/await` with `useEffect` hook in components.
 -   **View Composition & Layout:**
-    -   Reusable UI components (e.g., `SurahCard.tsx` in `src/components/`).
+    -   Reusable UI components.
     -   Flexbox for layout.
-    -   **Dynamic Layout Calculation:** Using `Dimensions` API and `useSafeAreaInsets` to calculate available screen space and adjust layout, particularly for `FlatList` containers to avoid overlap with status/tab bars (as seen in `app/(tabs)/surahs.tsx`).
-    -   Styled Components (`MainContainer` in `app/(tabs)/surahs.tsx`) for applying safe area padding.
+    -   Dynamic layout calculation using `Dimensions` API and `useSafeAreaInsets`.
 -   **Theming and Styling:**
-    -   **`styled-components`:** For creating themed and reusable styled components.
-    -   Theme object defined in `src/theme/theme.ts` and provided via `ThemeProvider`.
-    -   TypeScript definitions for theme in `src/styled.d.ts`.
+    -   **`styled-components`**. Theme object provided via `ThemeProvider`.
 -   **Animation System:**
-    -   **Lottie:** `lottie-react-native` (native) / `@lottiefiles/dotlottie-react` (web) for complex vector animations (e.g., `AnimatedBackground.tsx`).
-    -   **React Native Animated API:** For programmatic animations and transitions.
+    -   **Lottie:** `lottie-react-native` (native) / `@lottiefiles/dotlottie-react` (web).
 -   **Asynchronous Operations:**
-    -   `async/await` for Promises (e.g., data fetching, font loading, audio operations).
-    -   `useEffect` for managing side effects, including cleanup functions for asynchronous operations.
-    -   `useCallback` to memoize callbacks, especially those passed to child components or used in `useEffect` dependency arrays, ensuring stable references where needed (e.g., `stopAudio` in `useAudioPlayer`).
+    -   `async/await` for Promises.
+    -   `useEffect` for side effects and cleanup.
+    -   `useCallback` to memoize callbacks.
 -   **Polyfills for Web/Node.js Compatibility:**
-    -   Metro bundler configured with `resolver.extraNodeModules` in `metro.config.js` to provide browser/React Native compatible versions of Node.js core modules, essential for libraries like `@supabase/supabase-js` to work across platforms, especially web.
+    -   Metro bundler configured in `metro.config.js`.
+
+-   **Audio Playback & UI Synchronization Pattern:**
+    -   **Mono-instance, Play-on-Create:** A single `AudioPlayer` instance is active at any time. New playback requests for a different verse result in the current player (if any) being removed and a new one created and played immediately. This prevents issues related to managing multiple or stale player instances.
+    -   **Event-Driven State Updates:** UI state (playing, paused, buffering, current time, duration) is updated strictly based on events received from the `AudioPlayer` instance via its `onPlaybackStatusUpdate` listener. User actions (e.g., tap to play/pause) dispatch 'intent' actions to a reducer. The reducer may update an 'intent' status (e.g., `loading_requested`, `pausing_requested`), but the definitive transition to states like `playing` or `paused` only occurs after the corresponding player event is processed by the reducer. This ensures the UI accurately reflects the true state of the audio player.
+    -   **Resolution of Past Issues:** This event-driven pattern, combined with the mono-instance player, has resolved previous issues related to stuck buffering UI, desynchronized playback controls (like sliders), and unreliable play/pause/resume toggle behavior.
+    -   **Best Practice Alignment:** This approach aligns with `expo-audio` community best practices for robust audio state management and UI synchronization (e.g., insights from Expo GitHub issues like expo/expo#19788 and community forums regarding event-driven state).
+    -   ```mermaid
+        sequenceDiagram
+            participant User
+            participant Component
+            participant AudioHook
+            participant Reducer
+            participant ExpoAudioPlayer
+            User->>Component: Taps Play/Pause
+            Component->>AudioHook: Calls toggleAudio()
+            AudioHook->>Reducer: Dispatches INTENT (e.g., REQUEST_PLAY)
+            Reducer->>AudioHook: Updates state (e.g., status: 'loading_requested')
+            AudioHook->>ExpoAudioPlayer: Creates/Plays/Pauses instance
+            ExpoAudioPlayer-->>AudioHook: Emits onPlaybackStatusUpdate event
+            AudioHook->>Reducer: Dispatches EVENT_CONFIRMED (e.g., AUDIO_LOADED_AND_PLAYING)
+            Reducer->>AudioHook: Updates state (e.g., status: 'playing')
+            AudioHook-->>Component: Returns new state
+            Component->>User: UI Updates (icon, slider)
+        end
+        ```
 
 ## 3. Component Structure (Illustrative)
 
 -   **Core App Structure:**
-    -   `app/_layout.tsx`: Root layout, loads fonts, sets up `SafeAreaProvider` and `ThemeProvider`, initializes Expo Router.
-    -   `app/(tabs)/_layout.tsx`: Defines the tab bar structure and screens.
-    -   **Screens (Route Components):** Files within `app/(tabs)/` (e.g., `index.tsx`, `reader.tsx`, `surahs.tsx`).
-    -   **UI Components (Reusable):** Located in `src/components/` (e.g., `AnimatedBackground.tsx`, `SurahCard.tsx`, `AudioControlBar.tsx`).
-    -   **Hooks (Custom Logic):** Located in `src/hooks/` (e.g., `useAudioPlayer.ts`).
-    -   **Services/Libs:** `src/lib/supabaseClient.ts`, `src/services/surahService.ts`, `src/services/audioService.ts`.
+    -   `app/_layout.tsx`: Root layout.
+    -   `app/(tabs)/_layout.tsx`: Tab bar structure.
+    -   **Screens (Route Components):** Files within `app/(tabs)/`.
+    -   **UI Components (Reusable):** Located in `src/components/`.
+    -   **Hooks (Custom Logic):** Located in `src/hooks/`.
+    -   **Services/Libs:** `src/lib/`, `src/services/`.
     -   **Theme:** `src/theme/theme.ts`, `src/styled.d.ts`.
-    -   **Assets:** `assets/animations/`, `assets/fonts/`, `assets/images/`.
+    -   **Assets:** `assets/`.
 
 ## 4. Expo/React Native Specific Patterns
 
--   **Platform-Specific Code:** Using `Platform.OS` (e.g., for `TAB_BAR_HEIGHT` calculation). Aiming for maximum code sharing.
--   **Expo Modules:** Utilizing Expo SDK APIs (e.g., `expo-font`, `expo-splash-screen`, `expo-av`).
--   **`react-native-safe-area-context`:** For handling safe area insets (`SafeAreaProvider`, `useSafeAreaInsets`).
--   **`Dimensions` API:** For getting screen dimensions to aid in layout calculations.
--   **Metro Bundler Configuration:** Customizations in `metro.config.js` for polyfills.
--   **TypeScript Integration:** Strong typing throughout the codebase.
+-   **Platform-Specific Code:** Using `Platform.OS`.
+-   **Expo Modules:** Utilizing Expo SDK APIs (e.g., `expo-font`, `expo-splash-screen`, `expo-audio`).
+-   **`react-native-safe-area-context`:** For safe area insets.
+-   **`Dimensions` API:** For screen dimensions.
+-   **Metro Bundler Configuration:** Customizations in `metro.config.js`.
+-   **TypeScript Integration:** Strong typing.
 
-This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices.
+This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices, with a now-stable and robust audio playback system.

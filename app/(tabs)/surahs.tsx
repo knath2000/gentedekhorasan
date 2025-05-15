@@ -1,33 +1,30 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, ImageBackground, Platform, Text, View } from 'react-native'; // Added Dimensions
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // SafeAreaView itself is not directly used here now
+import { ActivityIndicator, Dimensions, FlatList, Platform, Text, View } from 'react-native'; // Removed ImageBackground
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled, { useTheme } from 'styled-components/native';
-import SurahCard from '../../src/components/SurahCard'; // Ensure this path is correct
+import { ScreenBackground } from '../../src/components/ScreenBackground'; // Added ScreenBackground import
+import SurahCard from '../../src/components/SurahCard';
 import { fetchSurahList } from '../../src/services/surahService';
-import { Theme } from '../../src/theme/theme'; // Ensure this path is correct
+import { Theme } from '../../src/theme/theme';
 import { Surah } from '../../src/types/quran';
 
-const backgroundImageSource = require('../../assets/images/iOSbackground.png');
-
-const BackgroundImage = styled(ImageBackground)<{ theme: Theme }>`
-  flex: 1;
-  width: 100%;
-  background-color: ${({ theme }) => theme.colors.background}; /* Fallback */
-`;
+// Removed backgroundImageSource and BackgroundImage styled-component
 
 const MainContainer = styled(View)<{ pt: number; pl: number; pr: number }>`
   flex: 1;
   padding-top: ${({ pt }) => pt}px;
   padding-left: ${({ pl }) => pl}px;
   padding-right: ${({ pr }) => pr}px;
+  /* Ensure content is visible on potentially dark/image backgrounds */
+  /* background-color: rgba(0,0,0,0.1); /* Optional: slight dimming if text readability is an issue */
 `;
 
 const LoadingContainer = styled(View)<{ theme: Theme }>`
   flex: 1;
   justify-content: center;
   align-items: center;
-  /* background-color is transparent by default for View, or set by parent */
+  background-color: transparent;
 `;
 
 const ErrorContainer = styled(View)<{ theme: Theme }>`
@@ -35,7 +32,7 @@ const ErrorContainer = styled(View)<{ theme: Theme }>`
   justify-content: center;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.md}px;
-  /* background-color is transparent by default for View, or set by parent */
+  background-color: transparent;
 `;
 
 const ErrorText = styled(Text)<{ theme: Theme }>`
@@ -54,9 +51,7 @@ export default function SurahsScreen() {
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
 
-  // Define a fixed tab bar height (adjust if your tab bar height is different or get dynamically if possible)
-  const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 70; // This might need to be more dynamic if tab bar height changes
-
+  const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 70;
   const listContainerHeight = windowHeight - insets.top - insets.bottom - TAB_BAR_HEIGHT + theme.spacing.md;
 
   useEffect(() => {
@@ -86,37 +81,34 @@ export default function SurahsScreen() {
 
   if (loading) {
     return (
-      <BackgroundImage source={backgroundImageSource} resizeMode="cover">
+      <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <LoadingContainer>
             <ActivityIndicator size="large" color={theme.colors.desertHighlightGold} />
           </LoadingContainer>
         </MainContainer>
-      </BackgroundImage>
+      </ScreenBackground>
     );
   }
 
   if (error) {
     return (
-      <BackgroundImage source={backgroundImageSource} resizeMode="cover">
+      <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <ErrorContainer>
             <ErrorText>{error}</ErrorText>
           </ErrorContainer>
         </MainContainer>
-      </BackgroundImage>
+      </ScreenBackground>
     );
   }
 
   return (
-    <BackgroundImage
-      source={backgroundImageSource}
-      resizeMode="cover"
-    >
+    <ScreenBackground>
       <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
         <View style={{ height: listContainerHeight }}>
           <FlatList
-            ListHeaderComponent={<View style={{ height: theme.spacing.xl }} />} // Standard top padding within the list
+            ListHeaderComponent={<View style={{ height: theme.spacing.xl }} />}
             data={surahs}
             keyExtractor={(item) => item.number.toString()}
             renderItem={({ item }) => (
@@ -124,14 +116,13 @@ export default function SurahsScreen() {
             )}
             contentContainerStyle={{
               paddingHorizontal: theme.spacing.md,
-              paddingBottom: theme.spacing.md, // Small margin at the end of the list content
+              paddingBottom: theme.spacing.md,
             }}
-            // scrollIndicatorInsets are not strictly needed here as the parent View controls the visible area
             initialNumToRender={5}
             windowSize={10}
           />
         </View>
       </MainContainer>
-    </BackgroundImage>
+    </ScreenBackground>
   );
 }

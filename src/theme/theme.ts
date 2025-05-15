@@ -21,7 +21,8 @@ export const colors = {
   accentRuby: '#E0115F', // Deep red
   accentSapphire: '#0F52BA', // Bright blue
   accentAmethyst: '#9966CC', // Rich purple
-
+  playingGreen: '#4CAF50', // Green for active playing state
+ 
   // Text Colors
   textPrimary: '#F5F5F5', // Off-white for primary text on dark backgrounds
   textSecondary: '#A9A9A9', // Light grey for secondary text

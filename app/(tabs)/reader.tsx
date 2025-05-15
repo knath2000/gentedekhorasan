@@ -1,25 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Dimensions, FlatList, ImageBackground, Platform, StatusBar, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, FlatList, Platform, StatusBar, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled, { useTheme } from 'styled-components/native';
 import AudioControlBar from '../../src/components/AudioControlBar';
+import { ScreenBackground } from '../../src/components/ScreenBackground';
 import SurahHeader from '../../src/components/SurahHeader';
 import VerseCard from '../../src/components/VerseCard';
-import { useAudioPlayer } from '../../src/hooks/useAudioPlayer';
-import { getAutoplayEnabled } from '../../src/services/settingsService';
+import { useAudioPlayer } from '../../src/hooks/useAudioPlayer'; // Step 2: Import useAudioPlayer
+import { getAutoplayEnabled, setAutoplayEnabled as saveAutoplaySetting } from '../../src/services/settingsService'; // Added saveAutoplaySetting
 import { fetchSurahById, fetchVersesBySurahId } from '../../src/services/surahService';
 import { Theme } from '../../src/theme/theme';
 import { Surah, Verse } from '../../src/types/quran';
-
-const backgroundImageSource = require('../../assets/images/iOSbackground.png');
-
-const BackgroundImage = styled(ImageBackground)<{ theme: Theme }>`
-  flex: 1;
-  width: 100%;
-  background-color: ${({ theme }) => theme.colors.background}; /* Fallback */
-`;
 
 const LoadingContainer = styled(View)<{ theme: Theme }>`
   flex: 1;
@@ -46,6 +39,7 @@ const MainContainer = styled(View)<{ pt: number; pl: number; pr: number }>`
 export default function ReaderScreen() {
   const params = useLocalSearchParams();
   const initialSurahId = params.surahId ? Number(params.surahId) : 1;
+  const initialAyahNumber = params.ayahNumber ? Number(params.ayahNumber) : null;
 
   const [surah, setSurah] = useState<Surah | null>(null);
   const [verses, setVerses] = useState<Verse[]>([]);
@@ -55,44 +49,65 @@ export default function ReaderScreen() {
   const router = useRouter();
 
   const componentUnmountingRef = useRef(false);
-  const manuallyStoppedRef = useRef(false);
+  const flatListRef = useRef<FlatList<Verse>>(null); 
 
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
   const MAIN_APP_TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 120 : 85;
-  // AudioControlBar height might change with new design, adjust if necessary
   const AUDIO_CONTROLS_BAR_HEIGHT = theme.spacing.xxl * 1.5; 
 
   const [showTranslation, setShowTranslation] = useState(true);
   const [showAudioControls, setShowAudioControls] = useState(false);
-  const [autoplayEnabled, setAutoplayEnabled] = useState(false);
+  // Autoplay state is now managed by useQuranAudioPlayer, but we need to initialize it
+  const [initialAutoplay, setInitialAutoplay] = useState(false); 
   const routerNavigation = useNavigation();
   
   const listContainerHeight = showAudioControls
     ? windowHeight - insets.top - insets.bottom - AUDIO_CONTROLS_BAR_HEIGHT
     : windowHeight - insets.top - insets.bottom - MAIN_APP_TAB_BAR_HEIGHT + theme.spacing.xl;
 
+  // Step 2: Initialize useAudioPlayer directly
   const {
-    playingVerseNumber,
-    activeVerseNumber, // Directly use activeVerseNumber from the hook
-    isLoading: audioLoading,
+    activeVerseNumber, // This will be playingVerseNumber from useAudioPlayer
+    isLoading: audioIsLoading,
+    isPlaying: audioIsPlaying,
+    isBuffering: audioIsBuffering,
     error: audioError,
-    isPlaying: isAudioPlaying,
     durationMillis,
     positionMillis,
-    isBuffering, // Keep for VerseCard
-    toggleAudio,
+    autoplayEnabled,
+    toggleAudio, // This is the primary control function from useAudioPlayer
     stopAudio,
-    resetActiveVerse,
-    // seekAudio, // Available if needed
-  } = useAudioPlayer(initialSurahId, surah?.numberOfAyahs || 0, autoplayEnabled);
+    seekAudio,
+    // setAutoplayEnabled, // This will be handled by dispatching an action to useAudioPlayer if needed, or managed locally
+    // resetActiveVerse, // Available from useAudioPlayer if needed
+  } = useAudioPlayer(
+    initialSurahId,
+    surah?.numberOfAyahs || 0,
+    initialAutoplay
+  );
+
+  // Step 2.1: Manage setAutoplayEnabled locally and sync with useAudioPlayer if it exposes a dispatcher or specific function
+  // For now, we'll assume useAudioPlayer's initialAutoplayEnabled is sufficient and local state for settingsService
+  const [localAutoplayEnabled, setLocalAutoplayEnabled] = useState(initialAutoplay);
 
   useEffect(() => {
+    // If useAudioPlayer's autoplayEnabled state changes (e.g. due to end of surah), update local state
+    // This depends on whether useAudioPlayer's autoplayEnabled is readable and reflects its internal state.
+    // For now, we assume initialAutoplay sets it up.
+    // If useAudioPlayer had a dispatch for 'SET_AUTOPLAY', we'd call it here.
+    // This part might need refinement based on useAudioPlayer's exact API for updating autoplay.
+  }, [autoplayEnabled]);
+
+
+  useEffect(() => {
+    componentUnmountingRef.current = false;
     return () => {
       componentUnmountingRef.current = true;
     };
   }, []);
 
+  // Load initial settings (including autoplay for the hook)
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -101,8 +116,9 @@ export default function ReaderScreen() {
           setShowTranslation(savedShowTranslation === 'true');
         }
         const isAutoplayEnabled = await getAutoplayEnabled();
-        setAutoplayEnabled(isAutoplayEnabled);
-        console.log(`ReaderScreen: Loaded autoplay setting: ${isAutoplayEnabled}`);
+        setInitialAutoplay(isAutoplayEnabled); // Set initialAutoplay for the hook
+        // The hook itself will manage the autoplayEnabled state internally after this
+        console.log(`ReaderScreen: Loaded initial autoplay setting: ${isAutoplayEnabled}`);
       } catch (e) {
         console.error('Error loading settings:', e);
       }
@@ -110,6 +126,7 @@ export default function ReaderScreen() {
     loadSettings();
   }, []);
 
+  // Save translation setting
   useEffect(() => {
     const saveSettings = async () => {
       try {
@@ -121,6 +138,7 @@ export default function ReaderScreen() {
     saveSettings();
   }, [showTranslation]);
 
+  // Load surah and verse data
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -133,6 +151,12 @@ export default function ReaderScreen() {
         setSurah(surahData);
         const versesData = await fetchVersesBySurahId(initialSurahId);
         setVerses(versesData);
+
+        if (initialAyahNumber && versesData.length >= initialAyahNumber) {
+          setTimeout(() => { 
+            flatListRef.current?.scrollToIndex({ animated: true, index: initialAyahNumber - 1, viewPosition: 0.5 });
+          }, 500);
+        }
       } catch (err: any) {
         setError(err.message || 'An unexpected error occurred');
         console.error("Error loading data for ReaderScreen:", err);
@@ -141,37 +165,42 @@ export default function ReaderScreen() {
       }
     };
     loadData();
-  }, [initialSurahId]);
+  }, [initialSurahId, initialAyahNumber]); 
 
+  const prevInitialSurahIdRef = useRef<number | undefined>(undefined);
+
+  // Stop audio if surah changes
   useEffect(() => {
+    if (prevInitialSurahIdRef.current !== undefined && prevInitialSurahIdRef.current !== initialSurahId) {
+      stopAudio(); 
+      setShowAudioControls(false);
+    }
+    prevInitialSurahIdRef.current = initialSurahId;
+
     return () => {
       if (componentUnmountingRef.current) {
-        console.log('ReaderScreen: Component unmounting, calling stopAudio.');
         stopAudio();
-      } else if (!manuallyStoppedRef.current) {
-         console.log("ReaderScreen: Effect cleanup for initialSurahId change (not unmount), calling stopAudio.");
-         stopAudio();
-      } else {
-        console.log("ReaderScreen: Effect cleanup called but not unmounting and manually stopped - skipping audio cleanup.");
+        setShowAudioControls(false);
       }
     };
-  }, [initialSurahId, stopAudio]); // Added stopAudio to dependencies
+  }, [initialSurahId, stopAudio]); 
 
+  // Alert for audio errors
   useEffect(() => {
     if (audioError) {
       Alert.alert("Audio Error", audioError);
     }
   }, [audioError]);
 
-  // Removed useEffect that synced hookActiveVerseNumber to local activeVerseNumber
-
+  // Show/hide audio controls based on playback state
   useEffect(() => {
-    // activeVerseNumber from the hook now drives UI for showing controls if a verse is active/playing
-    if (activeVerseNumber > 0 && isAudioPlaying) {
+    if (activeVerseNumber !== null && audioIsPlaying) {
       setShowAudioControls(true);
+    } else if (activeVerseNumber === null && !audioIsPlaying) {
+      // If activeVerse is cleared (e.g. by stopAudio) and not playing, hide controls
+      // setShowAudioControls(false); // This might be too aggressive, let stopAudio handle it.
     }
-    // setShowAudioControls(false) is handled by handleStopPress
-  }, [playingVerseNumber, isAudioPlaying]);
+  }, [activeVerseNumber, audioIsPlaying]);
 
   const handleBackPress = () => {
     if (router.canGoBack()) {
@@ -181,45 +210,44 @@ export default function ReaderScreen() {
     }
   };
 
+  // Toggle translation and autoplay
   const handleSettingsPress = () => {
-    setShowTranslation(prev => !prev);
+    // For this example, settings press will toggle autoplay.
+    // Translation toggle can be a separate button or a more complex settings menu.
+    const newAutoplayState = !localAutoplayEnabled; // Use localAutoplayEnabled for toggling
+    setLocalAutoplayEnabled(newAutoplayState);
+    // TODO: If useAudioPlayer has a way to update its internal autoplay state, call it here.
+    // e.g., if useAudioPlayer returned a dispatch: dispatch({ type: 'SET_AUTOPLAY', enabled: newAutoplayState });
+    // For now, this only affects the initialAutoplay passed to useAudioPlayer on mount/surah change.
+    saveAutoplaySetting(newAutoplayState); // Persist setting
+    Alert.alert("Autoplay", newAutoplayState ? "Enabled" : "Disabled");
+    // setShowTranslation(prev => !prev); // If you want to keep translation toggle here
   };
 
-  const handleVersePress = useCallback((verse: Verse) => {
-    const verseNumber = verse.numberInSurah;
-    manuallyStoppedRef.current = false;
-    setShowAudioControls(true); 
+  // Step 3: Control playback lifecycle explicitly
+  const handleVersePress = useCallback((verseNumber: number) => {
+    console.log(`[ReaderScreen] handleVersePress: verseNumber ${verseNumber}, current activeVerseNumber from useAudioPlayer: ${activeVerseNumber}, audioIsPlaying: ${audioIsPlaying}`);
+    // toggleAudio from useAudioPlayer handles the logic of playing/pausing/resuming
+    // It should internally wait for isLoaded before playing a new track.
     toggleAudio(verseNumber);
-  }, [toggleAudio]);
+    // setShowAudioControls(true); // Show controls when a verse is pressed, hook manages active state
+  }, [toggleAudio, activeVerseNumber, audioIsPlaying]);
 
-  const handlePlayPausePress = useCallback(() => {
-    if (activeVerseNumber > 0) {
-      toggleAudio(activeVerseNumber);
-    }
-  }, [toggleAudio, activeVerseNumber]);
-
+  // Skip to next verse
   const handleSkipNextPress = useCallback(() => {
-    // This logic assumes that if audio is playing, it's for activeVerseNumber.
-    // And if not playing, it will start the next one.
-    // Or if playing, it will stop current and play next.
-    // The useAudioPlayer hook should handle the "stop current and play next" internally if needed.
-    if (activeVerseNumber > 0 && surah && activeVerseNumber < surah.numberOfAyahs) {
+    // activeVerseNumber from useAudioPlayer reflects the currently *playing* or *last active* verse.
+    if (activeVerseNumber !== 0 && surah && activeVerseNumber < surah.numberOfAyahs) { // activeVerseNumber from useAudioPlayer is 0 if nothing is active
       const nextVerseToPlay = activeVerseNumber + 1;
-      console.log(`ReaderScreen: Skip next pressed. Current active: ${activeVerseNumber}, attempting to play: ${nextVerseToPlay}`);
-      manuallyStoppedRef.current = false; // Allow autoplay to potentially continue after this manual skip if enabled
-      toggleAudio(nextVerseToPlay); // toggleAudio will handle stopping current and playing next, hook will update activeVerseNumber
-      // setActiveVerseNumber(nextVerseToPlay); // No longer needed, hook updates activeVerseNumber
-      setShowAudioControls(true);
+      console.log(`[ReaderScreen] handleSkipNextPress: playing next verse ${nextVerseToPlay}`);
+      toggleAudio(nextVerseToPlay);
+    } else if (activeVerseNumber !== 0 && surah && activeVerseNumber === surah.numberOfAyahs) {
+      console.log(`[ReaderScreen] handleSkipNextPress: end of surah, stopping audio.`);
+      stopAudio();
+      setShowAudioControls(false);
     } else {
-      console.log("ReaderScreen: Skip next pressed, but no active verse or at end of surah.");
-      // Optionally stop audio if at the end
-      if (surah && activeVerseNumber === surah.numberOfAyahs) {
-        stopAudio();
-        setShowAudioControls(false);
-      }
+      console.log(`[ReaderScreen] handleSkipNextPress: No active verse or already at end. Active: ${activeVerseNumber}, Surah Ayahs: ${surah?.numberOfAyahs}`);
     }
   }, [activeVerseNumber, surah, toggleAudio, stopAudio]);
-
 
   const defaultTabBarStyle = {
     backgroundColor: 'transparent',
@@ -230,11 +258,11 @@ export default function ReaderScreen() {
     bottom: 0,
     height: Platform.OS === 'ios' ? 90 : 70,
     paddingBottom: Platform.OS === 'ios' ? 30 : 10,
-  };
+  } as const; 
 
   const hiddenTabBarStyle = {
     display: 'none',
-  };
+  } as const; 
 
   useEffect(() => {
     if (showAudioControls) {
@@ -247,30 +275,33 @@ export default function ReaderScreen() {
     };
   }, [showAudioControls, routerNavigation, defaultTabBarStyle, hiddenTabBarStyle]);
 
+  // Handle stop button press from AudioControlBar
   const handleStopPress = useCallback(() => {
-    manuallyStoppedRef.current = true;
     stopAudio();
     setShowAudioControls(false);
-    // setActiveVerseNumber(0); // No longer needed, hook's activeVerseNumber will become 0
-    resetActiveVerse(); // Call hook's reset function
-  }, [stopAudio, resetActiveVerse]);
+  }, [stopAudio]);
+
+  // Handle seek from VerseCard's slider
+  const handleSeek = useCallback((positionMillis: number) => {
+    seekAudio(positionMillis);
+  }, [seekAudio]);
 
   if (loading) {
     return (
-      <BackgroundImage source={backgroundImageSource} resizeMode="cover">
+      <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <StatusBar barStyle="light-content" />
           <LoadingContainer>
             <ActivityIndicator size="large" color={theme.colors.desertHighlightGold} />
           </LoadingContainer>
         </MainContainer>
-      </BackgroundImage>
+      </ScreenBackground>
     );
   }
 
   if (error) {
     return (
-      <BackgroundImage source={backgroundImageSource} resizeMode="cover">
+      <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <StatusBar barStyle="light-content" />
           {surah && <SurahHeader surah={surah} onBackPress={handleBackPress} onSettingsPress={handleSettingsPress} />}
@@ -278,30 +309,31 @@ export default function ReaderScreen() {
             <ErrorText>{error}</ErrorText>
           </LoadingContainer>
         </MainContainer>
-      </BackgroundImage>
+      </ScreenBackground>
     );
   }
 
   if (!surah) {
     return (
-      <BackgroundImage source={backgroundImageSource} resizeMode="cover">
+      <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <StatusBar barStyle="light-content" />
           <LoadingContainer>
             <ErrorText>Surah data could not be loaded.</ErrorText>
           </LoadingContainer>
         </MainContainer>
-      </BackgroundImage>
+      </ScreenBackground>
     );
   }
 
   return (
-    <BackgroundImage source={backgroundImageSource} resizeMode="cover">
+    <ScreenBackground>
       <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
         <StatusBar barStyle="light-content" />
         <View style={{ height: listContainerHeight }}>
           {verses.length > 0 ? (
             <FlatList
+              ref={flatListRef} 
               data={verses}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
@@ -309,15 +341,14 @@ export default function ReaderScreen() {
                   verse={item}
                   showTranslation={showTranslation}
                   isActive={item.numberInSurah === activeVerseNumber}
-                  // Props for VerseCard's internal slider and status indicators
-                  // Use activeVerseNumber directly from the hook
-                  isAudioPlaying={item.numberInSurah === activeVerseNumber && isAudioPlaying}
-                  isLoadingAudio={item.numberInSurah === activeVerseNumber && audioLoading}
-                  isBuffering={item.numberInSurah === activeVerseNumber && isBuffering}
+                  isPlaying={item.numberInSurah === activeVerseNumber && audioIsPlaying}
+                  isLoading={item.numberInSurah === activeVerseNumber && audioIsLoading}
+                  isBuffering={item.numberInSurah === activeVerseNumber && audioIsBuffering}
                   durationMillis={item.numberInSurah === activeVerseNumber ? durationMillis : 0}
                   positionMillis={item.numberInSurah === activeVerseNumber ? positionMillis : 0}
                   onPress={handleVersePress}
-                  // onSeek prop is now handled by VerseCard internally if it has a slider
+                  onSeek={handleSeek}
+                  onTogglePlayback={handleVersePress} // Use the same handler for toggling
                 />
               )}
               ListHeaderComponent={
@@ -331,6 +362,9 @@ export default function ReaderScreen() {
               maxToRenderPerBatch={10}
               windowSize={21}
               initialNumToRender={10}
+              getItemLayout={(data, index) => ( 
+                { length: 150, offset: 150 * index, index } 
+              )}
             />
           ) : (
             <LoadingContainer>
@@ -342,16 +376,14 @@ export default function ReaderScreen() {
         </View>
         {showAudioControls && surah && (
           <AudioControlBar
-            // Updated props for AudioControlBar
-            isLoading={audioLoading}
-            durationMillis={durationMillis} // Still needed for time display
-            positionMillis={positionMillis} // Still needed for time display
+            isLoading={audioIsLoading}
+            durationMillis={durationMillis} 
+            positionMillis={positionMillis} 
             onSkipNext={handleSkipNextPress}
-            onStop={handleStopPress} // Pass the correct stop handler
-            // isPlaying, onPlayPause, autoplayEnabled removed
+            onStop={handleStopPress} 
           />
         )}
       </MainContainer>
-    </BackgroundImage>
+    </ScreenBackground>
   );
 }

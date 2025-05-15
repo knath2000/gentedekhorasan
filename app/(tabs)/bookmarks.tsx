@@ -1,16 +1,11 @@
 // app/(tabs)/bookmarks.tsx
 import React from 'react';
-import { Platform, Text, View } from 'react-native'; // Added Platform
+import { Platform, StyleSheet, Text } from 'react-native'; // Removed View
 import styled from 'styled-components/native';
+import { ScreenBackground } from '../../src/components/ScreenBackground'; // Added ScreenBackground import
 import { Theme } from '../../src/theme/theme'; // Adjust path if necessary
 
-const ScreenContainer = styled(View)<{ theme: Theme }>`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent; /* Changed for floating tab bar */
-  padding-bottom: ${Platform.OS === 'ios' ? 90 : 70}px; /* Added padding for floating tab bar */
-`;
+// Removed ScreenContainer styled-component
 
 const ScreenText = styled(Text)<{ theme: Theme }>`
   font-size: ${({ theme }) => theme.typography.fontSizes.xl}px;
@@ -20,8 +15,17 @@ const ScreenText = styled(Text)<{ theme: Theme }>`
 
 export default function BookmarksScreen() {
   return (
-    <ScreenContainer>
+    <ScreenBackground style={styles.container}>
       <ScreenText>Bookmarks Screen</ScreenText>
-    </ScreenContainer>
+    </ScreenBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: Platform.OS === 'ios' ? 90 : 70, // Added padding for floating tab bar
+  },
+});

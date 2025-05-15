@@ -1,12 +1,12 @@
 // app/(tabs)/settings.tsx
 import React, { useEffect, useState } from 'react';
-import { ImageBackground, Platform, StyleSheet, Switch, Text, View } from 'react-native';
+import { Platform, StyleSheet, Switch, Text, View } from 'react-native'; // Removed ImageBackground
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenBackground } from '../../src/components/ScreenBackground'; // Added ScreenBackground import
 import { ThemeConsumer } from '../../src/components/ThemeProvider';
 import { getAutoplayEnabled, setAutoplayEnabled as saveAutoplaySetting } from '../../src/services/settingsService';
 
 export default function SettingsScreen() {
-  // Don't use any theme hooks directly in the component
   const insets = useSafeAreaInsets();
   const [autoplayEnabled, setAutoplayEnabled] = useState(false);
 
@@ -33,22 +33,19 @@ export default function SettingsScreen() {
     }
   };
 
-  // Use ThemeConsumer to safely access theme
   return (
     <ThemeConsumer>
-      {(theme) => ( // theme object is now available here
-        <ImageBackground
-          source={require('../../assets/images/iOSbackground.png')} // Using consistent background for now
+      {(theme) => (
+        <ScreenBackground
           style={[
-            styles.backgroundImage, // Changed from container to backgroundImage
+            styles.backgroundContainer, // Use a more generic name for the style on ScreenBackground
             {
               paddingTop: insets.top,
-              paddingBottom: insets.bottom, // Adjusted for safe area
+              paddingBottom: insets.bottom,
               paddingLeft: insets.left,
               paddingRight: insets.right,
             }
           ]}
-          imageStyle={styles.imageStyle} // Ensures image covers full background
         >
           <View style={styles.titleContainer}>
             <Text style={[styles.screenTitle, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishBold }]}>
@@ -78,58 +75,50 @@ export default function SettingsScreen() {
               />
             </View>
           </View>
-        </ImageBackground>
+        </ScreenBackground>
       )}
     </ThemeConsumer>
   );
 }
 
-// Use regular StyleSheet instead of styled-components to avoid CSS issues
 const styles = StyleSheet.create({
-  backgroundImage: {
+  backgroundContainer: { // Renamed from backgroundImage to be more generic for ScreenBackground
     flex: 1,
     width: '100%',
+    // resizeMode is handled by ScreenBackground's internal ImageBackground
   },
-  imageStyle: { // Style for the actual image within ImageBackground
-    resizeMode: 'cover',
-  },
-  titleContainer: { // Container to center title and add padding
+  // imageStyle is no longer needed here as ScreenBackground handles its internal ImageBackground's imageStyle
+  titleContainer: {
     alignItems: 'center',
-    marginTop: 24, // From theme.spacing.lg
-    marginBottom: 24, // From theme.spacing.lg
+    marginTop: 24,
+    marginBottom: 24,
   },
   screenTitle: {
-    fontSize: 20, // From theme.typography.fontSizes.xl
-    // fontFamily and color are set inline using theme
+    fontSize: 20,
   },
   settingsSection: {
-    // backgroundColor and borderRadius are set inline using theme
-    padding: 16, // From theme.spacing.md
-    marginHorizontal: 16, // To make it 90% width-like with padding
-    // width: '90%', // Not needed if using marginHorizontal
+    padding: 16,
+    marginHorizontal: 16,
   },
   sectionTitle: {
-    fontSize: 18, // From theme.typography.fontSizes.lg
-    // fontFamily and color are set inline using theme
-    marginBottom: 16, // From theme.spacing.md
+    fontSize: 18,
+    marginBottom: 16,
   },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8, // From theme.spacing.sm
+    paddingVertical: 8,
   },
   settingLabelContainer: {
     flex: 1,
-    marginRight: 16, // From theme.spacing.md
+    marginRight: 16,
   },
   settingLabel: {
-    fontSize: 16, // From theme.typography.fontSizes.md
-    // fontFamily and color are set inline using theme
+    fontSize: 16,
   },
   settingDescription: {
-    fontSize: 14, // From theme.typography.fontSizes.sm
-    // fontFamily and color are set inline using theme
-    marginTop: 4, // From theme.spacing.xs
+    fontSize: 14,
+    marginTop: 4,
   },
 });
