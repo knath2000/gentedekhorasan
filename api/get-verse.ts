@@ -18,7 +18,7 @@ pool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client in pool (get-verse)', err);
 });
 
-module.exports = async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req: typeof VercelRequest, res: typeof VercelResponse) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     return res.status(405).end('Method Not Allowed');
