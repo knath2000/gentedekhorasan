@@ -1,5 +1,4 @@
-import { createClient, EdgeConfigClient } from '@vercel/edge-config';
-import { fetchMetadataFromAPI } from './apiClient';
+import { fetchEdgeConfigProxyData, fetchMetadataFromAPI } from './apiClient';
 
 // Define types based on the expected structure from Edge Config and API
 // These should align with what the conversion script produces and the DB schema
@@ -29,7 +28,6 @@ interface SajdaVerse {
   type?: string; // 'recommended' or 'obligatory'
 }
 
-// Example of how to get navigation indices (e.g., Juz starts) from Edge Config
 interface NavigationIndexItem {
   surah: number;
   aya: number;
@@ -41,133 +39,129 @@ interface NavigationIndices {
   // Add other indices as needed
 }
 
-
-let edgeConfigClient: EdgeConfigClient | undefined; // Existing line, kept for context, search starts effectively below
 let localEdgeConfigData: QuranEdgeConfigData | undefined;
+let hasAttemptedProxyFetch = false;
+let proxyFetchPromise: Promise<QuranEdgeConfigData | null> | null = null;
 
-// Initialize Edge Config or local fallback
-if (process.env.EXPO_PUBLIC_EDGE_CONFIG) {
-  try {
-    edgeConfigClient = createClient(process.env.EXPO_PUBLIC_EDGE_CONFIG);
-  } catch (error) {
-    console.error("Failed to create Edge Config client:", error);
-    initializeLocalFallback(); // Call fallback
+// Function to fetch all metadata from the Edge Config proxy
+async function fetchAllMetadataFromProxy(): Promise<QuranEdgeConfigData | null> {
+  if (!proxyFetchPromise) {
+    proxyFetchPromise = (async () => {
+      try {
+        console.log("[quranMetadataService] Attempting to fetch all metadata from Edge Config proxy via apiClient.");
+        const data = await fetchEdgeConfigProxyData<QuranEdgeConfigData>();
+        if (data) {
+          console.log("[quranMetadataService] Successfully fetched metadata from proxy. Data:", JSON.stringify(data, null, 2)?.substring(0, 500) + "...");
+          hasAttemptedProxyFetch = true;
+          localEdgeConfigData = data; // Cache locally
+          return data;
+        }
+        // If data is null (error handled in fetchEdgeConfigProxyData and rethrown, caught below)
+        throw new Error("fetchEdgeConfigProxyData returned null or failed");
+      } catch (error) {
+        console.error('[quranMetadataService] Error fetching from Edge Config proxy via apiClient:', error);
+        hasAttemptedProxyFetch = true;
+        // Attempt to initialize local fallback if proxy fails, especially in dev
+        await initializeLocalFallback();
+        return null;
+      } finally {
+        proxyFetchPromise = null; // Reset promise so it can be called again if needed
+      }
+    })();
   }
-} else {
-  console.warn("EDGE_CONFIG connection string not found. Using local fallback data.");
-  initializeLocalFallback(); // Call fallback
+  return proxyFetchPromise;
 }
 
-// Function to initialize local fallback data
+
+// Function to initialize local fallback data (e.g., from specific API endpoints if proxy fails)
 async function initializeLocalFallback() {
-  try {
-    // If in development, try to load local data
-    if (__DEV__) { // __DEV__ is a global variable typically available in React Native development mode
-      // First try API
-      const surahList = await fetchMetadataFromAPI<SurahBasicInfo[]>('surah-list');
-      if (surahList) {
-        localEdgeConfigData = { surahBasicInfo: surahList };
-        console.info("Using API data as local Edge Config fallback for surahBasicInfo");
-        return;
-      }
-      
-      // If API fails, use static data if available
-      // This could be imported from a local JSON file
-      // import localDataFromFile from './local-edge-config-data.json'; // Ensure this file exists and is typed
-      // if (localDataFromFile) {
-      //   localEdgeConfigData = localDataFromFile as QuranEdgeConfigData;
-      //   console.info("Using local JSON file as Edge Config fallback.");
-      // }
-    }
-  } catch (error) {
-    console.error("Failed to initialize local fallback data:", error);
-  }
-}
-
-
-// Use Edge Config with API fallback instead of DB fallback
-export async function getBasicSurahList(): Promise<SurahBasicInfo[] | null> {
-  if (edgeConfigClient) {
+  if (__DEV__) { // Only run this complex fallback logic in development
+    console.warn("[quranMetadataService] Edge Config proxy failed or not available. Initializing local fallback for DEV.");
     try {
-      const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
-      console.log("[quranMetadataService] Attempted to fetch 'quranMetadata' from Edge Config. Result:", JSON.stringify(metadata, null, 2)?.substring(0, 500) + "...");
-      if (metadata && typeof metadata === 'object' && metadata.surahBasicInfo) {
-        console.log("[quranMetadataService] Successfully fetched and validated surahBasicInfo from Edge Config. Count:", metadata.surahBasicInfo.length);
-        return metadata.surahBasicInfo;
+      if (!localEdgeConfigData?.surahBasicInfo) {
+        const surahList = await fetchMetadataFromAPI<SurahBasicInfo[]>('surah-list');
+        if (surahList) {
+          localEdgeConfigData = { ...localEdgeConfigData, surahBasicInfo: surahList };
+          console.info("[quranMetadataService] DEV: Populated localEdgeConfigData.surahBasicInfo from API.");
+        }
       }
-      console.warn('[quranMetadataService] surahBasicInfo not found or metadata is not in expected format in Edge Config.');
+      if (!localEdgeConfigData?.navigationIndices) {
+        const navIndices = await fetchMetadataFromAPI<NavigationIndices>('navigation-indices');
+        if (navIndices) {
+          localEdgeConfigData = { ...localEdgeConfigData, navigationIndices: navIndices };
+          console.info("[quranMetadataService] DEV: Populated localEdgeConfigData.navigationIndices from API.");
+        }
+      }
     } catch (error) {
-      console.error('[quranMetadataService] Error fetching from Edge Config in getBasicSurahList:', error);
+      console.error("[quranMetadataService] DEV: Failed to initialize local fallback data from APIs:", error);
     }
   } else {
-    console.log("[quranMetadataService] EdgeConfigClient not available.");
+    console.warn("[quranMetadataService] Edge Config proxy failed. Fallbacks to specific APIs will occur per function call in PROD.");
   }
+}
 
-  // Try local fallback if Edge Config client failed or didn't return data
-  if (localEdgeConfigData?.surahBasicInfo) {
-    console.log("[quranMetadataService] Using pre-loaded localEdgeConfigData for surahBasicInfo. Count:", localEdgeConfigData.surahBasicInfo.length);
-    return localEdgeConfigData.surahBasicInfo;
+export async function getBasicSurahList(): Promise<SurahBasicInfo[] | null> {
+  const metadata = await fetchAllMetadataFromProxy();
+
+  if (metadata?.surahBasicInfo) {
+    console.log("[quranMetadataService] Using surahBasicInfo from (proxy/cached) metadata. Count:", metadata.surahBasicInfo.length);
+    return metadata.surahBasicInfo;
   }
   
-  console.warn("[quranMetadataService] Edge Config data not available (neither live nor pre-loaded local). Attempting API fetch for getBasicSurahList as final fallback.");
-  // Fallback to API if Edge Config and local fallback are not available/successful
+  // If proxy provided metadata but not surahBasicInfo, or if proxy failed and local cache has it (from dev fallback)
+  if (localEdgeConfigData?.surahBasicInfo) {
+     console.log("[quranMetadataService] Using surahBasicInfo from localEdgeConfigData. Count:", localEdgeConfigData.surahBasicInfo.length);
+     return localEdgeConfigData.surahBasicInfo;
+  }
+
+  console.warn("[quranMetadataService] Metadata from proxy/cache did not contain surahBasicInfo. Attempting direct API fallback for 'surah-list'.");
   try {
     const surahList = await fetchMetadataFromAPI<SurahBasicInfo[]>('surah-list');
-    console.log("[quranMetadataService] API fallback for surah-list result:", JSON.stringify(surahList, null, 2)?.substring(0, 500) + "...");
     if (surahList && __DEV__ && (!localEdgeConfigData || !localEdgeConfigData.surahBasicInfo)) {
         localEdgeConfigData = { ...localEdgeConfigData, surahBasicInfo: surahList };
-        console.info("[quranMetadataService] Populated localEdgeConfigData with API result for surahBasicInfo. Count:", surahList.length);
+        console.info("[quranMetadataService] DEV: Populated localEdgeConfigData.surahBasicInfo with API result after proxy miss.");
     }
     return surahList;
   } catch (apiError) {
-    console.error("[quranMetadataService] API error during fallback fetch for basic surah list:", apiError);
+    console.error("[quranMetadataService] API error during fallback fetch for 'surah-list':", apiError);
     return null;
   }
 }
 
-// Similar approach for other functions
 export async function getSajdaVerses(): Promise<SajdaVerse[] | null> {
-  // Sajda verses might not be in Edge Config, so directly try API
+  // Sajda verses are typically not in the main quranMetadata Edge Config item, so fetch directly.
   try {
     const sajdaVerses = await fetchMetadataFromAPI<SajdaVerse[]>('sajdas');
     return sajdaVerses;
   } catch (apiError) {
-    console.error("API error fetching sajda verses:", apiError);
+    console.error("[quranMetadataService] API error fetching sajda verses:", apiError);
     return null;
   }
 }
 
 export async function getNavigationIndices(): Promise<NavigationIndices | null> {
-  if (edgeConfigClient) {
-    try {
-      const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
-      if (metadata && typeof metadata === 'object' && metadata.navigationIndices) {
-        console.log("Fetched navigationIndices from Edge Config.");
-        return metadata.navigationIndices;
-      }
-      console.warn('navigationIndices not found or metadata is not in expected format in Edge Config.');
-    } catch (error) {
-      console.error('Edge Config error in getNavigationIndices:', error);
-    }
+  const metadata = await fetchAllMetadataFromProxy();
+
+  if (metadata?.navigationIndices) {
+    console.log("[quranMetadataService] Using navigationIndices from (proxy/cached) metadata.");
+    return metadata.navigationIndices;
   }
 
-  // Try local fallback if Edge Config client failed or didn't return data
   if (localEdgeConfigData?.navigationIndices) {
-    console.log("Using pre-loaded localEdgeConfigData for navigationIndices.");
+    console.log("[quranMetadataService] Using navigationIndices from localEdgeConfigData.");
     return localEdgeConfigData.navigationIndices;
   }
-
-  console.warn("Edge Config client not available or data not found, and no local fallback. Attempting API fetch for getNavigationIndices.");
-  // Fallback to API if Edge Config and local fallback are not available/successful
+  
+  console.warn("[quranMetadataService] Metadata from proxy/cache did not contain navigationIndices. Attempting direct API fallback for 'navigation-indices'.");
   try {
-    const navigationIndices = await fetchMetadataFromAPI<NavigationIndices>('navigation-indices');
-    if (navigationIndices && __DEV__ && (!localEdgeConfigData || !localEdgeConfigData.navigationIndices)) {
-        localEdgeConfigData = { ...localEdgeConfigData, navigationIndices: navigationIndices };
-        console.info("Populated localEdgeConfigData with API result for navigationIndices.");
+    const navIndices = await fetchMetadataFromAPI<NavigationIndices>('navigation-indices');
+     if (navIndices && __DEV__ && (!localEdgeConfigData || !localEdgeConfigData.navigationIndices)) {
+        localEdgeConfigData = { ...localEdgeConfigData, navigationIndices: navIndices };
+        console.info("[quranMetadataService] DEV: Populated localEdgeConfigData.navigationIndices with API result after proxy miss.");
     }
-    return navigationIndices;
+    return navIndices;
   } catch (apiError) {
-    console.error("API error fetching navigation indices:", apiError);
+    console.error("[quranMetadataService] API error fetching 'navigation-indices':", apiError);
     return null;
   }
 }
