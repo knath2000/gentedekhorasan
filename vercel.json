@@ -11,6 +11,18 @@
   ],
   "routes": [
     {
+      "src": "/api/get-metadata",
+      "dest": "/api/get-metadata.js"
+    },
+    {
+      "src": "/api/get-verse",
+      "dest": "/api/get-verse.js"
+    },
+    {
+      "src": "/api/get-verses",
+      "dest": "/api/get-verses.js"
+    },
+    {
       "src": "/api/([^/]+)",
       "dest": "/api/$1.js"
     }
