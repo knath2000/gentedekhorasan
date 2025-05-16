@@ -90,33 +90,37 @@ export async function getBasicSurahList(): Promise<SurahBasicInfo[] | null> {
   if (edgeConfigClient) {
     try {
       const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
+      console.log("[quranMetadataService] Attempted to fetch 'quranMetadata' from Edge Config. Result:", JSON.stringify(metadata, null, 2)?.substring(0, 500) + "...");
       if (metadata && typeof metadata === 'object' && metadata.surahBasicInfo) {
-        console.log("Fetched surahBasicInfo from Edge Config.");
+        console.log("[quranMetadataService] Successfully fetched and validated surahBasicInfo from Edge Config. Count:", metadata.surahBasicInfo.length);
         return metadata.surahBasicInfo;
       }
-      console.warn('surahBasicInfo not found or metadata is not in expected format in Edge Config.');
+      console.warn('[quranMetadataService] surahBasicInfo not found or metadata is not in expected format in Edge Config.');
     } catch (error) {
-      console.error('Edge Config error in getBasicSurahList:', error);
+      console.error('[quranMetadataService] Error fetching from Edge Config in getBasicSurahList:', error);
     }
+  } else {
+    console.log("[quranMetadataService] EdgeConfigClient not available.");
   }
 
   // Try local fallback if Edge Config client failed or didn't return data
   if (localEdgeConfigData?.surahBasicInfo) {
-    console.log("Using pre-loaded localEdgeConfigData for surahBasicInfo.");
+    console.log("[quranMetadataService] Using pre-loaded localEdgeConfigData for surahBasicInfo. Count:", localEdgeConfigData.surahBasicInfo.length);
     return localEdgeConfigData.surahBasicInfo;
   }
   
-  console.warn("Edge Config client not available or data not found, and no local fallback. Attempting API fetch for getBasicSurahList.");
+  console.warn("[quranMetadataService] Edge Config data not available (neither live nor pre-loaded local). Attempting API fetch for getBasicSurahList as final fallback.");
   // Fallback to API if Edge Config and local fallback are not available/successful
   try {
     const surahList = await fetchMetadataFromAPI<SurahBasicInfo[]>('surah-list');
+    console.log("[quranMetadataService] API fallback for surah-list result:", JSON.stringify(surahList, null, 2)?.substring(0, 500) + "...");
     if (surahList && __DEV__ && (!localEdgeConfigData || !localEdgeConfigData.surahBasicInfo)) {
         localEdgeConfigData = { ...localEdgeConfigData, surahBasicInfo: surahList };
-        console.info("Populated localEdgeConfigData with API result for surahBasicInfo.");
+        console.info("[quranMetadataService] Populated localEdgeConfigData with API result for surahBasicInfo. Count:", surahList.length);
     }
     return surahList;
   } catch (apiError) {
-    console.error("API error fetching basic surah list:", apiError);
+    console.error("[quranMetadataService] API error during fallback fetch for basic surah list:", apiError);
     return null;
   }
 }
