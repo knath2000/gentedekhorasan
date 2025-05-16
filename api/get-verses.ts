@@ -1,5 +1,5 @@
-const { VercelRequest: _VercelRequest, VercelResponse: _VercelResponse } = require('@vercel/node');
-const { Pool: PgPool } = require('pg');
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Pool as PgPool } from 'pg';
 
 // Initialize the connection pool
 // Ensure NEON_DATABASE_URL is set in your Vercel project's environment variables
@@ -18,7 +18,7 @@ dbPool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client in pool (get-verses)', err);
 });
 
-module.exports = async function handler(req: typeof _VercelRequest, res: typeof _VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log(`[API] Request received: ${req.url}`);
   console.log(`[API] Query parameters: ${JSON.stringify(req.query)}`);
   console.log(`[API] Environment variables available: ${Object.keys(process.env).filter(key => !key.includes('KEY') && !key.includes('SECRET')).join(', ')}`);
