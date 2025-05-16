@@ -1,7 +1,7 @@
 # Project Brief: Luminous Verses (Expo App)
 
-**Version:** 0.9.2 (Stable Audio Playback & UI Sync)
-**Date:** 2025-05-14
+**Version:** 0.9.3 (Reflects API-Driven Architecture)
+**Date:** 2025-05-15
 **Original iOS Native Port Brief:** (This document adapts the vision of the original iOS native port for the current Expo-based cross-platform project.)
 
 ## 1. Project Name
@@ -20,7 +20,11 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
     -   Verse-by-verse audio playback using `expo-audio`.
     -   Intuitive navigation using Expo Router.
 -   **Cross-Platform Reach:** Target iOS, Android, and Web from a single codebase.
--   **Data Management:** Utilize **Vercel Blob for all static Quranic content (Arabic text, Surah list, Yusuf Ali translations)**. Supabase is planned for dynamic data needs (e.g., user accounts, bookmarks).
+-   **Data Management (Hybrid Model):**
+    -   **Arabic Verse Text:** Served dynamically from a Neon PostgreSQL database via Vercel Serverless Functions.
+    -   **Surah List & Yusuf Ali Translations:** Static JSON files served from Vercel Blob.
+    -   **Audio Files:** Hosted on Vercel Blob.
+    -   **User Data (Planned):** Supabase for features like user accounts and bookmarks.
 
 ## 3. Target Audience
 
@@ -30,9 +34,9 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
 ## 4. Key Features (Current & MVP for Expo Port)
 
 -   **Quranic Text Display:**
-    -   Clear, legible Arabic text (Uthmani script) - *Fetched from Vercel Blob.*
+    -   Clear, legible Arabic text (Uthmani script) - *Fetched from Neon PostgreSQL DB via Vercel Serverless Functions.*
     -   Display of corresponding English translations (Yusuf Ali) - *Fetched from Vercel Blob.*
-    -   Accurate verse numbering - *Fetched from Vercel Blob.*
+    -   Accurate verse numbering - *Sourced from API (DB) for Arabic text, and Blob for translations.*
     -   Proper Right-to-Left (RTL) support for Arabic - *Implemented.*
 -   **Audio Playback (using `expo-audio`):**
     -   Individual audio playback functionality for each Quranic verse - *Implemented using a robust 'play-on-create' (mono-instance) pattern with event-driven UI state synchronization. This ensures reliable playback, pause, resume, and stop behaviors. UI (verse highlight, controls, buffering indicators, slider) accurately reflects actual player status, adhering to `expo-audio` best practices.*
@@ -52,12 +56,13 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
 -   **Core Screens (Expo Router):**
     -   `app/(tabs)/index.tsx` (HomeScreen): Displays Lottie/static background and title.
     -   `app/(tabs)/surahs.tsx` (SurahListScreen): Fetches and displays the list of Surahs from Vercel Blob.
-    -   `app/(tabs)/reader.tsx` (ReaderScreen): Displays Arabic text and Yusuf Ali translations from Vercel Blob, with audio playback controls using `expo-audio`.
+    -   `app/(tabs)/reader.tsx` (ReaderScreen): Displays Arabic text (from API/DB) and Yusuf Ali translations (from Vercel Blob), with audio playback controls using `expo-audio`.
     -   `app/(tabs)/bookmarks.tsx` (BookmarksScreen): Placeholder, uses shared background.
     -   `app/(tabs)/settings.tsx` (SettingsScreen): Basic settings (e.g., autoplay toggle), uses shared background.
--   **Data Backend:**
-    -   **Vercel Blob:** Primary store for static Quranic content (Arabic text, Surah list, Yusuf Ali translations) served as JSON files.
-    -   **Supabase:** Planned for dynamic data (user accounts, bookmarks, etc.). All static content, including translations, is served from Vercel Blob.
+-   **Data Backend (Hybrid):**
+    -   **Neon PostgreSQL Database (via Vercel Serverless Functions):** Primary store for Arabic Quranic text. Accessed via `src/services/apiClient.ts`.
+    -   **Vercel Blob:** Store for static assets: Surah list (JSON), Yusuf Ali translations (JSON), and audio files. Accessed via `src/services/surahService.ts` and `src/services/audioService.ts`.
+    -   **Supabase (Planned):** For dynamic user data (user accounts, bookmarks, etc.).
 
 ## 5. Design Aesthetic & User Experience (UX) Principles
 
@@ -81,8 +86,9 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
 -   **Navigation:** Expo Router
 -   **Animation:** Lottie (`lottie-react-native`, `@lottiefiles/dotlottie-react`)
 -   **Audio:** `expo-audio` (migrated from `expo-av`)
--   **Static Data Storage:** Vercel Blob (for JSON files: Arabic text, Surah list, Yusuf Ali translations)
--   **Dynamic Backend/Data:** Supabase (`@supabase/supabase-js`) - for features like user accounts, bookmarks (planned).
+-   **Quranic Text Data (Arabic):** Neon PostgreSQL database, accessed via Vercel Serverless Functions (`api/*.ts`) using the `pg` library.
+-   **Static Assets (Translations, Surah List, Audio):** Vercel Blob (JSON files, audio files).
+-   **Dynamic User Data (Planned):** Supabase (`@supabase/supabase-js`).
 -   **Fonts:** Noto Naskh Arabic (Arabic), Montserrat (English) - *Loaded via [`app/_layout.tsx`](app/_layout.tsx:1).*\
 -   **Bundler:** Metro (with custom polyfills for Node.js core modules configured in [`metro.config.js`](metro.config.js:1)).
 
@@ -91,10 +97,10 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
 -   High visual fidelity to the "Desert Oasis at Night" theme across platforms.
 -   Smooth, jank-free animations and UI interactions.
 -   Positive user feedback regarding the cross-platform experience, performance, and usability.
--   Successful and accurate delivery of Quranic text, translations, and audio from their respective sources (Vercel Blob for static content).
+-   Successful and accurate delivery of Quranic text (from API/DB), translations (from Vercel Blob), and audio (from Vercel Blob).
 -   Highly reliable and responsive audio playback, with UI state (including buffering, playing, paused, slider position) consistently synchronized with the actual player status, adhering to community best practices for `expo-audio`.
 -   Successful bundling and operation on iOS, (Android to be tested), and Web.
--   Efficient data loading from CDN (Vercel Blob) for core Quranic content.
+-   Efficient data loading from API (for Arabic text) and CDN (Vercel Blob for translations, Surah list, audio).
 
 ## 8. Future Considerations (Post-MVP Port)
 *(Adapted from original iOS brief)*

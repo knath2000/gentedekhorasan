@@ -3,34 +3,41 @@ import Constants from 'expo-constants';
 import { Surah, Verse } from '../types/quran';
 // import { getVerseFromDb, getVersesBySurahFromDb } from './quranDbService'; // Old DB functions
 import { fetchVerseFromAPI, fetchVersesFromAPI } from './apiClient'; // New API client functions
+import { getBasicSurahList } from './quranMetadataService'; // Import new service
 
 export const fetchSurahList = async (): Promise<Surah[]> => {
   try {
-    const vercelBlobBaseUrl = Constants.expoConfig?.extra?.VERCEL_BLOB_URL_BASE as string;
-    if (!vercelBlobBaseUrl) {
-      console.error('VERCEL_BLOB_URL_BASE is not defined in app.json extra. Cannot fetch Surah list.');
-      throw new Error('Application configuration error: Vercel Blob URL base is missing.');
-    }
-    
-    const surahListUrl = `https://${vercelBlobBaseUrl.replace(/\/$/, '')}/quran-data/surahlist.json`;
-    console.log(`Fetching Surah list from: ${surahListUrl}`);
+    console.log('Fetching Surah list using quranMetadataService...');
+    const basicSurahList = await getBasicSurahList();
 
-    const response = await fetch(surahListUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Surah list from Vercel Blob. Status: ${response.status}`);
+    if (!basicSurahList) {
+      console.error('Failed to fetch surah list from quranMetadataService (Edge Config or DB fallback).');
+      throw new Error('Failed to retrieve Surah list.');
     }
 
-    const data = await response.json() as Surah[];
-
-    return (data || []).map(item => ({
-      ...item,
-      revelationType: item.revelationType === 'Meccan' || item.revelationType === 'Medinan'
-        ? item.revelationType
-        : 'Meccan', 
+    // Adapt SurahBasicInfo[] to Surah[]
+    return basicSurahList.map(item => ({
+      number: item.number,
+      name: item.name, // This is arabic_name in quran_surahs table, maps to Surah.name
+      englishName: item.ename,
+      englishNameTranslation: `Chapter ${item.ename}`, // Assuming this is how it was structured
+      numberOfAyahs: item.ayas,
+      revelationType: item.type === 'Meccan' || item.type === 'Medinan' ? item.type : 'Meccan', // Validate
+      // Fields from quran.ts Surah type that might not be in SurahBasicInfo directly:
+      // id: item.number.toString(), // Assuming id is string representation of number
+      // transliterationName: item.tname, // Add if needed and available
+      // Add other fields if they were part of the original Surah type and are available
+      // For example, if the original surahlist.json had more fields, ensure they are mapped or handled.
+      // The original mapping had `...item` which implies the old surahlist.json might have had more fields.
+      // For now, mapping core fields.
+      id: String(item.number), // Ensure id is a string if quran.ts expects it
+      arabicName: item.name,
+      transliterationName: item.tname,
+      // Ensure all fields required by the Surah type in '../types/quran' are present
     }));
 
   } catch (error: any) {
-    console.error('Error fetching surah list:', error.message);
+    console.error('Error fetching surah list via quranMetadataService:', error.message);
     throw error;
   }
 };

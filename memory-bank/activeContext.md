@@ -1,7 +1,7 @@
 # Active Context: Luminous Verses (Expo App)
 
-**Version:** 0.9.2 (Comprehensive Audio Stability & UI Sync)
-**Date:** 2025-05-14
+**Version:** 0.9.3 (Reflects API-Driven Architecture & Audio Stability)
+**Date:** 2025-05-15
 **Related Brief:** `docs/projectbrief.md`
 **Related Progress:** `docs/progress.md`
 **Previous Refactoring Plan (Tap-to-Play):** `docs/updated_audio_playback_refactoring_plan.md`
@@ -9,12 +9,17 @@
 
 ## 1. Current Focus & State
 
--   **Focus:** Consolidating and documenting the comprehensive audio playback stability achieved through recent refactoring. This includes the 'play-on-create' (mono-instance) pattern, strict event-driven UI state synchronization (resolving stuck buffering and slider issues), robust toggle logic, and numeric precision fixes.
+-   **Focus:** Consolidating and documenting:
+    1.  The architectural shift to an API-driven model for Arabic Quranic text (Vercel Serverless Functions + Neon PostgreSQL DB).
+    2.  The comprehensive audio playback stability achieved through recent refactoring (mono-instance player, event-driven UI sync, precision fixes).
 -   **State:**
-    -   **Memory Bank:** Core documents are being updated to version 0.9.2.
-    -   **Application Core:** (Largely unchanged, audio system is the focus)
+    -   **Memory Bank:** Core documents are being updated to version 0.9.3 to reflect both architectural and audio system changes.
+    -   **Application Core:**
         -   Expo Router, theming, custom fonts, `react-native-safe-area-context` are integrated.
-        -   **Static Data Source:** Vercel Blob for Quranic content.
+        -   **Data Sources (Hybrid Model):**
+            -   **Arabic Text:** Neon PostgreSQL DB via Vercel Serverless Functions (e.g., `api/get-verses.ts`), accessed by `src/services/apiClient.ts`.
+            -   **Translations & Surah List:** Static JSON files from Vercel Blob, accessed by `src/services/surahService.ts`.
+            -   **Audio Files:** Hosted on Vercel Blob, URLs managed by `src/services/audioService.ts`.
     -   **`src/hooks/useAudioPlayer.ts` (formerly `useQuranAudioPlayer.ts` - name standardized):**
         -   **Refactored:** Implements a 'play-on-create' (mono-instance) audio player lifecycle using `expo-audio`'s library-provided `useAudioPlayer`.
         -   **Refactored:** UI state (playing, paused, buffering, time, duration) is now strictly synchronized via player events (`onPlaybackStatusUpdate`) dispatched to a reducer, ensuring UI accurately reflects true player state. This resolved previous issues with stuck buffering icons and desynchronized controls.
@@ -35,39 +40,44 @@
 
 ## 2. Recent Changes / Milestones
 
+-   **Architectural Shift to API-Driven Content (Approx. 2025-05-15 or prior):**
+    -   Implemented Vercel Serverless Functions (e.g., `api/get-verses.ts`, `api/get-verse.ts`) to serve Arabic Quranic text from a Neon PostgreSQL database.
+    -   Integrated `src/services/apiClient.ts` to fetch data from these API endpoints.
+    -   Modified `src/services/surahService.ts` to use `apiClient.ts` for Arabic text and continue fetching translations and Surah lists from Vercel Blob, creating a hybrid data model.
+    -   The `src/services/quranDbService.ts` (direct client-side DB connection) was effectively deprecated/commented out in favor of the serverless function approach.
 -   **Comprehensive Audio Stability Refactor (2025-05-14):**
     -   Implemented a 'play-on-create' (mono-instance) audio player lifecycle within `src/hooks/useAudioPlayer.ts`.
-    -   Established strict event-driven UI state synchronization: player events (`onPlaybackStatusUpdate`) now directly drive reducer updates, which in turn update the UI. This ensures the UI (buffering icons, playback slider, play/pause states) accurately reflects the true state of the `expo-audio` player.
-    -   Resolved persistent issues with stuck buffering UI and desynchronized playback controls (e.g., slider not appearing or updating correctly).
-    -   Ensured reliable and predictable play/pause/resume toggle logic in `toggleAudio`, aligning with `expo-audio` community best practices.
-    -   **Numeric Precision Fix (Sub-milestone):**
-        -   Updated `src/hooks/useAudioPlayer.ts`: Rounded `durationMillis` and `positionMillis` in the return object; ensured `seekAudio` handles input `positionMillis` by rounding.
-        -   Updated `src/components/PlatformSlider.tsx`: Rounded all numeric values and `accessibilityValue` fields.
-        -   Updated `src/components/VerseCard.tsx`: Rounded time-based props and values for `PlatformSlider` and `formatTime`.
--   **Previous - Audio Playback Refactoring - Tap-to-Play & Accessibility (2025-05-14):**
-    -   Implemented tap-to-play/pause on `VerseCard`.
-    -   Enhanced visual feedback and accessibility features.
-    -   Relied on `useAudioPlayer.ts` (which uses the library-provided `useAudioPlayer` from `expo-audio`).
+    -   Established strict event-driven UI state synchronization.
+    -   Resolved issues with stuck buffering UI and desynchronized controls.
+    -   Ensured reliable toggle logic.
+    -   Integrated numeric precision fixes.
+-   **Previous - Audio Playback Refactoring - Tap-to-Play & Accessibility (2025-05-14):** (Details as before)
 
 ## 3. Next Immediate Steps
 
-1.  **Update Memory Bank & `.clinerules`:** (This step) Reflect the comprehensive audio stability refactor, including event-driven patterns, mono-instance player, UI synchronization fixes, and precision enhancements.
+1.  **Update Memory Bank & `.clinerules`:** (This step) Reflect both the new API-driven architecture for Quranic text and the comprehensive audio stability refactor.
 2.  **Testing (Manual by User):**
-    -   Verify overall audio playback stability, responsiveness of controls (play, pause, resume, seek), and accuracy of UI indicators (buffering, playing state, slider position) across iOS, Android, and Web.
-    -   Confirm "loss of precision" errors are eliminated.
-    -   Test accessibility with VoiceOver (iOS) and TalkBack (Android).
-3.  **Address any bugs or UX issues identified during testing.**
+    -   **Data Retrieval:** Verify correct fetching and display of Arabic text from API/DB and translations/Surah list from Blob. Test error handling for API/DB issues.
+    -   **Audio Playback:** Verify overall audio playback stability, responsiveness of controls, accuracy of UI indicators, and elimination of precision errors across platforms.
+    -   **Accessibility:** Test with VoiceOver (iOS) and TalkBack (Android) for both data display and audio controls.
+3.  **Address any bugs or UX issues identified during testing (data or audio related).**
 
 ## 4. Key Decisions Made
 
--   **Event-Driven State Synchronization for Audio:** Adopted a pattern where UI state is updated *only* in response to actual events from the `expo-audio` player. This ensures the UI is a source of truth for the player's status, resolving previous desynchronization issues. This aligns with community best practices for managing AV state in React Native.
--   **Mono-instance 'Play-on-Create' Player Lifecycle:** Enforced a single, active `AudioPlayer` instance. New playback requests for different verses destroy the old player and create a new one, simplifying state management and preventing race conditions.
--   **Systematic Rounding for Numeric Precision:** Applied `Math.round()` to all millisecond-based time values at their source (audio hook) and points of consumption/conversion (slider, verse card) to prevent floating-point errors when bridging to native modules.
--   **Defensive Programming in Components:** Ensured components consuming these values also perform rounding if necessary.
+-   **Hybrid Data Model:** Adopted a model where dynamic/core content (Arabic Quran text) is served via an API from a database, while more static assets (translations, Surah list, audio files) are served from Vercel Blob. This provides flexibility for the core text and CDN benefits for static assets.
+-   **Serverless Functions for Data Access:** Utilized Vercel Serverless Functions to abstract direct database access from the client, improving security and manageability.
+-   **Event-Driven State Synchronization for Audio:** (As before)
+-   **Mono-instance 'Play-on-Create' Player Lifecycle:** (As before)
+-   **Systematic Rounding for Numeric Precision:** (As before)
+-   **Defensive Programming in Components:** (As before)
 
 ## 5. Open Questions / Considerations
 
--   **Thorough Testing of New Audio Architecture:** The primary open point is comprehensive testing across all platforms to confirm the stability and correctness of the new event-driven audio architecture and mono-instance player lifecycle, and to ensure no new regressions were introduced.
--   **Performance:** While the current patterns are robust, continue to monitor for any unexpected performance impacts in highly dynamic scenarios.
+-   **Thorough Testing of Hybrid Data & New Audio Architecture:** Comprehensive testing is needed across all platforms to confirm:
+    -   Correct and reliable data fetching from both API/DB and Vercel Blob.
+    -   Stability and correctness of the event-driven audio architecture and mono-instance player.
+    -   No new regressions introduced by either architectural change.
+-   **API & Database Performance/Reliability:** Monitor performance of Vercel Functions and Neon DB under load. Ensure robust error handling for API/DB unavailability.
+-   **Audio Performance:** (As before)
 
-This document reflects the context after implementing the precision fixes for audio playback.
+This document reflects the context after the shift to an API-driven model for Arabic text and the implementation of precision fixes for audio playback.

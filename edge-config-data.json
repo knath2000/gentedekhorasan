@@ -1,0 +1,3686 @@
+{
+  "surahBasicInfo": [
+    {
+      "number": 1,
+      "name": "الفاتحة",
+      "tname": "Al-Faatiha",
+      "ename": "The Opening",
+      "ayas": 7,
+      "type": "Meccan",
+      "order": 5,
+      "rukus": 1
+    },
+    {
+      "number": 2,
+      "name": "البقرة",
+      "tname": "Al-Baqara",
+      "ename": "The Cow",
+      "ayas": 286,
+      "type": "Medinan",
+      "order": 87,
+      "rukus": 40
+    },
+    {
+      "number": 3,
+      "name": "آل عمران",
+      "tname": "Aal-i-Imraan",
+      "ename": "The Family of Imraan",
+      "ayas": 200,
+      "type": "Medinan",
+      "order": 89,
+      "rukus": 20
+    },
+    {
+      "number": 4,
+      "name": "النساء",
+      "tname": "An-Nisaa",
+      "ename": "The Women",
+      "ayas": 176,
+      "type": "Medinan",
+      "order": 92,
+      "rukus": 24
+    },
+    {
+      "number": 5,
+      "name": "المائدة",
+      "tname": "Al-Maaida",
+      "ename": "The Table",
+      "ayas": 120,
+      "type": "Medinan",
+      "order": 112,
+      "rukus": 16
+    },
+    {
+      "number": 6,
+      "name": "الأنعام",
+      "tname": "Al-An'aam",
+      "ename": "The Cattle",
+      "ayas": 165,
+      "type": "Meccan",
+      "order": 55,
+      "rukus": 20
+    },
+    {
+      "number": 7,
+      "name": "الأعراف",
+      "tname": "Al-A'raaf",
+      "ename": "The Heights",
+      "ayas": 206,
+      "type": "Meccan",
+      "order": 39,
+      "rukus": 24
+    },
+    {
+      "number": 8,
+      "name": "الأنفال",
+      "tname": "Al-Anfaal",
+      "ename": "The Spoils of War",
+      "ayas": 75,
+      "type": "Medinan",
+      "order": 88,
+      "rukus": 10
+    },
+    {
+      "number": 9,
+      "name": "التوبة",
+      "tname": "At-Tawba",
+      "ename": "The Repentance",
+      "ayas": 129,
+      "type": "Medinan",
+      "order": 113,
+      "rukus": 16
+    },
+    {
+      "number": 10,
+      "name": "يونس",
+      "tname": "Yunus",
+      "ename": "Jonas",
+      "ayas": 109,
+      "type": "Meccan",
+      "order": 51,
+      "rukus": 11
+    },
+    {
+      "number": 11,
+      "name": "هود",
+      "tname": "Hud",
+      "ename": "Hud",
+      "ayas": 123,
+      "type": "Meccan",
+      "order": 52,
+      "rukus": 10
+    },
+    {
+      "number": 12,
+      "name": "يوسف",
+      "tname": "Yusuf",
+      "ename": "Joseph",
+      "ayas": 111,
+      "type": "Meccan",
+      "order": 53,
+      "rukus": 12
+    },
+    {
+      "number": 13,
+      "name": "الرعد",
+      "tname": "Ar-Ra'd",
+      "ename": "The Thunder",
+      "ayas": 43,
+      "type": "Medinan",
+      "order": 96,
+      "rukus": 6
+    },
+    {
+      "number": 14,
+      "name": "ابراهيم",
+      "tname": "Ibrahim",
+      "ename": "Abraham",
+      "ayas": 52,
+      "type": "Meccan",
+      "order": 72,
+      "rukus": 7
+    },
+    {
+      "number": 15,
+      "name": "الحجر",
+      "tname": "Al-Hijr",
+      "ename": "The Rock",
+      "ayas": 99,
+      "type": "Meccan",
+      "order": 54,
+      "rukus": 6
+    },
+    {
+      "number": 16,
+      "name": "النحل",
+      "tname": "An-Nahl",
+      "ename": "The Bee",
+      "ayas": 128,
+      "type": "Meccan",
+      "order": 70,
+      "rukus": 16
+    },
+    {
+      "number": 17,
+      "name": "الإسراء",
+      "tname": "Al-Israa",
+      "ename": "The Night Journey",
+      "ayas": 111,
+      "type": "Meccan",
+      "order": 50,
+      "rukus": 12
+    },
+    {
+      "number": 18,
+      "name": "الكهف",
+      "tname": "Al-Kahf",
+      "ename": "The Cave",
+      "ayas": 110,
+      "type": "Meccan",
+      "order": 69,
+      "rukus": 12
+    },
+    {
+      "number": 19,
+      "name": "مريم",
+      "tname": "Maryam",
+      "ename": "Mary",
+      "ayas": 98,
+      "type": "Meccan",
+      "order": 44,
+      "rukus": 6
+    },
+    {
+      "number": 20,
+      "name": "طه",
+      "tname": "Taa-Haa",
+      "ename": "Taa-Haa",
+      "ayas": 135,
+      "type": "Meccan",
+      "order": 45,
+      "rukus": 8
+    },
+    {
+      "number": 21,
+      "name": "الأنبياء",
+      "tname": "Al-Anbiyaa",
+      "ename": "The Prophets",
+      "ayas": 112,
+      "type": "Meccan",
+      "order": 73,
+      "rukus": 7
+    },
+    {
+      "number": 22,
+      "name": "الحج",
+      "tname": "Al-Hajj",
+      "ename": "The Pilgrimage",
+      "ayas": 78,
+      "type": "Medinan",
+      "order": 103,
+      "rukus": 10
+    },
+    {
+      "number": 23,
+      "name": "المؤمنون",
+      "tname": "Al-Muminoon",
+      "ename": "The Believers",
+      "ayas": 118,
+      "type": "Meccan",
+      "order": 74,
+      "rukus": 6
+    },
+    {
+      "number": 24,
+      "name": "النور",
+      "tname": "An-Noor",
+      "ename": "The Light",
+      "ayas": 64,
+      "type": "Medinan",
+      "order": 102,
+      "rukus": 9
+    },
+    {
+      "number": 25,
+      "name": "الفرقان",
+      "tname": "Al-Furqaan",
+      "ename": "The Criterion",
+      "ayas": 77,
+      "type": "Meccan",
+      "order": 42,
+      "rukus": 6
+    },
+    {
+      "number": 26,
+      "name": "الشعراء",
+      "tname": "Ash-Shu'araa",
+      "ename": "The Poets",
+      "ayas": 227,
+      "type": "Meccan",
+      "order": 47,
+      "rukus": 11
+    },
+    {
+      "number": 27,
+      "name": "النمل",
+      "tname": "An-Naml",
+      "ename": "The Ant",
+      "ayas": 93,
+      "type": "Meccan",
+      "order": 48,
+      "rukus": 7
+    },
+    {
+      "number": 28,
+      "name": "القصص",
+      "tname": "Al-Qasas",
+      "ename": "The Stories",
+      "ayas": 88,
+      "type": "Meccan",
+      "order": 49,
+      "rukus": 8
+    },
+    {
+      "number": 29,
+      "name": "العنكبوت",
+      "tname": "Al-Ankaboot",
+      "ename": "The Spider",
+      "ayas": 69,
+      "type": "Meccan",
+      "order": 85,
+      "rukus": 7
+    },
+    {
+      "number": 30,
+      "name": "الروم",
+      "tname": "Ar-Room",
+      "ename": "The Romans",
+      "ayas": 60,
+      "type": "Meccan",
+      "order": 84,
+      "rukus": 6
+    },
+    {
+      "number": 31,
+      "name": "لقمان",
+      "tname": "Luqman",
+      "ename": "Luqman",
+      "ayas": 34,
+      "type": "Meccan",
+      "order": 57,
+      "rukus": 3
+    },
+    {
+      "number": 32,
+      "name": "السجدة",
+      "tname": "As-Sajda",
+      "ename": "The Prostration",
+      "ayas": 30,
+      "type": "Meccan",
+      "order": 75,
+      "rukus": 3
+    },
+    {
+      "number": 33,
+      "name": "الأحزاب",
+      "tname": "Al-Ahzaab",
+      "ename": "The Clans",
+      "ayas": 73,
+      "type": "Medinan",
+      "order": 90,
+      "rukus": 9
+    },
+    {
+      "number": 34,
+      "name": "سبإ",
+      "tname": "Saba",
+      "ename": "Sheba",
+      "ayas": 54,
+      "type": "Meccan",
+      "order": 58,
+      "rukus": 6
+    },
+    {
+      "number": 35,
+      "name": "فاطر",
+      "tname": "Faatir",
+      "ename": "The Originator",
+      "ayas": 45,
+      "type": "Meccan",
+      "order": 43,
+      "rukus": 5
+    },
+    {
+      "number": 36,
+      "name": "يس",
+      "tname": "Yaseen",
+      "ename": "Yaseen",
+      "ayas": 83,
+      "type": "Meccan",
+      "order": 41,
+      "rukus": 5
+    },
+    {
+      "number": 37,
+      "name": "الصافات",
+      "tname": "As-Saaffaat",
+      "ename": "Those drawn up in Ranks",
+      "ayas": 182,
+      "type": "Meccan",
+      "order": 56,
+      "rukus": 5
+    },
+    {
+      "number": 38,
+      "name": "ص",
+      "tname": "Saad",
+      "ename": "The letter Saad",
+      "ayas": 88,
+      "type": "Meccan",
+      "order": 38,
+      "rukus": 5
+    },
+    {
+      "number": 39,
+      "name": "الزمر",
+      "tname": "Az-Zumar",
+      "ename": "The Groups",
+      "ayas": 75,
+      "type": "Meccan",
+      "order": 59,
+      "rukus": 8
+    },
+    {
+      "number": 40,
+      "name": "غافر",
+      "tname": "Al-Ghaafir",
+      "ename": "The Forgiver",
+      "ayas": 85,
+      "type": "Meccan",
+      "order": 60,
+      "rukus": 9
+    },
+    {
+      "number": 41,
+      "name": "فصلت",
+      "tname": "Fussilat",
+      "ename": "Explained in detail",
+      "ayas": 54,
+      "type": "Meccan",
+      "order": 61,
+      "rukus": 6
+    },
+    {
+      "number": 42,
+      "name": "الشورى",
+      "tname": "Ash-Shura",
+      "ename": "Consultation",
+      "ayas": 53,
+      "type": "Meccan",
+      "order": 62,
+      "rukus": 5
+    },
+    {
+      "number": 43,
+      "name": "الزخرف",
+      "tname": "Az-Zukhruf",
+      "ename": "Ornaments of gold",
+      "ayas": 89,
+      "type": "Meccan",
+      "order": 63,
+      "rukus": 7
+    },
+    {
+      "number": 44,
+      "name": "الدخان",
+      "tname": "Ad-Dukhaan",
+      "ename": "The Smoke",
+      "ayas": 59,
+      "type": "Meccan",
+      "order": 64,
+      "rukus": 3
+    },
+    {
+      "number": 45,
+      "name": "الجاثية",
+      "tname": "Al-Jaathiya",
+      "ename": "Crouching",
+      "ayas": 37,
+      "type": "Meccan",
+      "order": 65,
+      "rukus": 4
+    },
+    {
+      "number": 46,
+      "name": "الأحقاف",
+      "tname": "Al-Ahqaf",
+      "ename": "The Dunes",
+      "ayas": 35,
+      "type": "Meccan",
+      "order": 66,
+      "rukus": 4
+    },
+    {
+      "number": 47,
+      "name": "محمد",
+      "tname": "Muhammad",
+      "ename": "Muhammad",
+      "ayas": 38,
+      "type": "Medinan",
+      "order": 95,
+      "rukus": 4
+    },
+    {
+      "number": 48,
+      "name": "الفتح",
+      "tname": "Al-Fath",
+      "ename": "The Victory",
+      "ayas": 29,
+      "type": "Medinan",
+      "order": 111,
+      "rukus": 4
+    },
+    {
+      "number": 49,
+      "name": "الحجرات",
+      "tname": "Al-Hujuraat",
+      "ename": "The Inner Apartments",
+      "ayas": 18,
+      "type": "Medinan",
+      "order": 106,
+      "rukus": 2
+    },
+    {
+      "number": 50,
+      "name": "ق",
+      "tname": "Qaaf",
+      "ename": "The letter Qaaf",
+      "ayas": 45,
+      "type": "Meccan",
+      "order": 34,
+      "rukus": 3
+    },
+    {
+      "number": 51,
+      "name": "الذاريات",
+      "tname": "Adh-Dhaariyat",
+      "ename": "The Winnowing Winds",
+      "ayas": 60,
+      "type": "Meccan",
+      "order": 67,
+      "rukus": 3
+    },
+    {
+      "number": 52,
+      "name": "الطور",
+      "tname": "At-Tur",
+      "ename": "The Mount",
+      "ayas": 49,
+      "type": "Meccan",
+      "order": 76,
+      "rukus": 2
+    },
+    {
+      "number": 53,
+      "name": "النجم",
+      "tname": "An-Najm",
+      "ename": "The Star",
+      "ayas": 62,
+      "type": "Meccan",
+      "order": 23,
+      "rukus": 3
+    },
+    {
+      "number": 54,
+      "name": "القمر",
+      "tname": "Al-Qamar",
+      "ename": "The Moon",
+      "ayas": 55,
+      "type": "Meccan",
+      "order": 37,
+      "rukus": 3
+    },
+    {
+      "number": 55,
+      "name": "الرحمن",
+      "tname": "Ar-Rahmaan",
+      "ename": "The Beneficent",
+      "ayas": 78,
+      "type": "Medinan",
+      "order": 97,
+      "rukus": 3
+    },
+    {
+      "number": 56,
+      "name": "الواقعة",
+      "tname": "Al-Waaqia",
+      "ename": "The Inevitable",
+      "ayas": 96,
+      "type": "Meccan",
+      "order": 46,
+      "rukus": 3
+    },
+    {
+      "number": 57,
+      "name": "الحديد",
+      "tname": "Al-Hadid",
+      "ename": "The Iron",
+      "ayas": 29,
+      "type": "Medinan",
+      "order": 94,
+      "rukus": 4
+    },
+    {
+      "number": 58,
+      "name": "المجادلة",
+      "tname": "Al-Mujaadila",
+      "ename": "The Pleading Woman",
+      "ayas": 22,
+      "type": "Medinan",
+      "order": 105,
+      "rukus": 3
+    },
+    {
+      "number": 59,
+      "name": "الحشر",
+      "tname": "Al-Hashr",
+      "ename": "The Exile",
+      "ayas": 24,
+      "type": "Medinan",
+      "order": 101,
+      "rukus": 3
+    },
+    {
+      "number": 60,
+      "name": "الممتحنة",
+      "tname": "Al-Mumtahana",
+      "ename": "She that is to be examined",
+      "ayas": 13,
+      "type": "Medinan",
+      "order": 91,
+      "rukus": 2
+    },
+    {
+      "number": 61,
+      "name": "الصف",
+      "tname": "As-Saff",
+      "ename": "The Ranks",
+      "ayas": 14,
+      "type": "Medinan",
+      "order": 109,
+      "rukus": 2
+    },
+    {
+      "number": 62,
+      "name": "الجمعة",
+      "tname": "Al-Jumu'a",
+      "ename": "Friday",
+      "ayas": 11,
+      "type": "Medinan",
+      "order": 110,
+      "rukus": 2
+    },
+    {
+      "number": 63,
+      "name": "المنافقون",
+      "tname": "Al-Munaafiqoon",
+      "ename": "The Hypocrites",
+      "ayas": 11,
+      "type": "Medinan",
+      "order": 104,
+      "rukus": 2
+    },
+    {
+      "number": 64,
+      "name": "التغابن",
+      "tname": "At-Taghaabun",
+      "ename": "Mutual Disillusion",
+      "ayas": 18,
+      "type": "Medinan",
+      "order": 108,
+      "rukus": 2
+    },
+    {
+      "number": 65,
+      "name": "الطلاق",
+      "tname": "At-Talaaq",
+      "ename": "Divorce",
+      "ayas": 12,
+      "type": "Medinan",
+      "order": 99,
+      "rukus": 2
+    },
+    {
+      "number": 66,
+      "name": "التحريم",
+      "tname": "At-Tahrim",
+      "ename": "The Prohibition",
+      "ayas": 12,
+      "type": "Medinan",
+      "order": 107,
+      "rukus": 2
+    },
+    {
+      "number": 67,
+      "name": "الملك",
+      "tname": "Al-Mulk",
+      "ename": "The Sovereignty",
+      "ayas": 30,
+      "type": "Meccan",
+      "order": 77,
+      "rukus": 2
+    },
+    {
+      "number": 68,
+      "name": "القلم",
+      "tname": "Al-Qalam",
+      "ename": "The Pen",
+      "ayas": 52,
+      "type": "Meccan",
+      "order": 2,
+      "rukus": 2
+    },
+    {
+      "number": 69,
+      "name": "الحاقة",
+      "tname": "Al-Haaqqa",
+      "ename": "The Reality",
+      "ayas": 52,
+      "type": "Meccan",
+      "order": 78,
+      "rukus": 2
+    },
+    {
+      "number": 70,
+      "name": "المعارج",
+      "tname": "Al-Ma'aarij",
+      "ename": "The Ascending Stairways",
+      "ayas": 44,
+      "type": "Meccan",
+      "order": 79,
+      "rukus": 2
+    },
+    {
+      "number": 71,
+      "name": "نوح",
+      "tname": "Nooh",
+      "ename": "Noah",
+      "ayas": 28,
+      "type": "Meccan",
+      "order": 71,
+      "rukus": 2
+    },
+    {
+      "number": 72,
+      "name": "الجن",
+      "tname": "Al-Jinn",
+      "ename": "The Jinn",
+      "ayas": 28,
+      "type": "Meccan",
+      "order": 40,
+      "rukus": 2
+    },
+    {
+      "number": 73,
+      "name": "المزمل",
+      "tname": "Al-Muzzammil",
+      "ename": "The Enshrouded One",
+      "ayas": 20,
+      "type": "Meccan",
+      "order": 3,
+      "rukus": 2
+    },
+    {
+      "number": 74,
+      "name": "المدثر",
+      "tname": "Al-Muddaththir",
+      "ename": "The Cloaked One",
+      "ayas": 56,
+      "type": "Meccan",
+      "order": 4,
+      "rukus": 2
+    },
+    {
+      "number": 75,
+      "name": "القيامة",
+      "tname": "Al-Qiyaama",
+      "ename": "The Resurrection",
+      "ayas": 40,
+      "type": "Meccan",
+      "order": 31,
+      "rukus": 2
+    },
+    {
+      "number": 76,
+      "name": "الانسان",
+      "tname": "Al-Insaan",
+      "ename": "Man",
+      "ayas": 31,
+      "type": "Medinan",
+      "order": 98,
+      "rukus": 2
+    },
+    {
+      "number": 77,
+      "name": "المرسلات",
+      "tname": "Al-Mursalaat",
+      "ename": "The Emissaries",
+      "ayas": 50,
+      "type": "Meccan",
+      "order": 33,
+      "rukus": 2
+    },
+    {
+      "number": 78,
+      "name": "النبإ",
+      "tname": "An-Naba",
+      "ename": "The Announcement",
+      "ayas": 40,
+      "type": "Meccan",
+      "order": 80,
+      "rukus": 2
+    },
+    {
+      "number": 79,
+      "name": "النازعات",
+      "tname": "An-Naazi'aat",
+      "ename": "Those who drag forth",
+      "ayas": 46,
+      "type": "Meccan",
+      "order": 81,
+      "rukus": 2
+    },
+    {
+      "number": 80,
+      "name": "عبس",
+      "tname": "Abasa",
+      "ename": "He frowned",
+      "ayas": 42,
+      "type": "Meccan",
+      "order": 24,
+      "rukus": 1
+    },
+    {
+      "number": 81,
+      "name": "التكوير",
+      "tname": "At-Takwir",
+      "ename": "The Overthrowing",
+      "ayas": 29,
+      "type": "Meccan",
+      "order": 7,
+      "rukus": 1
+    },
+    {
+      "number": 82,
+      "name": "الإنفطار",
+      "tname": "Al-Infitaar",
+      "ename": "The Cleaving",
+      "ayas": 19,
+      "type": "Meccan",
+      "order": 82,
+      "rukus": 1
+    },
+    {
+      "number": 83,
+      "name": "المطففين",
+      "tname": "Al-Mutaffifin",
+      "ename": "Defrauding",
+      "ayas": 36,
+      "type": "Meccan",
+      "order": 86,
+      "rukus": 1
+    },
+    {
+      "number": 84,
+      "name": "الإنشقاق",
+      "tname": "Al-Inshiqaaq",
+      "ename": "The Splitting Open",
+      "ayas": 25,
+      "type": "Meccan",
+      "order": 83,
+      "rukus": 1
+    },
+    {
+      "number": 85,
+      "name": "البروج",
+      "tname": "Al-Burooj",
+      "ename": "The Constellations",
+      "ayas": 22,
+      "type": "Meccan",
+      "order": 27,
+      "rukus": 1
+    },
+    {
+      "number": 86,
+      "name": "الطارق",
+      "tname": "At-Taariq",
+      "ename": "The Morning Star",
+      "ayas": 17,
+      "type": "Meccan",
+      "order": 36,
+      "rukus": 1
+    },
+    {
+      "number": 87,
+      "name": "الأعلى",
+      "tname": "Al-A'laa",
+      "ename": "The Most High",
+      "ayas": 19,
+      "type": "Meccan",
+      "order": 8,
+      "rukus": 1
+    },
+    {
+      "number": 88,
+      "name": "الغاشية",
+      "tname": "Al-Ghaashiya",
+      "ename": "The Overwhelming",
+      "ayas": 26,
+      "type": "Meccan",
+      "order": 68,
+      "rukus": 1
+    },
+    {
+      "number": 89,
+      "name": "الفجر",
+      "tname": "Al-Fajr",
+      "ename": "The Dawn",
+      "ayas": 30,
+      "type": "Meccan",
+      "order": 10,
+      "rukus": 1
+    },
+    {
+      "number": 90,
+      "name": "البلد",
+      "tname": "Al-Balad",
+      "ename": "The City",
+      "ayas": 20,
+      "type": "Meccan",
+      "order": 35,
+      "rukus": 1
+    },
+    {
+      "number": 91,
+      "name": "الشمس",
+      "tname": "Ash-Shams",
+      "ename": "The Sun",
+      "ayas": 15,
+      "type": "Meccan",
+      "order": 26,
+      "rukus": 1
+    },
+    {
+      "number": 92,
+      "name": "الليل",
+      "tname": "Al-Lail",
+      "ename": "The Night",
+      "ayas": 21,
+      "type": "Meccan",
+      "order": 9,
+      "rukus": 1
+    },
+    {
+      "number": 93,
+      "name": "الضحى",
+      "tname": "Ad-Dhuhaa",
+      "ename": "The Morning Hours",
+      "ayas": 11,
+      "type": "Meccan",
+      "order": 11,
+      "rukus": 1
+    },
+    {
+      "number": 94,
+      "name": "الشرح",
+      "tname": "Ash-Sharh",
+      "ename": "The Consolation",
+      "ayas": 8,
+      "type": "Meccan",
+      "order": 12,
+      "rukus": 1
+    },
+    {
+      "number": 95,
+      "name": "التين",
+      "tname": "At-Tin",
+      "ename": "The Fig",
+      "ayas": 8,
+      "type": "Meccan",
+      "order": 28,
+      "rukus": 1
+    },
+    {
+      "number": 96,
+      "name": "العلق",
+      "tname": "Al-Alaq",
+      "ename": "The Clot",
+      "ayas": 19,
+      "type": "Meccan",
+      "order": 1,
+      "rukus": 1
+    },
+    {
+      "number": 97,
+      "name": "القدر",
+      "tname": "Al-Qadr",
+      "ename": "The Power, Fate",
+      "ayas": 5,
+      "type": "Meccan",
+      "order": 25,
+      "rukus": 1
+    },
+    {
+      "number": 98,
+      "name": "البينة",
+      "tname": "Al-Bayyina",
+      "ename": "The Evidence",
+      "ayas": 8,
+      "type": "Medinan",
+      "order": 100,
+      "rukus": 1
+    },
+    {
+      "number": 99,
+      "name": "الزلزلة",
+      "tname": "Az-Zalzala",
+      "ename": "The Earthquake",
+      "ayas": 8,
+      "type": "Medinan",
+      "order": 93,
+      "rukus": 1
+    },
+    {
+      "number": 100,
+      "name": "العاديات",
+      "tname": "Al-Aadiyaat",
+      "ename": "The Chargers",
+      "ayas": 11,
+      "type": "Meccan",
+      "order": 14,
+      "rukus": 1
+    },
+    {
+      "number": 101,
+      "name": "القارعة",
+      "tname": "Al-Qaari'a",
+      "ename": "The Calamity",
+      "ayas": 11,
+      "type": "Meccan",
+      "order": 30,
+      "rukus": 1
+    },
+    {
+      "number": 102,
+      "name": "التكاثر",
+      "tname": "At-Takaathur",
+      "ename": "Competition",
+      "ayas": 8,
+      "type": "Meccan",
+      "order": 16,
+      "rukus": 1
+    },
+    {
+      "number": 103,
+      "name": "العصر",
+      "tname": "Al-Asr",
+      "ename": "The Declining Day, Epoch",
+      "ayas": 3,
+      "type": "Meccan",
+      "order": 13,
+      "rukus": 1
+    },
+    {
+      "number": 104,
+      "name": "الهمزة",
+      "tname": "Al-Humaza",
+      "ename": "The Traducer",
+      "ayas": 9,
+      "type": "Meccan",
+      "order": 32,
+      "rukus": 1
+    },
+    {
+      "number": 105,
+      "name": "الفيل",
+      "tname": "Al-Fil",
+      "ename": "The Elephant",
+      "ayas": 5,
+      "type": "Meccan",
+      "order": 19,
+      "rukus": 1
+    },
+    {
+      "number": 106,
+      "name": "قريش",
+      "tname": "Quraish",
+      "ename": "Quraysh",
+      "ayas": 4,
+      "type": "Meccan",
+      "order": 29,
+      "rukus": 1
+    },
+    {
+      "number": 107,
+      "name": "الماعون",
+      "tname": "Al-Maa'un",
+      "ename": "Almsgiving",
+      "ayas": 7,
+      "type": "Meccan",
+      "order": 17,
+      "rukus": 1
+    },
+    {
+      "number": 108,
+      "name": "الكوثر",
+      "tname": "Al-Kawthar",
+      "ename": "Abundance",
+      "ayas": 3,
+      "type": "Meccan",
+      "order": 15,
+      "rukus": 1
+    },
+    {
+      "number": 109,
+      "name": "الكافرون",
+      "tname": "Al-Kaafiroon",
+      "ename": "The Disbelievers",
+      "ayas": 6,
+      "type": "Meccan",
+      "order": 18,
+      "rukus": 1
+    },
+    {
+      "number": 110,
+      "name": "النصر",
+      "tname": "An-Nasr",
+      "ename": "Divine Support",
+      "ayas": 3,
+      "type": "Medinan",
+      "order": 114,
+      "rukus": 1
+    },
+    {
+      "number": 111,
+      "name": "المسد",
+      "tname": "Al-Masad",
+      "ename": "The Palm Fibre",
+      "ayas": 5,
+      "type": "Meccan",
+      "order": 6,
+      "rukus": 1
+    },
+    {
+      "number": 112,
+      "name": "الإخلاص",
+      "tname": "Al-Ikhlaas",
+      "ename": "Sincerity",
+      "ayas": 4,
+      "type": "Meccan",
+      "order": 22,
+      "rukus": 1
+    },
+    {
+      "number": 113,
+      "name": "الفلق",
+      "tname": "Al-Falaq",
+      "ename": "The Dawn",
+      "ayas": 5,
+      "type": "Meccan",
+      "order": 20,
+      "rukus": 1
+    },
+    {
+      "number": 114,
+      "name": "الناس",
+      "tname": "An-Naas",
+      "ename": "Mankind",
+      "ayas": 6,
+      "type": "Meccan",
+      "order": 21,
+      "rukus": 1
+    }
+  ],
+  "navigationIndices": {
+    "juzStarts": {
+      "1": {
+        "surah": 1,
+        "aya": 1
+      },
+      "2": {
+        "surah": 2,
+        "aya": 142
+      },
+      "3": {
+        "surah": 2,
+        "aya": 253
+      },
+      "4": {
+        "surah": 3,
+        "aya": 93
+      },
+      "5": {
+        "surah": 4,
+        "aya": 24
+      },
+      "6": {
+        "surah": 4,
+        "aya": 148
+      },
+      "7": {
+        "surah": 5,
+        "aya": 82
+      },
+      "8": {
+        "surah": 6,
+        "aya": 111
+      },
+      "9": {
+        "surah": 7,
+        "aya": 88
+      },
+      "10": {
+        "surah": 8,
+        "aya": 41
+      },
+      "11": {
+        "surah": 9,
+        "aya": 93
+      },
+      "12": {
+        "surah": 11,
+        "aya": 6
+      },
+      "13": {
+        "surah": 12,
+        "aya": 53
+      },
+      "14": {
+        "surah": 15,
+        "aya": 1
+      },
+      "15": {
+        "surah": 17,
+        "aya": 1
+      },
+      "16": {
+        "surah": 18,
+        "aya": 75
+      },
+      "17": {
+        "surah": 21,
+        "aya": 1
+      },
+      "18": {
+        "surah": 23,
+        "aya": 1
+      },
+      "19": {
+        "surah": 25,
+        "aya": 21
+      },
+      "20": {
+        "surah": 27,
+        "aya": 56
+      },
+      "21": {
+        "surah": 29,
+        "aya": 46
+      },
+      "22": {
+        "surah": 33,
+        "aya": 31
+      },
+      "23": {
+        "surah": 36,
+        "aya": 28
+      },
+      "24": {
+        "surah": 39,
+        "aya": 32
+      },
+      "25": {
+        "surah": 41,
+        "aya": 47
+      },
+      "26": {
+        "surah": 46,
+        "aya": 1
+      },
+      "27": {
+        "surah": 51,
+        "aya": 31
+      },
+      "28": {
+        "surah": 58,
+        "aya": 1
+      },
+      "29": {
+        "surah": 67,
+        "aya": 1
+      },
+      "30": {
+        "surah": 78,
+        "aya": 1
+      }
+    },
+    "pageStarts": {
+      "1": {
+        "surah": 1,
+        "aya": 1
+      },
+      "2": {
+        "surah": 2,
+        "aya": 1
+      },
+      "3": {
+        "surah": 2,
+        "aya": 6
+      },
+      "4": {
+        "surah": 2,
+        "aya": 17
+      },
+      "5": {
+        "surah": 2,
+        "aya": 25
+      },
+      "6": {
+        "surah": 2,
+        "aya": 30
+      },
+      "7": {
+        "surah": 2,
+        "aya": 38
+      },
+      "8": {
+        "surah": 2,
+        "aya": 49
+      },
+      "9": {
+        "surah": 2,
+        "aya": 58
+      },
+      "10": {
+        "surah": 2,
+        "aya": 62
+      },
+      "11": {
+        "surah": 2,
+        "aya": 70
+      },
+      "12": {
+        "surah": 2,
+        "aya": 77
+      },
+      "13": {
+        "surah": 2,
+        "aya": 84
+      },
+      "14": {
+        "surah": 2,
+        "aya": 89
+      },
+      "15": {
+        "surah": 2,
+        "aya": 94
+      },
+      "16": {
+        "surah": 2,
+        "aya": 102
+      },
+      "17": {
+        "surah": 2,
+        "aya": 106
+      },
+      "18": {
+        "surah": 2,
+        "aya": 113
+      },
+      "19": {
+        "surah": 2,
+        "aya": 120
+      },
+      "20": {
+        "surah": 2,
+        "aya": 127
+      },
+      "21": {
+        "surah": 2,
+        "aya": 135
+      },
+      "22": {
+        "surah": 2,
+        "aya": 142
+      },
+      "23": {
+        "surah": 2,
+        "aya": 146
+      },
+      "24": {
+        "surah": 2,
+        "aya": 154
+      },
+      "25": {
+        "surah": 2,
+        "aya": 164
+      },
+      "26": {
+        "surah": 2,
+        "aya": 170
+      },
+      "27": {
+        "surah": 2,
+        "aya": 177
+      },
+      "28": {
+        "surah": 2,
+        "aya": 182
+      },
+      "29": {
+        "surah": 2,
+        "aya": 187
+      },
+      "30": {
+        "surah": 2,
+        "aya": 191
+      },
+      "31": {
+        "surah": 2,
+        "aya": 197
+      },
+      "32": {
+        "surah": 2,
+        "aya": 203
+      },
+      "33": {
+        "surah": 2,
+        "aya": 211
+      },
+      "34": {
+        "surah": 2,
+        "aya": 216
+      },
+      "35": {
+        "surah": 2,
+        "aya": 220
+      },
+      "36": {
+        "surah": 2,
+        "aya": 225
+      },
+      "37": {
+        "surah": 2,
+        "aya": 231
+      },
+      "38": {
+        "surah": 2,
+        "aya": 234
+      },
+      "39": {
+        "surah": 2,
+        "aya": 238
+      },
+      "40": {
+        "surah": 2,
+        "aya": 246
+      },
+      "41": {
+        "surah": 2,
+        "aya": 249
+      },
+      "42": {
+        "surah": 2,
+        "aya": 253
+      },
+      "43": {
+        "surah": 2,
+        "aya": 257
+      },
+      "44": {
+        "surah": 2,
+        "aya": 260
+      },
+      "45": {
+        "surah": 2,
+        "aya": 265
+      },
+      "46": {
+        "surah": 2,
+        "aya": 270
+      },
+      "47": {
+        "surah": 2,
+        "aya": 275
+      },
+      "48": {
+        "surah": 2,
+        "aya": 282
+      },
+      "49": {
+        "surah": 2,
+        "aya": 283
+      },
+      "50": {
+        "surah": 3,
+        "aya": 1
+      },
+      "51": {
+        "surah": 3,
+        "aya": 10
+      },
+      "52": {
+        "surah": 3,
+        "aya": 16
+      },
+      "53": {
+        "surah": 3,
+        "aya": 23
+      },
+      "54": {
+        "surah": 3,
+        "aya": 30
+      },
+      "55": {
+        "surah": 3,
+        "aya": 38
+      },
+      "56": {
+        "surah": 3,
+        "aya": 46
+      },
+      "57": {
+        "surah": 3,
+        "aya": 53
+      },
+      "58": {
+        "surah": 3,
+        "aya": 62
+      },
+      "59": {
+        "surah": 3,
+        "aya": 71
+      },
+      "60": {
+        "surah": 3,
+        "aya": 78
+      },
+      "61": {
+        "surah": 3,
+        "aya": 84
+      },
+      "62": {
+        "surah": 3,
+        "aya": 92
+      },
+      "63": {
+        "surah": 3,
+        "aya": 101
+      },
+      "64": {
+        "surah": 3,
+        "aya": 109
+      },
+      "65": {
+        "surah": 3,
+        "aya": 116
+      },
+      "66": {
+        "surah": 3,
+        "aya": 122
+      },
+      "67": {
+        "surah": 3,
+        "aya": 133
+      },
+      "68": {
+        "surah": 3,
+        "aya": 141
+      },
+      "69": {
+        "surah": 3,
+        "aya": 149
+      },
+      "70": {
+        "surah": 3,
+        "aya": 154
+      },
+      "71": {
+        "surah": 3,
+        "aya": 158
+      },
+      "72": {
+        "surah": 3,
+        "aya": 166
+      },
+      "73": {
+        "surah": 3,
+        "aya": 174
+      },
+      "74": {
+        "surah": 3,
+        "aya": 181
+      },
+      "75": {
+        "surah": 3,
+        "aya": 187
+      },
+      "76": {
+        "surah": 3,
+        "aya": 195
+      },
+      "77": {
+        "surah": 4,
+        "aya": 1
+      },
+      "78": {
+        "surah": 4,
+        "aya": 7
+      },
+      "79": {
+        "surah": 4,
+        "aya": 12
+      },
+      "80": {
+        "surah": 4,
+        "aya": 15
+      },
+      "81": {
+        "surah": 4,
+        "aya": 20
+      },
+      "82": {
+        "surah": 4,
+        "aya": 24
+      },
+      "83": {
+        "surah": 4,
+        "aya": 27
+      },
+      "84": {
+        "surah": 4,
+        "aya": 34
+      },
+      "85": {
+        "surah": 4,
+        "aya": 38
+      },
+      "86": {
+        "surah": 4,
+        "aya": 45
+      },
+      "87": {
+        "surah": 4,
+        "aya": 52
+      },
+      "88": {
+        "surah": 4,
+        "aya": 60
+      },
+      "89": {
+        "surah": 4,
+        "aya": 66
+      },
+      "90": {
+        "surah": 4,
+        "aya": 75
+      },
+      "91": {
+        "surah": 4,
+        "aya": 80
+      },
+      "92": {
+        "surah": 4,
+        "aya": 87
+      },
+      "93": {
+        "surah": 4,
+        "aya": 92
+      },
+      "94": {
+        "surah": 4,
+        "aya": 95
+      },
+      "95": {
+        "surah": 4,
+        "aya": 102
+      },
+      "96": {
+        "surah": 4,
+        "aya": 106
+      },
+      "97": {
+        "surah": 4,
+        "aya": 114
+      },
+      "98": {
+        "surah": 4,
+        "aya": 122
+      },
+      "99": {
+        "surah": 4,
+        "aya": 128
+      },
+      "100": {
+        "surah": 4,
+        "aya": 135
+      },
+      "101": {
+        "surah": 4,
+        "aya": 141
+      },
+      "102": {
+        "surah": 4,
+        "aya": 148
+      },
+      "103": {
+        "surah": 4,
+        "aya": 155
+      },
+      "104": {
+        "surah": 4,
+        "aya": 163
+      },
+      "105": {
+        "surah": 4,
+        "aya": 171
+      },
+      "106": {
+        "surah": 4,
+        "aya": 176
+      },
+      "107": {
+        "surah": 5,
+        "aya": 3
+      },
+      "108": {
+        "surah": 5,
+        "aya": 6
+      },
+      "109": {
+        "surah": 5,
+        "aya": 10
+      },
+      "110": {
+        "surah": 5,
+        "aya": 14
+      },
+      "111": {
+        "surah": 5,
+        "aya": 18
+      },
+      "112": {
+        "surah": 5,
+        "aya": 24
+      },
+      "113": {
+        "surah": 5,
+        "aya": 32
+      },
+      "114": {
+        "surah": 5,
+        "aya": 37
+      },
+      "115": {
+        "surah": 5,
+        "aya": 42
+      },
+      "116": {
+        "surah": 5,
+        "aya": 46
+      },
+      "117": {
+        "surah": 5,
+        "aya": 51
+      },
+      "118": {
+        "surah": 5,
+        "aya": 58
+      },
+      "119": {
+        "surah": 5,
+        "aya": 65
+      },
+      "120": {
+        "surah": 5,
+        "aya": 71
+      },
+      "121": {
+        "surah": 5,
+        "aya": 77
+      },
+      "122": {
+        "surah": 5,
+        "aya": 83
+      },
+      "123": {
+        "surah": 5,
+        "aya": 90
+      },
+      "124": {
+        "surah": 5,
+        "aya": 96
+      },
+      "125": {
+        "surah": 5,
+        "aya": 104
+      },
+      "126": {
+        "surah": 5,
+        "aya": 109
+      },
+      "127": {
+        "surah": 5,
+        "aya": 114
+      },
+      "128": {
+        "surah": 6,
+        "aya": 1
+      },
+      "129": {
+        "surah": 6,
+        "aya": 9
+      },
+      "130": {
+        "surah": 6,
+        "aya": 19
+      },
+      "131": {
+        "surah": 6,
+        "aya": 28
+      },
+      "132": {
+        "surah": 6,
+        "aya": 36
+      },
+      "133": {
+        "surah": 6,
+        "aya": 45
+      },
+      "134": {
+        "surah": 6,
+        "aya": 53
+      },
+      "135": {
+        "surah": 6,
+        "aya": 60
+      },
+      "136": {
+        "surah": 6,
+        "aya": 69
+      },
+      "137": {
+        "surah": 6,
+        "aya": 74
+      },
+      "138": {
+        "surah": 6,
+        "aya": 82
+      },
+      "139": {
+        "surah": 6,
+        "aya": 91
+      },
+      "140": {
+        "surah": 6,
+        "aya": 95
+      },
+      "141": {
+        "surah": 6,
+        "aya": 102
+      },
+      "142": {
+        "surah": 6,
+        "aya": 111
+      },
+      "143": {
+        "surah": 6,
+        "aya": 119
+      },
+      "144": {
+        "surah": 6,
+        "aya": 125
+      },
+      "145": {
+        "surah": 6,
+        "aya": 132
+      },
+      "146": {
+        "surah": 6,
+        "aya": 138
+      },
+      "147": {
+        "surah": 6,
+        "aya": 143
+      },
+      "148": {
+        "surah": 6,
+        "aya": 147
+      },
+      "149": {
+        "surah": 6,
+        "aya": 152
+      },
+      "150": {
+        "surah": 6,
+        "aya": 158
+      },
+      "151": {
+        "surah": 7,
+        "aya": 1
+      },
+      "152": {
+        "surah": 7,
+        "aya": 12
+      },
+      "153": {
+        "surah": 7,
+        "aya": 23
+      },
+      "154": {
+        "surah": 7,
+        "aya": 31
+      },
+      "155": {
+        "surah": 7,
+        "aya": 38
+      },
+      "156": {
+        "surah": 7,
+        "aya": 44
+      },
+      "157": {
+        "surah": 7,
+        "aya": 52
+      },
+      "158": {
+        "surah": 7,
+        "aya": 58
+      },
+      "159": {
+        "surah": 7,
+        "aya": 68
+      },
+      "160": {
+        "surah": 7,
+        "aya": 74
+      },
+      "161": {
+        "surah": 7,
+        "aya": 82
+      },
+      "162": {
+        "surah": 7,
+        "aya": 88
+      },
+      "163": {
+        "surah": 7,
+        "aya": 96
+      },
+      "164": {
+        "surah": 7,
+        "aya": 105
+      },
+      "165": {
+        "surah": 7,
+        "aya": 121
+      },
+      "166": {
+        "surah": 7,
+        "aya": 131
+      },
+      "167": {
+        "surah": 7,
+        "aya": 138
+      },
+      "168": {
+        "surah": 7,
+        "aya": 144
+      },
+      "169": {
+        "surah": 7,
+        "aya": 150
+      },
+      "170": {
+        "surah": 7,
+        "aya": 156
+      },
+      "171": {
+        "surah": 7,
+        "aya": 160
+      },
+      "172": {
+        "surah": 7,
+        "aya": 164
+      },
+      "173": {
+        "surah": 7,
+        "aya": 171
+      },
+      "174": {
+        "surah": 7,
+        "aya": 179
+      },
+      "175": {
+        "surah": 7,
+        "aya": 188
+      },
+      "176": {
+        "surah": 7,
+        "aya": 196
+      },
+      "177": {
+        "surah": 8,
+        "aya": 1
+      },
+      "178": {
+        "surah": 8,
+        "aya": 9
+      },
+      "179": {
+        "surah": 8,
+        "aya": 17
+      },
+      "180": {
+        "surah": 8,
+        "aya": 26
+      },
+      "181": {
+        "surah": 8,
+        "aya": 34
+      },
+      "182": {
+        "surah": 8,
+        "aya": 41
+      },
+      "183": {
+        "surah": 8,
+        "aya": 46
+      },
+      "184": {
+        "surah": 8,
+        "aya": 53
+      },
+      "185": {
+        "surah": 8,
+        "aya": 62
+      },
+      "186": {
+        "surah": 8,
+        "aya": 70
+      },
+      "187": {
+        "surah": 9,
+        "aya": 1
+      },
+      "188": {
+        "surah": 9,
+        "aya": 7
+      },
+      "189": {
+        "surah": 9,
+        "aya": 14
+      },
+      "190": {
+        "surah": 9,
+        "aya": 21
+      },
+      "191": {
+        "surah": 9,
+        "aya": 27
+      },
+      "192": {
+        "surah": 9,
+        "aya": 32
+      },
+      "193": {
+        "surah": 9,
+        "aya": 37
+      },
+      "194": {
+        "surah": 9,
+        "aya": 41
+      },
+      "195": {
+        "surah": 9,
+        "aya": 48
+      },
+      "196": {
+        "surah": 9,
+        "aya": 55
+      },
+      "197": {
+        "surah": 9,
+        "aya": 62
+      },
+      "198": {
+        "surah": 9,
+        "aya": 69
+      },
+      "199": {
+        "surah": 9,
+        "aya": 73
+      },
+      "200": {
+        "surah": 9,
+        "aya": 80
+      },
+      "201": {
+        "surah": 9,
+        "aya": 87
+      },
+      "202": {
+        "surah": 9,
+        "aya": 94
+      },
+      "203": {
+        "surah": 9,
+        "aya": 100
+      },
+      "204": {
+        "surah": 9,
+        "aya": 107
+      },
+      "205": {
+        "surah": 9,
+        "aya": 112
+      },
+      "206": {
+        "surah": 9,
+        "aya": 118
+      },
+      "207": {
+        "surah": 9,
+        "aya": 123
+      },
+      "208": {
+        "surah": 10,
+        "aya": 1
+      },
+      "209": {
+        "surah": 10,
+        "aya": 7
+      },
+      "210": {
+        "surah": 10,
+        "aya": 15
+      },
+      "211": {
+        "surah": 10,
+        "aya": 21
+      },
+      "212": {
+        "surah": 10,
+        "aya": 26
+      },
+      "213": {
+        "surah": 10,
+        "aya": 34
+      },
+      "214": {
+        "surah": 10,
+        "aya": 43
+      },
+      "215": {
+        "surah": 10,
+        "aya": 54
+      },
+      "216": {
+        "surah": 10,
+        "aya": 62
+      },
+      "217": {
+        "surah": 10,
+        "aya": 71
+      },
+      "218": {
+        "surah": 10,
+        "aya": 79
+      },
+      "219": {
+        "surah": 10,
+        "aya": 89
+      },
+      "220": {
+        "surah": 10,
+        "aya": 98
+      },
+      "221": {
+        "surah": 10,
+        "aya": 107
+      },
+      "222": {
+        "surah": 11,
+        "aya": 6
+      },
+      "223": {
+        "surah": 11,
+        "aya": 13
+      },
+      "224": {
+        "surah": 11,
+        "aya": 20
+      },
+      "225": {
+        "surah": 11,
+        "aya": 29
+      },
+      "226": {
+        "surah": 11,
+        "aya": 38
+      },
+      "227": {
+        "surah": 11,
+        "aya": 46
+      },
+      "228": {
+        "surah": 11,
+        "aya": 54
+      },
+      "229": {
+        "surah": 11,
+        "aya": 63
+      },
+      "230": {
+        "surah": 11,
+        "aya": 72
+      },
+      "231": {
+        "surah": 11,
+        "aya": 82
+      },
+      "232": {
+        "surah": 11,
+        "aya": 89
+      },
+      "233": {
+        "surah": 11,
+        "aya": 98
+      },
+      "234": {
+        "surah": 11,
+        "aya": 109
+      },
+      "235": {
+        "surah": 11,
+        "aya": 118
+      },
+      "236": {
+        "surah": 12,
+        "aya": 5
+      },
+      "237": {
+        "surah": 12,
+        "aya": 15
+      },
+      "238": {
+        "surah": 12,
+        "aya": 23
+      },
+      "239": {
+        "surah": 12,
+        "aya": 31
+      },
+      "240": {
+        "surah": 12,
+        "aya": 38
+      },
+      "241": {
+        "surah": 12,
+        "aya": 44
+      },
+      "242": {
+        "surah": 12,
+        "aya": 53
+      },
+      "243": {
+        "surah": 12,
+        "aya": 64
+      },
+      "244": {
+        "surah": 12,
+        "aya": 70
+      },
+      "245": {
+        "surah": 12,
+        "aya": 79
+      },
+      "246": {
+        "surah": 12,
+        "aya": 87
+      },
+      "247": {
+        "surah": 12,
+        "aya": 96
+      },
+      "248": {
+        "surah": 12,
+        "aya": 104
+      },
+      "249": {
+        "surah": 13,
+        "aya": 1
+      },
+      "250": {
+        "surah": 13,
+        "aya": 6
+      },
+      "251": {
+        "surah": 13,
+        "aya": 14
+      },
+      "252": {
+        "surah": 13,
+        "aya": 19
+      },
+      "253": {
+        "surah": 13,
+        "aya": 29
+      },
+      "254": {
+        "surah": 13,
+        "aya": 35
+      },
+      "255": {
+        "surah": 13,
+        "aya": 43
+      },
+      "256": {
+        "surah": 14,
+        "aya": 6
+      },
+      "257": {
+        "surah": 14,
+        "aya": 11
+      },
+      "258": {
+        "surah": 14,
+        "aya": 19
+      },
+      "259": {
+        "surah": 14,
+        "aya": 25
+      },
+      "260": {
+        "surah": 14,
+        "aya": 34
+      },
+      "261": {
+        "surah": 14,
+        "aya": 43
+      },
+      "262": {
+        "surah": 15,
+        "aya": 1
+      },
+      "263": {
+        "surah": 15,
+        "aya": 16
+      },
+      "264": {
+        "surah": 15,
+        "aya": 32
+      },
+      "265": {
+        "surah": 15,
+        "aya": 52
+      },
+      "266": {
+        "surah": 15,
+        "aya": 71
+      },
+      "267": {
+        "surah": 15,
+        "aya": 91
+      },
+      "268": {
+        "surah": 16,
+        "aya": 7
+      },
+      "269": {
+        "surah": 16,
+        "aya": 15
+      },
+      "270": {
+        "surah": 16,
+        "aya": 27
+      },
+      "271": {
+        "surah": 16,
+        "aya": 35
+      },
+      "272": {
+        "surah": 16,
+        "aya": 43
+      },
+      "273": {
+        "surah": 16,
+        "aya": 55
+      },
+      "274": {
+        "surah": 16,
+        "aya": 65
+      },
+      "275": {
+        "surah": 16,
+        "aya": 73
+      },
+      "276": {
+        "surah": 16,
+        "aya": 80
+      },
+      "277": {
+        "surah": 16,
+        "aya": 88
+      },
+      "278": {
+        "surah": 16,
+        "aya": 94
+      },
+      "279": {
+        "surah": 16,
+        "aya": 103
+      },
+      "280": {
+        "surah": 16,
+        "aya": 111
+      },
+      "281": {
+        "surah": 16,
+        "aya": 119
+      },
+      "282": {
+        "surah": 17,
+        "aya": 1
+      },
+      "283": {
+        "surah": 17,
+        "aya": 8
+      },
+      "284": {
+        "surah": 17,
+        "aya": 18
+      },
+      "285": {
+        "surah": 17,
+        "aya": 28
+      },
+      "286": {
+        "surah": 17,
+        "aya": 39
+      },
+      "287": {
+        "surah": 17,
+        "aya": 50
+      },
+      "288": {
+        "surah": 17,
+        "aya": 59
+      },
+      "289": {
+        "surah": 17,
+        "aya": 67
+      },
+      "290": {
+        "surah": 17,
+        "aya": 76
+      },
+      "291": {
+        "surah": 17,
+        "aya": 87
+      },
+      "292": {
+        "surah": 17,
+        "aya": 97
+      },
+      "293": {
+        "surah": 17,
+        "aya": 105
+      },
+      "294": {
+        "surah": 18,
+        "aya": 5
+      },
+      "295": {
+        "surah": 18,
+        "aya": 16
+      },
+      "296": {
+        "surah": 18,
+        "aya": 21
+      },
+      "297": {
+        "surah": 18,
+        "aya": 28
+      },
+      "298": {
+        "surah": 18,
+        "aya": 35
+      },
+      "299": {
+        "surah": 18,
+        "aya": 46
+      },
+      "300": {
+        "surah": 18,
+        "aya": 54
+      },
+      "301": {
+        "surah": 18,
+        "aya": 62
+      },
+      "302": {
+        "surah": 18,
+        "aya": 75
+      },
+      "303": {
+        "surah": 18,
+        "aya": 84
+      },
+      "304": {
+        "surah": 18,
+        "aya": 98
+      },
+      "305": {
+        "surah": 19,
+        "aya": 1
+      },
+      "306": {
+        "surah": 19,
+        "aya": 12
+      },
+      "307": {
+        "surah": 19,
+        "aya": 26
+      },
+      "308": {
+        "surah": 19,
+        "aya": 39
+      },
+      "309": {
+        "surah": 19,
+        "aya": 52
+      },
+      "310": {
+        "surah": 19,
+        "aya": 65
+      },
+      "311": {
+        "surah": 19,
+        "aya": 77
+      },
+      "312": {
+        "surah": 19,
+        "aya": 96
+      },
+      "313": {
+        "surah": 20,
+        "aya": 13
+      },
+      "314": {
+        "surah": 20,
+        "aya": 38
+      },
+      "315": {
+        "surah": 20,
+        "aya": 52
+      },
+      "316": {
+        "surah": 20,
+        "aya": 65
+      },
+      "317": {
+        "surah": 20,
+        "aya": 77
+      },
+      "318": {
+        "surah": 20,
+        "aya": 88
+      },
+      "319": {
+        "surah": 20,
+        "aya": 99
+      },
+      "320": {
+        "surah": 20,
+        "aya": 114
+      },
+      "321": {
+        "surah": 20,
+        "aya": 126
+      },
+      "322": {
+        "surah": 21,
+        "aya": 1
+      },
+      "323": {
+        "surah": 21,
+        "aya": 11
+      },
+      "324": {
+        "surah": 21,
+        "aya": 25
+      },
+      "325": {
+        "surah": 21,
+        "aya": 36
+      },
+      "326": {
+        "surah": 21,
+        "aya": 45
+      },
+      "327": {
+        "surah": 21,
+        "aya": 58
+      },
+      "328": {
+        "surah": 21,
+        "aya": 73
+      },
+      "329": {
+        "surah": 21,
+        "aya": 82
+      },
+      "330": {
+        "surah": 21,
+        "aya": 91
+      },
+      "331": {
+        "surah": 21,
+        "aya": 102
+      },
+      "332": {
+        "surah": 22,
+        "aya": 1
+      },
+      "333": {
+        "surah": 22,
+        "aya": 6
+      },
+      "334": {
+        "surah": 22,
+        "aya": 16
+      },
+      "335": {
+        "surah": 22,
+        "aya": 24
+      },
+      "336": {
+        "surah": 22,
+        "aya": 31
+      },
+      "337": {
+        "surah": 22,
+        "aya": 39
+      },
+      "338": {
+        "surah": 22,
+        "aya": 47
+      },
+      "339": {
+        "surah": 22,
+        "aya": 56
+      },
+      "340": {
+        "surah": 22,
+        "aya": 65
+      },
+      "341": {
+        "surah": 22,
+        "aya": 73
+      },
+      "342": {
+        "surah": 23,
+        "aya": 1
+      },
+      "343": {
+        "surah": 23,
+        "aya": 18
+      },
+      "344": {
+        "surah": 23,
+        "aya": 28
+      },
+      "345": {
+        "surah": 23,
+        "aya": 43
+      },
+      "346": {
+        "surah": 23,
+        "aya": 60
+      },
+      "347": {
+        "surah": 23,
+        "aya": 75
+      },
+      "348": {
+        "surah": 23,
+        "aya": 90
+      },
+      "349": {
+        "surah": 23,
+        "aya": 105
+      },
+      "350": {
+        "surah": 24,
+        "aya": 1
+      },
+      "351": {
+        "surah": 24,
+        "aya": 11
+      },
+      "352": {
+        "surah": 24,
+        "aya": 21
+      },
+      "353": {
+        "surah": 24,
+        "aya": 28
+      },
+      "354": {
+        "surah": 24,
+        "aya": 32
+      },
+      "355": {
+        "surah": 24,
+        "aya": 37
+      },
+      "356": {
+        "surah": 24,
+        "aya": 44
+      },
+      "357": {
+        "surah": 24,
+        "aya": 54
+      },
+      "358": {
+        "surah": 24,
+        "aya": 59
+      },
+      "359": {
+        "surah": 24,
+        "aya": 62
+      },
+      "360": {
+        "surah": 25,
+        "aya": 3
+      },
+      "361": {
+        "surah": 25,
+        "aya": 12
+      },
+      "362": {
+        "surah": 25,
+        "aya": 21
+      },
+      "363": {
+        "surah": 25,
+        "aya": 33
+      },
+      "364": {
+        "surah": 25,
+        "aya": 44
+      },
+      "365": {
+        "surah": 25,
+        "aya": 56
+      },
+      "366": {
+        "surah": 25,
+        "aya": 68
+      },
+      "367": {
+        "surah": 26,
+        "aya": 1
+      },
+      "368": {
+        "surah": 26,
+        "aya": 20
+      },
+      "369": {
+        "surah": 26,
+        "aya": 40
+      },
+      "370": {
+        "surah": 26,
+        "aya": 61
+      },
+      "371": {
+        "surah": 26,
+        "aya": 84
+      },
+      "372": {
+        "surah": 26,
+        "aya": 112
+      },
+      "373": {
+        "surah": 26,
+        "aya": 137
+      },
+      "374": {
+        "surah": 26,
+        "aya": 160
+      },
+      "375": {
+        "surah": 26,
+        "aya": 184
+      },
+      "376": {
+        "surah": 26,
+        "aya": 207
+      },
+      "377": {
+        "surah": 27,
+        "aya": 1
+      },
+      "378": {
+        "surah": 27,
+        "aya": 14
+      },
+      "379": {
+        "surah": 27,
+        "aya": 23
+      },
+      "380": {
+        "surah": 27,
+        "aya": 36
+      },
+      "381": {
+        "surah": 27,
+        "aya": 45
+      },
+      "382": {
+        "surah": 27,
+        "aya": 56
+      },
+      "383": {
+        "surah": 27,
+        "aya": 64
+      },
+      "384": {
+        "surah": 27,
+        "aya": 77
+      },
+      "385": {
+        "surah": 27,
+        "aya": 89
+      },
+      "386": {
+        "surah": 28,
+        "aya": 6
+      },
+      "387": {
+        "surah": 28,
+        "aya": 14
+      },
+      "388": {
+        "surah": 28,
+        "aya": 22
+      },
+      "389": {
+        "surah": 28,
+        "aya": 29
+      },
+      "390": {
+        "surah": 28,
+        "aya": 36
+      },
+      "391": {
+        "surah": 28,
+        "aya": 44
+      },
+      "392": {
+        "surah": 28,
+        "aya": 51
+      },
+      "393": {
+        "surah": 28,
+        "aya": 60
+      },
+      "394": {
+        "surah": 28,
+        "aya": 71
+      },
+      "395": {
+        "surah": 28,
+        "aya": 78
+      },
+      "396": {
+        "surah": 28,
+        "aya": 85
+      },
+      "397": {
+        "surah": 29,
+        "aya": 7
+      },
+      "398": {
+        "surah": 29,
+        "aya": 15
+      },
+      "399": {
+        "surah": 29,
+        "aya": 24
+      },
+      "400": {
+        "surah": 29,
+        "aya": 31
+      },
+      "401": {
+        "surah": 29,
+        "aya": 39
+      },
+      "402": {
+        "surah": 29,
+        "aya": 46
+      },
+      "403": {
+        "surah": 29,
+        "aya": 53
+      },
+      "404": {
+        "surah": 29,
+        "aya": 64
+      },
+      "405": {
+        "surah": 30,
+        "aya": 6
+      },
+      "406": {
+        "surah": 30,
+        "aya": 16
+      },
+      "407": {
+        "surah": 30,
+        "aya": 25
+      },
+      "408": {
+        "surah": 30,
+        "aya": 33
+      },
+      "409": {
+        "surah": 30,
+        "aya": 42
+      },
+      "410": {
+        "surah": 30,
+        "aya": 51
+      },
+      "411": {
+        "surah": 31,
+        "aya": 1
+      },
+      "412": {
+        "surah": 31,
+        "aya": 12
+      },
+      "413": {
+        "surah": 31,
+        "aya": 20
+      },
+      "414": {
+        "surah": 31,
+        "aya": 29
+      },
+      "415": {
+        "surah": 32,
+        "aya": 1
+      },
+      "416": {
+        "surah": 32,
+        "aya": 12
+      },
+      "417": {
+        "surah": 32,
+        "aya": 21
+      },
+      "418": {
+        "surah": 33,
+        "aya": 1
+      },
+      "419": {
+        "surah": 33,
+        "aya": 7
+      },
+      "420": {
+        "surah": 33,
+        "aya": 16
+      },
+      "421": {
+        "surah": 33,
+        "aya": 23
+      },
+      "422": {
+        "surah": 33,
+        "aya": 31
+      },
+      "423": {
+        "surah": 33,
+        "aya": 36
+      },
+      "424": {
+        "surah": 33,
+        "aya": 44
+      },
+      "425": {
+        "surah": 33,
+        "aya": 51
+      },
+      "426": {
+        "surah": 33,
+        "aya": 55
+      },
+      "427": {
+        "surah": 33,
+        "aya": 63
+      },
+      "428": {
+        "surah": 34,
+        "aya": 1
+      },
+      "429": {
+        "surah": 34,
+        "aya": 8
+      },
+      "430": {
+        "surah": 34,
+        "aya": 15
+      },
+      "431": {
+        "surah": 34,
+        "aya": 23
+      },
+      "432": {
+        "surah": 34,
+        "aya": 32
+      },
+      "433": {
+        "surah": 34,
+        "aya": 40
+      },
+      "434": {
+        "surah": 34,
+        "aya": 49
+      },
+      "435": {
+        "surah": 35,
+        "aya": 4
+      },
+      "436": {
+        "surah": 35,
+        "aya": 12
+      },
+      "437": {
+        "surah": 35,
+        "aya": 19
+      },
+      "438": {
+        "surah": 35,
+        "aya": 31
+      },
+      "439": {
+        "surah": 35,
+        "aya": 39
+      },
+      "440": {
+        "surah": 35,
+        "aya": 45
+      },
+      "441": {
+        "surah": 36,
+        "aya": 13
+      },
+      "442": {
+        "surah": 36,
+        "aya": 28
+      },
+      "443": {
+        "surah": 36,
+        "aya": 41
+      },
+      "444": {
+        "surah": 36,
+        "aya": 55
+      },
+      "445": {
+        "surah": 36,
+        "aya": 71
+      },
+      "446": {
+        "surah": 37,
+        "aya": 1
+      },
+      "447": {
+        "surah": 37,
+        "aya": 25
+      },
+      "448": {
+        "surah": 37,
+        "aya": 52
+      },
+      "449": {
+        "surah": 37,
+        "aya": 77
+      },
+      "450": {
+        "surah": 37,
+        "aya": 103
+      },
+      "451": {
+        "surah": 37,
+        "aya": 127
+      },
+      "452": {
+        "surah": 37,
+        "aya": 154
+      },
+      "453": {
+        "surah": 38,
+        "aya": 1
+      },
+      "454": {
+        "surah": 38,
+        "aya": 17
+      },
+      "455": {
+        "surah": 38,
+        "aya": 27
+      },
+      "456": {
+        "surah": 38,
+        "aya": 43
+      },
+      "457": {
+        "surah": 38,
+        "aya": 62
+      },
+      "458": {
+        "surah": 38,
+        "aya": 84
+      },
+      "459": {
+        "surah": 39,
+        "aya": 6
+      },
+      "460": {
+        "surah": 39,
+        "aya": 11
+      },
+      "461": {
+        "surah": 39,
+        "aya": 22
+      },
+      "462": {
+        "surah": 39,
+        "aya": 32
+      },
+      "463": {
+        "surah": 39,
+        "aya": 41
+      },
+      "464": {
+        "surah": 39,
+        "aya": 48
+      },
+      "465": {
+        "surah": 39,
+        "aya": 57
+      },
+      "466": {
+        "surah": 39,
+        "aya": 68
+      },
+      "467": {
+        "surah": 39,
+        "aya": 75
+      },
+      "468": {
+        "surah": 40,
+        "aya": 8
+      },
+      "469": {
+        "surah": 40,
+        "aya": 17
+      },
+      "470": {
+        "surah": 40,
+        "aya": 26
+      },
+      "471": {
+        "surah": 40,
+        "aya": 34
+      },
+      "472": {
+        "surah": 40,
+        "aya": 41
+      },
+      "473": {
+        "surah": 40,
+        "aya": 50
+      },
+      "474": {
+        "surah": 40,
+        "aya": 59
+      },
+      "475": {
+        "surah": 40,
+        "aya": 67
+      },
+      "476": {
+        "surah": 40,
+        "aya": 78
+      },
+      "477": {
+        "surah": 41,
+        "aya": 1
+      },
+      "478": {
+        "surah": 41,
+        "aya": 12
+      },
+      "479": {
+        "surah": 41,
+        "aya": 21
+      },
+      "480": {
+        "surah": 41,
+        "aya": 30
+      },
+      "481": {
+        "surah": 41,
+        "aya": 39
+      },
+      "482": {
+        "surah": 41,
+        "aya": 47
+      },
+      "483": {
+        "surah": 42,
+        "aya": 1
+      },
+      "484": {
+        "surah": 42,
+        "aya": 11
+      },
+      "485": {
+        "surah": 42,
+        "aya": 16
+      },
+      "486": {
+        "surah": 42,
+        "aya": 23
+      },
+      "487": {
+        "surah": 42,
+        "aya": 32
+      },
+      "488": {
+        "surah": 42,
+        "aya": 45
+      },
+      "489": {
+        "surah": 42,
+        "aya": 52
+      },
+      "490": {
+        "surah": 43,
+        "aya": 11
+      },
+      "491": {
+        "surah": 43,
+        "aya": 23
+      },
+      "492": {
+        "surah": 43,
+        "aya": 34
+      },
+      "493": {
+        "surah": 43,
+        "aya": 48
+      },
+      "494": {
+        "surah": 43,
+        "aya": 61
+      },
+      "495": {
+        "surah": 43,
+        "aya": 74
+      },
+      "496": {
+        "surah": 44,
+        "aya": 1
+      },
+      "497": {
+        "surah": 44,
+        "aya": 19
+      },
+      "498": {
+        "surah": 44,
+        "aya": 40
+      },
+      "499": {
+        "surah": 45,
+        "aya": 1
+      },
+      "500": {
+        "surah": 45,
+        "aya": 14
+      },
+      "501": {
+        "surah": 45,
+        "aya": 23
+      },
+      "502": {
+        "surah": 45,
+        "aya": 33
+      },
+      "503": {
+        "surah": 46,
+        "aya": 6
+      },
+      "504": {
+        "surah": 46,
+        "aya": 15
+      },
+      "505": {
+        "surah": 46,
+        "aya": 21
+      },
+      "506": {
+        "surah": 46,
+        "aya": 29
+      },
+      "507": {
+        "surah": 47,
+        "aya": 1
+      },
+      "508": {
+        "surah": 47,
+        "aya": 12
+      },
+      "509": {
+        "surah": 47,
+        "aya": 20
+      },
+      "510": {
+        "surah": 47,
+        "aya": 30
+      },
+      "511": {
+        "surah": 48,
+        "aya": 1
+      },
+      "512": {
+        "surah": 48,
+        "aya": 10
+      },
+      "513": {
+        "surah": 48,
+        "aya": 16
+      },
+      "514": {
+        "surah": 48,
+        "aya": 24
+      },
+      "515": {
+        "surah": 48,
+        "aya": 29
+      },
+      "516": {
+        "surah": 49,
+        "aya": 5
+      },
+      "517": {
+        "surah": 49,
+        "aya": 12
+      },
+      "518": {
+        "surah": 50,
+        "aya": 1
+      },
+      "519": {
+        "surah": 50,
+        "aya": 16
+      },
+      "520": {
+        "surah": 50,
+        "aya": 36
+      },
+      "521": {
+        "surah": 51,
+        "aya": 7
+      },
+      "522": {
+        "surah": 51,
+        "aya": 31
+      },
+      "523": {
+        "surah": 51,
+        "aya": 52
+      },
+      "524": {
+        "surah": 52,
+        "aya": 15
+      },
+      "525": {
+        "surah": 52,
+        "aya": 32
+      },
+      "526": {
+        "surah": 53,
+        "aya": 1
+      },
+      "527": {
+        "surah": 53,
+        "aya": 27
+      },
+      "528": {
+        "surah": 53,
+        "aya": 45
+      },
+      "529": {
+        "surah": 54,
+        "aya": 7
+      },
+      "530": {
+        "surah": 54,
+        "aya": 28
+      },
+      "531": {
+        "surah": 54,
+        "aya": 50
+      },
+      "532": {
+        "surah": 55,
+        "aya": 17
+      },
+      "533": {
+        "surah": 55,
+        "aya": 41
+      },
+      "534": {
+        "surah": 55,
+        "aya": 68
+      },
+      "535": {
+        "surah": 56,
+        "aya": 17
+      },
+      "536": {
+        "surah": 56,
+        "aya": 51
+      },
+      "537": {
+        "surah": 56,
+        "aya": 77
+      },
+      "538": {
+        "surah": 57,
+        "aya": 4
+      },
+      "539": {
+        "surah": 57,
+        "aya": 12
+      },
+      "540": {
+        "surah": 57,
+        "aya": 19
+      },
+      "541": {
+        "surah": 57,
+        "aya": 25
+      },
+      "542": {
+        "surah": 58,
+        "aya": 1
+      },
+      "543": {
+        "surah": 58,
+        "aya": 7
+      },
+      "544": {
+        "surah": 58,
+        "aya": 12
+      },
+      "545": {
+        "surah": 58,
+        "aya": 22
+      },
+      "546": {
+        "surah": 59,
+        "aya": 4
+      },
+      "547": {
+        "surah": 59,
+        "aya": 10
+      },
+      "548": {
+        "surah": 59,
+        "aya": 17
+      },
+      "549": {
+        "surah": 60,
+        "aya": 1
+      },
+      "550": {
+        "surah": 60,
+        "aya": 6
+      },
+      "551": {
+        "surah": 60,
+        "aya": 12
+      },
+      "552": {
+        "surah": 61,
+        "aya": 6
+      },
+      "553": {
+        "surah": 62,
+        "aya": 1
+      },
+      "554": {
+        "surah": 62,
+        "aya": 9
+      },
+      "555": {
+        "surah": 63,
+        "aya": 5
+      },
+      "556": {
+        "surah": 64,
+        "aya": 1
+      },
+      "557": {
+        "surah": 64,
+        "aya": 10
+      },
+      "558": {
+        "surah": 65,
+        "aya": 1
+      },
+      "559": {
+        "surah": 65,
+        "aya": 6
+      },
+      "560": {
+        "surah": 66,
+        "aya": 1
+      },
+      "561": {
+        "surah": 66,
+        "aya": 8
+      },
+      "562": {
+        "surah": 67,
+        "aya": 1
+      },
+      "563": {
+        "surah": 67,
+        "aya": 13
+      },
+      "564": {
+        "surah": 67,
+        "aya": 27
+      },
+      "565": {
+        "surah": 68,
+        "aya": 16
+      },
+      "566": {
+        "surah": 68,
+        "aya": 43
+      },
+      "567": {
+        "surah": 69,
+        "aya": 9
+      },
+      "568": {
+        "surah": 69,
+        "aya": 35
+      },
+      "569": {
+        "surah": 70,
+        "aya": 11
+      },
+      "570": {
+        "surah": 70,
+        "aya": 40
+      },
+      "571": {
+        "surah": 71,
+        "aya": 11
+      },
+      "572": {
+        "surah": 72,
+        "aya": 1
+      },
+      "573": {
+        "surah": 72,
+        "aya": 14
+      },
+      "574": {
+        "surah": 73,
+        "aya": 1
+      },
+      "575": {
+        "surah": 73,
+        "aya": 20
+      },
+      "576": {
+        "surah": 74,
+        "aya": 18
+      },
+      "577": {
+        "surah": 74,
+        "aya": 48
+      },
+      "578": {
+        "surah": 75,
+        "aya": 20
+      },
+      "579": {
+        "surah": 76,
+        "aya": 6
+      },
+      "580": {
+        "surah": 76,
+        "aya": 26
+      },
+      "581": {
+        "surah": 77,
+        "aya": 20
+      },
+      "582": {
+        "surah": 78,
+        "aya": 1
+      },
+      "583": {
+        "surah": 78,
+        "aya": 31
+      },
+      "584": {
+        "surah": 79,
+        "aya": 16
+      },
+      "585": {
+        "surah": 80,
+        "aya": 1
+      },
+      "586": {
+        "surah": 81,
+        "aya": 1
+      },
+      "587": {
+        "surah": 82,
+        "aya": 1
+      },
+      "588": {
+        "surah": 83,
+        "aya": 7
+      },
+      "589": {
+        "surah": 83,
+        "aya": 35
+      },
+      "590": {
+        "surah": 85,
+        "aya": 1
+      },
+      "591": {
+        "surah": 86,
+        "aya": 1
+      },
+      "592": {
+        "surah": 87,
+        "aya": 16
+      },
+      "593": {
+        "surah": 89,
+        "aya": 1
+      },
+      "594": {
+        "surah": 89,
+        "aya": 24
+      },
+      "595": {
+        "surah": 91,
+        "aya": 1
+      },
+      "596": {
+        "surah": 92,
+        "aya": 15
+      },
+      "597": {
+        "surah": 95,
+        "aya": 1
+      },
+      "598": {
+        "surah": 97,
+        "aya": 1
+      },
+      "599": {
+        "surah": 98,
+        "aya": 8
+      },
+      "600": {
+        "surah": 100,
+        "aya": 10
+      },
+      "601": {
+        "surah": 103,
+        "aya": 1
+      },
+      "602": {
+        "surah": 106,
+        "aya": 1
+      },
+      "603": {
+        "surah": 109,
+        "aya": 1
+      },
+      "604": {
+        "surah": 112,
+        "aya": 1
+      }
+    }
+  }
+}

@@ -1,18 +1,18 @@
 # System Patterns: Luminous Verses (Expo App)
 
-**Version:** 0.9.2 (Stable Audio Playback & UI Sync)
-**Date:** 2025-05-14
+**Version:** 0.9.3 (Reflects API-Driven Architecture)
+**Date:** 2025-05-15
 **Related Brief:** `docs/projectbrief.md`
 **Original iOS Native Port Patterns:** (This document adapts system patterns for the current Expo-based project.)
 
-## 1. Overall Architecture (Expo - MVVM-like with Hooks)
+## 1. Overall Architecture (Expo - MVVM-like with Hooks & API Integration)
 
 ```mermaid
 graph TD
     AppEntry[Expo App Entry (`app/_layout.tsx`)] --> SafeAreaProv[SafeAreaProvider (`react-native-safe-area-context`)]
     SafeAreaProv --> ThemeProv[ThemeProvider (`styled-components`)]
     ThemeProv --> FontLoader[Font Loading (`expo-font`)]
-    FontLoader --> SupabaseInit([Supabase Client Init (`src/lib/supabaseClient.ts`)]) %% For dynamic data
+    FontLoader --> SupabaseInit([Supabase Client Init (`src/lib/supabaseClient.ts`)]) %% For dynamic data (User Data)
     FontLoader --> ExpoRouter[Expo Router (`SplashScreen`, `Stack`)]
 
     ExpoRouter --> TabNav[Tab Navigator (`app/(tabs)/_layout.tsx`)]
@@ -43,12 +43,18 @@ graph TD
         GenericScreenComponent --> ReusableComponent[Reusable UI Components (e.g., ThemedText, ThemedView)]
     end
 
-    subgraph "Services & Data (Audio)"
-        SupabaseInit --> SupabaseClient[Supabase Client Instance] %% For dynamic data
-        AppServices -- Fetches Static Content --> VercelBlob[Vercel Blob (JSON files)]
+    subgraph "Services & Data Layer"
+        AppServices -- Uses --> ApiClient[API Client (`src/services/apiClient.ts`)]
+        AppServices -- Fetches Surah List & Translations --> VercelBlob[Vercel Blob (JSON files)]
+        ApiClient -- Calls --> VercelFunctions[Vercel Serverless Functions (`api/*.ts`)]
+        VercelFunctions -- Queries --> NeonDB[Neon PostgreSQL Database (Quran Text)]
+        
+        SupabaseInit --> SupabaseClient[Supabase Client Instance (User Data)]
         AppServices -- Fetches Dynamic (Planned) --> SupabaseClient %% e.g., user data
+        
         AudioPlayerHook -- Uses Service --> AudioService[Audio Service (`src/services/audioService.ts`)]
         AudioService -- Uses SDK --> ExpoAudio[Expo Audio (`expo-audio`)]
+        AudioService -- Constructs URLs for --> VercelBlobAudio[Vercel Blob (Audio Files)]
     end
 
     subgraph Styling & Theme
@@ -68,6 +74,10 @@ graph TD
     style ExpoRouter fill:#ccf,stroke:#333,stroke-width:2px
     style TabNav fill:#cdf,stroke:#333,stroke-width:2px
     style VercelBlob fill:#dff,stroke:#333,stroke-width:2px
+    style VercelBlobAudio fill:#dff,stroke:#333,stroke-width:2px
+    style ApiClient fill:#aef,stroke:#333,stroke-width:2px
+    style VercelFunctions fill:#f96,stroke:#333,stroke-width:2px
+    style NeonDB fill:#69b,stroke:#333,stroke-width:2px
     style SupabaseClient fill:#fdb,stroke:#333,stroke-width:1px
     style AppServices fill:#bdc,stroke:#333,stroke-width:2px
     style SafeAreaProv fill:#cfc,stroke:#333,stroke-width:2px
@@ -76,8 +86,11 @@ graph TD
 ```
 
 -   **Client-Side Application:** Expo (React Native) app targeting iOS, Android, and Web.
--   **Static Quranic Content (Arabic Text, Surah List, Yusuf Ali Translations):** Vercel Blob (JSON files). Data fetched via `src/services/surahService.ts`.
--   **Dynamic Data (User Accounts, Bookmarks - Planned):** Supabase (PostgreSQL).
+-   **Quranic Content Data Sources:**
+    -   **Arabic Text:** Fetched from a Neon PostgreSQL database via Vercel Serverless Functions. Accessed through `src/services/apiClient.ts` which calls endpoints like `/api/get-verses`.
+    -   **Surah List & English Translations (Yusuf Ali):** Vercel Blob (JSON files). Data fetched directly via `src/services/surahService.ts`.
+    -   **Audio Files:** Hosted on Vercel Blob, URLs constructed by `src/services/audioService.ts`.
+-   **Dynamic User Data (User Accounts, Bookmarks - Planned):** Supabase (PostgreSQL).
 -   **UI Framework:** React Native with custom components.
 -   **Architectural Pattern (Loosely):** MVVM-like, where:
     -   **Models:** Data structures/types (e.g., `Surah`, `Verse` type in `src/types/quran.ts`).
@@ -94,14 +107,22 @@ graph TD
     -   React Hooks (`useState`, `useEffect`, `useContext`, `useTheme`, `useSafeAreaInsets`, `useRef`, `useReducer`).
     -   React Context API for global state.
     -   **Custom Hooks for Complex Logic:**
-        -   `useAudioPlayer` in `src/hooks/useAudioPlayer.ts` manages audio playback state using `expo-audio`'s library-provided `useAudioPlayer` hook, coupled with a `useReducer` pattern for robust state transitions. It enforces a mono-instance 'play-on-create' audio player lifecycle. UI state is strictly synchronized via player events (`onPlaybackStatusUpdate`) to ensure reliability, as per `expo-audio` best practices.
+        -   `useAudioPlayer` in `src/hooks/useAudioPlayer.ts` manages audio playback state using `createAudioPlayer` from `expo-audio` directly, coupled with a `useReducer` pattern for robust state transitions. It enforces a mono-instance 'play-on-create' audio player lifecycle. UI state is strictly synchronized via player events (`onPlaybackStatusUpdate`) to ensure reliability, as per `expo-audio` best practices.
 -   **Navigation Pattern:**
     -   **Expo Router:** File-system based routing.
     -   Tab-based navigation for main sections.
--   **Data Fetching Pattern:**
-    -   **Static Content:** Fetched as JSON files from Vercel Blob URLs via `src/services/surahService.ts`.
-    -   **Dynamic Content (Planned):** `@supabase/supabase-js` client.
-    -   `async/await` with `useEffect` hook in components.
+-   **Data Fetching Pattern (Hybrid Model):**
+    -   **Arabic Verse Text:** Fetched from Vercel Serverless Functions (which query PostgreSQL) via `src/services/apiClient.ts` and then integrated by `src/services/surahService.ts`.
+    -   **Translations & Surah List (Static):** Fetched as JSON files from Vercel Blob URLs directly by `src/services/surahService.ts`.
+    -   **Audio Files:** URLs constructed by `src/services/audioService.ts` pointing to Vercel Blob.
+    -   **Dynamic User Content (Planned):** `@supabase/supabase-js` client.
+    -   `async/await` with `useEffect` hook in components for data loading.
+-   **API-Driven Content & Hybrid Retrieval:**
+    -   The application employs a hybrid data retrieval strategy. Core Quranic text (Arabic) is served dynamically via an API layer (Vercel Serverless Functions backed by PostgreSQL) to allow for more flexible data management and potential future enhancements (e.g., different Qira'at, advanced search).
+    -   Supporting static content like translations and the Surah list are still fetched from Vercel Blob for simplicity and CDN benefits.
+    -   The `src/services/surahService.ts` acts as an orchestrator, combining data from these different sources (API for Arabic text, Blob for translations) to form complete `Verse` objects for the UI.
+    -   Error handling for API requests is managed within `src/services/apiClient.ts`, with further handling in `src/services/surahService.ts`.
+    -   A cache-first strategy is not yet explicitly implemented but could be a future enhancement for API-fetched data.
 -   **View Composition & Layout:**
     -   Reusable UI components.
     -   Flexbox for layout.
@@ -119,6 +140,8 @@ graph TD
 
 -   **Audio Playback & UI Synchronization Pattern:**
     -   **Mono-instance, Play-on-Create:** A single `AudioPlayer` instance is active at any time. New playback requests for a different verse result in the current player (if any) being removed and a new one created and played immediately. This prevents issues related to managing multiple or stale player instances.
+    -   **Direct Player Creation:** The implementation uses `createAudioPlayer` directly rather than the library-provided `useAudioPlayer` hook, giving fine-grained control over player lifecycle and state management.
+    -   **Comprehensive Error Handling:** The implementation includes retry logic for network errors, stall detection with timeouts, and detailed error tracking to provide a robust playback experience.
     -   **Event-Driven State Updates:** UI state (playing, paused, buffering, current time, duration) is updated strictly based on events received from the `AudioPlayer` instance via its `onPlaybackStatusUpdate` listener. User actions (e.g., tap to play/pause) dispatch 'intent' actions to a reducer. The reducer may update an 'intent' status (e.g., `loading_requested`, `pausing_requested`), but the definitive transition to states like `playing` or `paused` only occurs after the corresponding player event is processed by the reducer. This ensures the UI accurately reflects the true state of the audio player.
     -   **Resolution of Past Issues:** This event-driven pattern, combined with the mono-instance player, has resolved previous issues related to stuck buffering UI, desynchronized playback controls (like sliders), and unreliable play/pause/resume toggle behavior.
     -   **Best Practice Alignment:** This approach aligns with `expo-audio` community best practices for robust audio state management and UI synchronization (e.g., insights from Expo GitHub issues like expo/expo#19788 and community forums regarding event-driven state).
@@ -163,4 +186,4 @@ graph TD
 -   **Metro Bundler Configuration:** Customizations in `metro.config.js`.
 -   **TypeScript Integration:** Strong typing.
 
-This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices, with a now-stable and robust audio playback system.
+This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices. It now incorporates a hybrid data model with API-driven content for core Quranic text and a stable, robust audio playback system.

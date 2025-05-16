@@ -21,6 +21,7 @@
     "@react-navigation/native": "^7.1.6",
     "@supabase/supabase-js": "^2.49.4",
     "@vercel/blob": "^1.0.1",
+    "@vercel/edge-config": "^1.4.0",
     "@vercel/node": "^5.1.16",
     "ajv": "^8.17.1",
     "assert": "^2.1.0",
@@ -70,7 +71,8 @@
     "@types/react": "~19.0.10",
     "dotenv": "^16.5.0",
     "eslint": "^9.25.0",
-    "eslint-config-expo": "~9.2.0"
+    "eslint-config-expo": "~9.2.0",
+    "xml2js": "^0.6.2"
   },
   "private": true
 }

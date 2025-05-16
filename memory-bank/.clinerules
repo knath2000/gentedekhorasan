@@ -19,15 +19,25 @@
 -   **Asset Organization:** `assets/` directory with subfolders for `animations`, `fonts`, `images`.
 
 ### 2. Key Technologies & Integration Patterns:
--   **Supabase:** Used for dynamic data needs (planned: user accounts, bookmarks). Previously used for static Quran data.
+-   **Supabase:** Used for dynamic user data needs (planned: user accounts, bookmarks).
     -   Client initialization: `src/lib/supabaseClient.ts`.
--   **Vercel Blob:** Primary store for static Quranic content (Arabic text, Surah list, translations) served as JSON files.
+-   **Vercel Serverless Functions & Neon PostgreSQL DB:**
+    -   **Pattern:** Arabic Quranic text is served dynamically via Vercel Serverless Functions (e.g., `api/get-verses.ts`) that query a Neon PostgreSQL database.
+    -   **Client Interaction:** `src/services/apiClient.ts` handles `fetch` requests to these serverless functions.
+    -   **Rationale:** Provides flexibility for core text data, allows for potential future features (advanced search, different Qira'at), and abstracts direct DB access from the client.
+-   **Vercel Blob:** Primary store for static assets:
+    -   Surah list (JSON).
+    -   Yusuf Ali translations (JSON).
+    -   Audio files.
+    -   **Access:** `src/services/surahService.ts` (for JSON data) and `src/services/audioService.ts` (for audio file URLs).
+-   **Hybrid Data Retrieval Orchestration:**
+    -   **Pattern:** `src/services/surahService.ts` acts as an orchestrator, fetching Arabic text via `apiClient.ts` (from API/DB) and translations/Surah list directly from Vercel Blob, then combining them into complete `Verse` objects for the UI.
 -   **Lottie Animations:**
     -   `lottie-react-native` for native.
     -   `@lottiefiles/dotlottie-react` for web.
     -   Current issue: Native Lottie animation plays once and freezes on Home screen.
 -   **Custom Fonts:** Loaded via `expo-font` in the root layout.
--   **Audio Playback:** `expo-audio` is used, managed via `src/hooks/useQuranAudioPlayer.ts` which utilizes the library-provided `useAudioPlayer` hook. UI interaction (tap-to-play/pause) is handled in `src/components/VerseCard.tsx`.
+-   **Audio Playback:** `expo-audio` is used. The core logic is managed by a custom hook `src/hooks/useAudioPlayer.ts` which uses `createAudioPlayer` directly from `expo-audio` and implements a `useReducer` pattern for state management. UI interaction (tap-to-play/pause) is handled in `src/components/VerseCard.tsx`.
 -   **Metro Bundler Polyfills:** Critical for cross-platform compatibility of certain libraries. Configuration in `metro.config.js`.
 -   **TypeScript DOM Lib:** `tsconfig.json` updated to include `"dom"` in `compilerOptions.lib` for web-specific typings (e.g., `HTMLInputElement` in `PlatformSlider.tsx`).
 ### 3. Development Workflow & Preferences:
@@ -49,8 +59,8 @@
 -   **Performance:** Lottie animations, data fetching.
 -   **State Management Complexity:** As features grow.
 -   **Metro Bundler Configuration.**
--   **Asynchronous Operations & State Sync:** Especially critical for audio. `useQuranAudioPlayer.ts` handles this.
--   **`expo-audio` Reliability:** The previous playback failure with `createAudioPlayer` was a major concern. The switch to the library-provided `useAudioPlayer` hook in `useQuranAudioPlayer.ts` is intended to address this.
+-   **Asynchronous Operations & State Sync:** Especially critical for audio. The custom `src/hooks/useAudioPlayer.ts` hook handles this with a detailed state machine and event-driven updates.
+-   **`expo-audio` Reliability:** The current implementation in `src/hooks/useAudioPlayer.ts` uses `createAudioPlayer` directly, coupled with robust error handling, retry mechanisms, and stall detection to ensure reliability. This approach was chosen for fine-grained control over the player lifecycle.
 -   **Accessibility Implementation:** Ensuring `AccessibilityInfo.announceForAccessibility` and correct ARIA props are used and effective across platforms.
 ## Layout & UI Development Patterns (2025-05-10)
 
@@ -60,8 +70,8 @@
 ## Audio Playback & Asynchronous State Management Patterns (2025-05-11 to 2025-05-13)
 ## Audio Playback & UI Interaction Patterns (2025-05-14 Refactor)
 
-### 7. Audio Hook (`src/hooks/useQuranAudioPlayer.ts`):
--   **Pattern:** Uses the library-provided `useAudioPlayer` hook from `expo-audio` to manage core audio state (loading, playing, duration, position, errors, etc.).
+### 7. Audio Hook (`src/hooks/useAudioPlayer.ts`):
+-   **Pattern:** Implements a custom audio player logic using `createAudioPlayer` directly from `expo-audio`. It employs a `useReducer` for managing a complex state machine (idle, loading, playing, paused, buffering, error, etc.) and ensures UI state is synchronized via player events.
 -   **Responsibilities:** Provides functions like `toggleAudio`, `stopAudio`, `seekAudio`, `setAutoplayEnabled`.
 
 ### 8. Stabilizing Callback References for `useEffect` Dependencies:
@@ -106,8 +116,8 @@
 
 ## Data Migration & Static Asset Handling (Vercel Blob) (2025-05-13)
 
-### 15. Static Data Strategy:
--   **Pattern:** Use static JSON files on Vercel Blob for Quranic text, translations, surah lists.
+### 15. Static Asset Strategy (Vercel Blob):
+-   **Pattern:** Use static JSON files on Vercel Blob for translations and Surah lists. Audio files are also hosted on Vercel Blob. (Arabic Quranic text is now database-driven via API).
 
 ### 16. Migration Script Structure (Node.js):
 -   **Pattern:** Scripts use `dotenv`, Supabase client, `@vercel/blob` client. Specify `access: 'public'`, `contentType: 'application/json; charset=utf-8'`, `addRandomSuffix: false`.
@@ -115,11 +125,14 @@
 ### 17. Environment Variable Consistency:
 -   **Rule:** Ensure consistency for `VERCEL_BLOB_URL_BASE` etc., across `.env.local`, `app.json`, and scripts.
 
-### 18. Application Service Layer Refactoring for Blob Data:
--   **Pattern:** Update services to `fetch` from Blob URLs and parse JSON.
+### 18. Application Service Layer for Data Retrieval:
+-   **Pattern:**
+    -   `src/services/apiClient.ts`: Dedicated to fetching data (Arabic text) from Vercel Serverless Functions.
+    -   `src/services/surahService.ts`: Fetches static assets (translations, Surah list) directly from Vercel Blob and uses `apiClient.ts` for dynamic Arabic text, then combines them.
+    -   `src/services/audioService.ts`: Constructs URLs for audio files hosted on Vercel Blob.
 
 ### 19. Data Organization in Blob Storage:
--   **Pattern:** Hierarchical paths (e.g., `quran-text/arabic/[surahId].json`).
+-   **Pattern:** Hierarchical paths for Vercel Blob assets (e.g., `quran-data/translation/yusufali/[surahId].json`, `quran-data/audio/[reciter]/[surahId]/[ayahId].mp3`). API endpoints also follow a clear structure (e.g., `/api/get-verses?surah=[surahId]`).
 
 ### 20. Idempotency and Error Handling in Migration Scripts:
 -   **Rule:** Scripts should be idempotent and handle errors gracefully.
@@ -130,11 +143,11 @@
 ## `expo-audio` Playback Learnings (Pre-Refactor & Current)
 
 ### 15. Previous Issue: Playback Stalls with `createAudioPlayer`
--   **Observation:** The prior custom hook (`src/hooks/useAudioPlayer.ts`, now presumably deprecated or replaced by `useQuranAudioPlayer.ts`) using `expo-audio`'s `createAudioPlayer` consistently failed to start playback. `isLoaded` and `isPlaying` remained `false`.
--   **Resolution Path Taken:** The diagnostic plan involved testing the library-provided `useAudioPlayer` hook. The current `src/hooks/useQuranAudioPlayer.ts` successfully implements this, forming the basis of the current (refactored) audio system.
+-   **Observation:** Initial attempts or previous iterations might have faced challenges with `createAudioPlayer`. The current `src/hooks/useAudioPlayer.ts` is a refined implementation that directly uses `createAudioPlayer` along with a comprehensive state management strategy (`useReducer`), event listeners, and error handling to achieve stable playback.
+-   **Current Implementation:** The system does *not* use the library-provided `useAudioPlayer` hook but instead directly instantiates and manages `AudioPlayer` objects created with `createAudioPlayer`.
 
 ### 16. Current Approach: Library's `useAudioPlayer` Hook
--   **Pattern:** The `src/hooks/useQuranAudioPlayer.ts` now correctly uses `useAudioPlayer(source, updateInterval)` from `expo-audio`. This hook manages the `AudioPlayer` instance and its status.
+-   **Pattern:** The `src/hooks/useAudioPlayer.ts` directly calls `createAudioPlayer({ uri: audioUrl }, UPDATE_INTERVAL_MS)` and manages the lifecycle of the returned `AudioPlayer` instance, including attaching status listeners, handling play/pause/stop/seek operations, and cleaning up resources.
 -   **Benefit:** This approach is generally more stable and aligns with `expo-audio`'s intended usage, abstracting away some of the complexities of manual player creation and management.
 
 ### 17. TypeScript Configuration for Web (`tsconfig.json`):
@@ -158,7 +171,7 @@
     2.  Are intended to be passed as props to native-backed UI components.
     3.  Are used in `accessibilityValue` or other accessibility props that are bridged to native.
 -   **Implementation Points:**
-    -   **Hooks:** Perform rounding within custom hooks that manage or calculate these values (e.g., `useQuranAudioPlayer.ts` now rounds `durationMillis` and `positionMillis`).
+    -   **Hooks:** Perform rounding within custom hooks that manage or calculate these values (e.g., `src/hooks/useAudioPlayer.ts` rounds `durationMillis` and `positionMillis` where appropriate before they are exposed or used in UI-facing calculations).
     -   **Component Props:** When passing props directly to native components (like `SliderIOS` in `PlatformSlider.tsx`) or to web equivalents that might have similar sensitivities (`input type="range"`), ensure the values are rounded.
     -   **Event Handlers:** When receiving values from native component events (e.g., slider `onValueChange`), if these values might be floats and are used in further calculations or state updates that feed back into native components, consider rounding them at the point of receipt or before use.
     -   **Utility Functions:** For common conversions (like `formatTime`), ensure the input is rounded if it's used in calculations that are sensitive to float vs. integer distinctions.
@@ -167,14 +180,43 @@
 -   **Pattern:** Components that receive potentially problematic numeric props (e.g., `VerseCard.tsx` receiving `positionMillis`, `durationMillis`) should also apply `Math.round()` before using these values with child components (like `PlatformSlider`) or in internal calculations that feed into UI elements. This provides an extra layer of safety.
 
 ### 22. Logging for Precision Issues:
--   **Pattern:** In custom hooks or complex components dealing with these values, add specific `console.warn` or error logging if a precision-related error code or message is detected from underlying libraries (e.g., `expo-audio`). This logging should include the raw and rounded values to aid debugging. (Implemented in `useQuranAudioPlayer.ts`).
+-   **Pattern:** In custom hooks or complex components dealing with these values, add specific `console.warn` or error logging if a precision-related error code or message is detected from underlying libraries (e.g., `expo-audio`). This logging should include the raw and rounded values to aid debugging. (Implemented in `src/hooks/useAudioPlayer.ts`).
 
 This file will be updated as new patterns, preferences, or critical project intelligence emerge.
+
+## API-Driven Content & Serverless Architecture Patterns (2025-05-15)
+
+### 29. Rule: Serverless Functions for Backend Logic
+-   **Pattern:** Utilize Vercel Serverless Functions (TypeScript, e.g., `api/get-verses.ts`) for backend logic, such as database queries. This abstracts database credentials and complex logic from the client.
+-   **Database Client:** Use `pg` library within serverless functions for PostgreSQL interaction.
+-   **Connection Pooling:** Configure connection pooling within serverless functions (e.g., `max: 1`, short `idleTimeoutMillis`) suitable for serverless environments to manage database connections efficiently.
+-   **Error Handling:** Implement robust error handling and logging within serverless functions, returning appropriate HTTP status codes and error messages to the client.
+
+### 30. Rule: Dedicated API Client Service on Frontend
+-   **Pattern:** Create a dedicated service (e.g., `src/services/apiClient.ts`) on the frontend to encapsulate all `fetch` calls to the backend API (Vercel Serverless Functions).
+-   **Responsibilities:** This service should handle URL construction, request/response processing, and initial error handling/logging for API interactions.
+-   **Environment Variables:** Use environment variables (e.g., `API_BASE_URL` from `expo-constants`) for the base URL of the API to allow for different environments (dev, prod).
+
+### 31. Pattern: Hybrid Data Orchestration Service
+-   **Pattern:** When data comes from multiple sources (e.g., API/DB for Arabic text, Vercel Blob for translations), use an orchestrating service (e.g., `src/services/surahService.ts`) to:
+    1.  Fetch data from each source (using `apiClient.ts` for API calls, direct `fetch` for Blob).
+    2.  Combine or merge the data into a unified structure required by the UI (e.g., a complete `Verse` object with both Arabic text and translation).
+    3.  Handle errors from underlying fetch operations.
+-   **Rationale:** Decouples UI components from the specifics of multiple data sources, simplifying component logic.
+
+### 32. Learning: Transition from Client-Side DB to Serverless API
+-   **Observation:** The project initially had `src/services/quranDbService.ts` for direct client-side connection to Neon DB. This was transitioned to Vercel Serverless Functions querying the database.
+-   **Rationale for Shift:**
+    -   **Security:** Avoids exposing database credentials directly in the client-side application.
+    -   **Scalability & Management:** Serverless functions can scale independently and are easier to manage for backend logic.
+    -   **Performance:** Can optimize queries and data shaping on the server side before sending to the client.
+    -   **Connection Management:** Better control over database connection pooling in a serverless environment.
+-   **Impact:** `quranDbService.ts` is now effectively deprecated/commented out. All database interactions for Quran text are routed through the API.
 
 ## Robust Audio Playback & UI Synchronization Patterns (Expo Audio - 2025-05-14)
 
 ### 23. Rule: Event-Driven UI State for Audio
--   **Pattern:** UI state for audio playback (e.g., playing, paused, buffering, current time, slider position, verse highlighting) MUST be driven by actual events from the `expo-audio` player (specifically, `onPlaybackStatusUpdate` via the `useAudioPlayer` hook). Do not rely on optimistic updates or action intent alone. The reducer should transition to definitive states like 'playing' or 'paused' only *after* receiving confirmation from a player event.
+-   **Pattern:** UI state for audio playback (e.g., playing, paused, buffering, current time, slider position, verse highlighting) MUST be driven by actual events from the `expo-audio` player (specifically, `onPlaybackStatusUpdate` from the player instance created by `createAudioPlayer` and managed within `src/hooks/useAudioPlayer.ts`). Do not rely on optimistic updates or action intent alone. The reducer in `useAudioPlayer.ts` transitions to definitive states like 'playing' or 'paused' only *after* receiving confirmation from a player event.
 -   **Rationale:** This ensures the UI is a source of truth reflecting the actual player status, preventing desynchronization issues like stuck buffering icons or inaccurate control states. (Reference: Expo community discussions, e.g., [Expo GitHub Issue #19788](https://github.com/expo/expo/issues/19788) regarding AV status, general React state synchronization best practices).
 
 ### 24. Rule: Mono-Instance 'Play-on-Create' Player Lifecycle
@@ -198,7 +240,7 @@ This file will be updated as new patterns, preferences, or critical project inte
 -   **Solution:** The fix is to ensure that the `onPlaybackStatusUpdate` handler in the audio hook *always* dispatches an action to the reducer that sets the UI state to accurately reflect the player's current status (e.g., set to 'playing' when `event.isPlaying` is true and `event.isLoaded` is true, *regardless* of the previous UI state like 'buffering' or 'loading_requested'). The reducer case for this action should then directly set the `status: 'playing'`.
 
 ### 27. Learning: `expo-audio` Nuances & Best Practices
--   **Key Insight:** While `expo-audio`'s `useAudioPlayer` hook (or direct `createAudioPlayer` usage) provides the core player functionality, robust state synchronization with a React `useReducer` pattern and meticulous handling of the `onPlaybackStatusUpdate` event stream are critical for building a reliable and predictable audio user experience.
+-   **Key Insight:** Direct usage of `createAudioPlayer` from `expo-audio` provides the core player functionality. Robust state synchronization with a React `useReducer` pattern (as implemented in `src/hooks/useAudioPlayer.ts`) and meticulous handling of the `onPlaybackStatusUpdate` event stream are critical for building a reliable and predictable audio user experience.
 -   **Community Wisdom:** Adhering to patterns discussed in Expo forums and GitHub issues (such as ensuring event-driven state updates) is crucial for avoiding common pitfalls.
 
 ### 28. Pattern: Defensive Numeric Handling for Native Modules (Reiteration)

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext", // Keep target as esnext for modern syntax, CommonJS is for module system
-    "module": "CommonJS", // Change to CommonJS for Vercel API routes
+    "module": "esnext", // Changed to esnext for compatibility with moduleResolution: "bundler"
     "lib": [
       "esnext",
       "dom"
@@ -10,7 +10,7 @@
     "jsx": "react-native",
     "noEmit": false, // Allow TypeScript to emit files; Vercel will handle output for API routes
     "strict": true,
-    "moduleResolution": "node", // Change to "node" for CommonJS compatibility
+    "moduleResolution": "bundler", // Changed to "bundler" to support customConditions from base
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
