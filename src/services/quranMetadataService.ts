@@ -46,9 +46,9 @@ let edgeConfigClient: EdgeConfigClient | undefined; // Existing line, kept for c
 let localEdgeConfigData: QuranEdgeConfigData | undefined;
 
 // Initialize Edge Config or local fallback
-if (process.env.EDGE_CONFIG) {
+if (process.env.EXPO_PUBLIC_EDGE_CONFIG) {
   try {
-    edgeConfigClient = createClient(process.env.EDGE_CONFIG);
+    edgeConfigClient = createClient(process.env.EXPO_PUBLIC_EDGE_CONFIG);
   } catch (error) {
     console.error("Failed to create Edge Config client:", error);
     initializeLocalFallback(); // Call fallback
