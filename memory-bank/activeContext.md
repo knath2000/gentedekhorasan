@@ -12,6 +12,7 @@
 -   **Focus:** Consolidating and documenting:
     1.  The architectural shift to an API-driven model for Arabic Quranic text (Vercel Serverless Functions + Neon PostgreSQL DB).
     2.  The comprehensive audio playback stability achieved through recent refactoring (mono-instance player, event-driven UI sync, precision fixes).
+    3.  **Fixing module syntax errors in Vercel API functions** that are preventing metadata loading and causing the surah page to fail.
 -   **State:**
     -   **Memory Bank:** Core documents are being updated to version 0.9.3 to reflect both architectural and audio system changes.
     -   **Application Core:**
@@ -37,9 +38,18 @@
         -   **Modified:** `formatTime` function now rounds its input `millis` argument.
     -   **`src/components/AudioControlBar.tsx`:**
         -   **Verified:** No changes needed as its `formatTime` function already handles rounding appropriately, and it receives already-rounded props from `useQuranAudioPlayer.ts`.
+    -   **Vercel API Functions:**
+        -   **Issue Identified:** Module syntax errors in `api/get-metadata.ts` causing failures when the client tries to fetch metadata.
+        -   **Root Cause:** TypeScript configuration mismatch - global `tsconfig.json` set to `"module": "esnext"` but Vercel serverless functions require CommonJS syntax.
+        -   **Proposed Solution:** Created a plan for a specialized TypeScript configuration for the API directory to ensure proper CommonJS module output.
 
 ## 2. Recent Changes / Milestones
 
+-   **API Module Syntax Issue Investigation (2025-05-15):**
+    -   Identified "Unexpected token 'export'" error in Vercel logs when the client attempts to fetch metadata.
+    -   Discovered TypeScript configuration using ES modules (`"module": "esnext"`) which conflicts with Vercel serverless function requirements.
+    -   Identified missing Edge Config connection string in environment variables.
+    -   Created a detailed solution plan in `memory-bank/solution-vercel-api-module-syntax.md` involving specialized TypeScript configuration for API routes.
 -   **Architectural Shift to API-Driven Content (Approx. 2025-05-15 or prior):**
     -   Implemented Vercel Serverless Functions (e.g., `api/get-verses.ts`, `api/get-verse.ts`) to serve Arabic Quranic text from a Neon PostgreSQL database.
     -   Integrated `src/services/apiClient.ts` to fetch data from these API endpoints.
@@ -55,15 +65,23 @@
 
 ## 3. Next Immediate Steps
 
-1.  **Update Memory Bank & `.clinerules`:** (This step) Reflect both the new API-driven architecture for Quranic text and the comprehensive audio stability refactor.
-2.  **Testing (Manual by User):**
+1.  **Implement API Module Syntax Fix:**
+    -   Create a specialized `tsconfig.json` for the `/api` directory that uses CommonJS modules.
+    -   Update Vercel configuration in `vercel.json` to specify how API routes should be built.
+    -   Configure the Edge Config environment variable in Vercel project settings.
+    -   Implement local fallback for Edge Config to ensure the app works in development environments.
+2.  **Update Memory Bank & `.clinerules`:** Reflect both the new API-driven architecture for Quranic text and the comprehensive audio stability refactor.
+3.  **Testing (Manual by User):**
     -   **Data Retrieval:** Verify correct fetching and display of Arabic text from API/DB and translations/Surah list from Blob. Test error handling for API/DB issues.
+    -   **Metadata Loading:** Verify the surah list and other metadata load correctly after implementing the API module syntax fix.
     -   **Audio Playback:** Verify overall audio playback stability, responsiveness of controls, accuracy of UI indicators, and elimination of precision errors across platforms.
     -   **Accessibility:** Test with VoiceOver (iOS) and TalkBack (Android) for both data display and audio controls.
-3.  **Address any bugs or UX issues identified during testing (data or audio related).**
+4.  **Address any bugs or UX issues identified during testing (data or audio related).**
 
 ## 4. Key Decisions Made
 
+-   **TypeScript Configuration Strategy:** Decided to create a specialized `tsconfig.json` for the API directory to ensure proper CommonJS module output rather than changing the global configuration, which would affect the React Native client app.
+-   **Edge Config with API Fallback:** Implemented a layered approach where the app first tries to fetch metadata from Edge Config for performance, then falls back to API requests if Edge Config is unavailable.
 -   **Hybrid Data Model:** Adopted a model where dynamic/core content (Arabic Quran text) is served via an API from a database, while more static assets (translations, Surah list, audio files) are served from Vercel Blob. This provides flexibility for the core text and CDN benefits for static assets.
 -   **Serverless Functions for Data Access:** Utilized Vercel Serverless Functions to abstract direct database access from the client, improving security and manageability.
 -   **Event-Driven State Synchronization for Audio:** (As before)
@@ -73,6 +91,9 @@
 
 ## 5. Open Questions / Considerations
 
+-   **Module System Compatibility:** Maintaining dual module system support (ES modules for the client, CommonJS for serverless functions) adds complexity. Long-term, we may want to standardize on a single approach or improve our build pipeline to handle this automatically.
+-   **TypeScript Configuration Management:** Consider refining the build process to automatically apply the right TypeScript configuration based on the target environment (client vs. serverless).
+-   **Edge Config vs. API Trade-offs:** Monitor performance differences between Edge Config data access and direct API calls to optimize which data should be stored in each system.
 -   **Thorough Testing of Hybrid Data & New Audio Architecture:** Comprehensive testing is needed across all platforms to confirm:
     -   Correct and reliable data fetching from both API/DB and Vercel Blob.
     -   Stability and correctness of the event-driven audio architecture and mono-instance player.
@@ -80,4 +101,4 @@
 -   **API & Database Performance/Reliability:** Monitor performance of Vercel Functions and Neon DB under load. Ensure robust error handling for API/DB unavailability.
 -   **Audio Performance:** (As before)
 
-This document reflects the context after the shift to an API-driven model for Arabic text and the implementation of precision fixes for audio playback.
+This document reflects the context after the shift to an API-driven model for Arabic text, the implementation of precision fixes for audio playback, and our plan to resolve the module syntax errors in Vercel API functions.

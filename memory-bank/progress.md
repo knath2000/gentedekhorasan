@@ -6,7 +6,7 @@
 **Active Context:** `docs/activeContext.md` (Version 0.9.3)
 **Refactoring Plan (Precision):** `docs/audio_playback_refactoring_strategy.md` (or similar)
 
-## 1. What Works / Completed (as of 2025-05-14)
+## 1. What Works / Completed (as of 2025-05-15)
 
 -   **Project Setup & Core Dependencies:** (Stable)
 -   **Basic App Structure & Navigation:** (Stable)
@@ -24,10 +24,15 @@
         -   (Details of audio stability refactor, precision fix, tap-to-play, visual sync, accessibility remain as previously documented and stable)
 -   **Vercel Serverless Functions (`api/*.ts`):**
     -   Implemented `api/get-verses.ts` and `api/get-verse.ts` to query Neon PostgreSQL DB for Quranic text.
+    -   Implemented `api/get-metadata.ts` to retrieve metadata (needs module syntax fix).
     -   Configured with `pg` for database connection.
 -   **`src/services/apiClient.ts`:**
     -   Implemented to make `fetch` requests to Vercel Serverless Functions.
     -   Handles API responses and basic error logging.
+    -   Includes `fetchMetadataFromAPI` for retrieving metadata.
+-   **`src/services/quranMetadataService.ts`:**
+    -   Implemented to fetch metadata from Edge Config with API fallback.
+    -   Provides methods for retrieving surah lists, sajda verses, and navigation indices.
 -   **`src/services/surahService.ts`:**
     -   **Modified:** Integrates `apiClient.ts` to fetch Arabic text.
     -   Continues to fetch Surah list and translations directly from Vercel Blob.
@@ -40,6 +45,11 @@
 
 ## 2. What's Left to Build / Fix (High-Level for Expo Port)
 
+-   **Fix API Module Syntax Issue:**
+    -   Create a specialized `tsconfig.json` for the `/api` directory that uses CommonJS modules.
+    -   Update Vercel configuration to specify how API routes should be built.
+    -   Configure the Edge Config environment variable in Vercel project settings.
+    -   Implement local fallback for Edge Config for development environments.
 -   **Thorough Testing of Hybrid Data Retrieval & Audio System:**
     -   **Data Flow:**
         -   Verify correct fetching and display of Arabic text from API/DB across various Surahs/verses.
@@ -55,11 +65,17 @@
 ## 3. Current Status
 
 -   **Overall:** The application now features a hybrid data model, with Arabic Quranic text served dynamically via Vercel Serverless Functions from a Neon PostgreSQL database. Translations, Surah lists, and audio files continue to be served from Vercel Blob. The audio playback system is stable and reliable due to the comprehensive refactor.
--   **Current Task Group:** Finalizing Memory Bank Documentation for the new architecture and continued system verification.
--   **Next Major Feature Focus:** Thorough testing of both the new API-driven data retrieval for Arabic text and the stable audio system across all platforms.
+-   **Current Issue:** Identified module syntax errors in the `api/get-metadata.ts` function due to TypeScript configuration mismatch. The Vercel logs show "Unexpected token 'export'" and "EDGE_CONFIG connection string not found" errors that need to be addressed.
+-   **Current Task Group:** Creating a solution plan for the API module syntax issue and finalizing Memory Bank documentation for the new architecture.
+-   **Next Major Feature Focus:** Implementing the API module syntax fix and thorough testing of both the new API-driven data retrieval for Arabic text and the stable audio system across all platforms.
 
 ## 4. Known Issues / Blockers / Considerations (Current)
 
+-   **API Module Syntax Error:**
+    -   The `api/get-metadata.ts` file is using ES module syntax while Vercel serverless functions expect CommonJS.
+    -   TypeScript configuration mismatch - global `tsconfig.json` set to `"module": "esnext"` but Vercel needs CommonJS.
+    -   Edge Config connection string not properly configured in Vercel environment variables.
+    -   Solution plan created in `memory-bank/solution-vercel-api-module-syntax.md`.
 -   **Testing Required (Data & Audio):**
     -   The new API-driven data flow for Arabic text needs thorough testing for correctness, performance, and error handling on all target platforms.
     -   The comprehensive audio architecture also requires continued thorough testing (as previously noted).

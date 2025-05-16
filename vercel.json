@@ -1,8 +1,18 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.ts": {
-      "includeFiles": "node_modules/typescript/**"
+  "builds": [
+    {
+      "src": "api/**/*.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["api/tsconfig.json"]
+      }
     }
-  }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    }
+  ]
 }
