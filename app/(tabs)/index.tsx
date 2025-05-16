@@ -54,7 +54,7 @@ const WelcomeText = styled(Text)<{ theme: Theme }>`
 
 const webImageSource = Platform.OS === 'web'
   ? require('../../assets/images/webtest.webp')
-  : require('../../assets/images/webtest.png'); // Fallback or native if ever used
+  : require('../../assets/images/webtest.webp'); // Fallback for bundler, native uses AnimatedBackground
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
