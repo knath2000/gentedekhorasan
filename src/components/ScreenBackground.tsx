@@ -4,7 +4,7 @@ import { ImageBackground, Platform, StyleSheet, View, ViewProps } from 'react-na
 
 // Define the image sources
 const webImage = require('../../assets/images/webtest.webp'); // Use the webp image
-const nativeImage = require('../../assets/images/iOSbackground.png'); // Using iOSbackground for native on other screens for now
+const nativeImage = require('../../assets/images/iOSbackground.webp'); // Using iOSbackground for native on other screens for now
 
 interface ScreenBackgroundProps extends ViewProps {
   children: React.ReactNode;
