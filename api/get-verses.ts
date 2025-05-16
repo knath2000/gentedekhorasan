@@ -19,12 +19,22 @@ dbPool.on('error', (err: Error) => {
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log(`[API] Request received: ${req.url}`);
-  console.log(`[API] Query parameters: ${JSON.stringify(req.query)}`);
-  console.log(`[API] Environment variables available: ${Object.keys(process.env).filter(key => !key.includes('KEY') && !key.includes('SECRET')).join(', ')}`);
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle OPTIONS preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  console.log(`[API-GetVerses] Request received: ${req.url}`);
+  console.log(`[API-GetVerses] Query parameters: ${JSON.stringify(req.query)}`);
+  console.log(`[API-GetVerses] Environment variables available: ${Object.keys(process.env).filter(key => !key.includes('KEY') && !key.includes('SECRET')).join(', ')}`);
 
   if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET']);
+    // res.setHeader('Allow', ['GET']); // Allow header is less relevant
     return res.status(405).end('Method Not Allowed');
   }
 
@@ -43,11 +53,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let client;
   try {
     client = await dbPool.connect();
-    console.log("[API] Successfully connected to database");
+    console.log("[API-GetVerses] Successfully connected to database");
     const query = 'SELECT id, sura, aya, text FROM quran_text WHERE sura = $1 ORDER BY aya ASC';
-    console.log(`[API] Executing query: ${query} with params: [${surah}]`);
+    console.log(`[API-GetVerses] Executing query: ${query} with params: [${surah}]`);
     const result = await client.query(query, [surah]);
-    console.log(`[API] Query returned ${result.rows.length} rows`);
+    console.log(`[API-GetVerses] Query returned ${result.rows.length} rows`);
     
     // Map to the expected client-side Verse structure (without translation yet)
     const verses = result.rows.map((row: { id: string; sura: string; aya: string; text: string }) => ({
@@ -59,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     return res.status(200).json(verses);
   } catch (err: any) {
-    console.error(`[API] Detailed error in get-verses for Surah ${surah}:`, {
+    console.error(`[API-GetVerses] Detailed error in get-verses for Surah ${surah}:`, {
       message: err.message,
       code: err.code, // PG error code, if available
       stack: err.stack,
@@ -73,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } finally {
     if (client) {
-      console.log("[API] Releasing database connection");
+      console.log("[API-GetVerses] Releasing database connection");
       client.release();
     }
   }

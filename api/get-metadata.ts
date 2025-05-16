@@ -18,9 +18,21 @@ dbPool.on('error', (err: Error) => {
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log(`[API] Request received: ${req.url}`);
-  console.log(`[API] Query parameters: ${JSON.stringify(req.query)}`);
-  console.log(`[API] Environment variables available: ${Object.keys(process.env).filter(key => !key.includes('KEY') && !key.includes('SECRET')).join(', ')}`);
+  // Set CORS headers for all responses from this function
+  // For development, '*' is okay. For production, restrict to your frontend domain.
+  // Example: res.setHeader('Access-Control-Allow-Origin', 'https://your-app-domain.com');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle OPTIONS preflight request for CORS
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  console.log(`[API-Metadata] Request received: ${req.url}`);
+  console.log(`[API-Metadata] Query parameters: ${JSON.stringify(req.query)}`);
+  console.log(`[API-Metadata] Environment variables available: ${Object.keys(process.env).filter(key => !key.includes('KEY') && !key.includes('SECRET')).join(', ')}`);
   
   const { type } = req.query;
   let client;
@@ -31,35 +43,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     // Handle different metadata requests
     if (type === 'surah-list') {
-      console.log("[API] Executing surah-list query");
+      console.log("[API-Metadata] Executing surah-list query");
       const result = await client.query(
         'SELECT number, arabic_name AS name, transliteration AS tname, ' +
         'english_name AS ename, ayas, revelation_type AS type, chronological_order AS "order", rukus ' +
         'FROM quran_surahs ORDER BY number'
       );
-      console.log(`[API] Query returned ${result.rows.length} rows`);
+      console.log(`[API-Metadata] Query returned ${result.rows.length} rows for surah-list`);
       return res.status(200).json(result.rows);
     }
     else if (type === 'sajdas') {
-      // Add similar logging for sajdas if needed
+      console.log("[API-Metadata] Executing sajdas query");
       const result = await client.query(
         'SELECT sajda_id, surah_number, ayah_number, type FROM quran_sajdas ORDER BY surah_number, ayah_number'
       );
+      console.log(`[API-Metadata] Query returned ${result.rows.length} rows for sajdas`);
       return res.status(200).json(result.rows);
     }
     else if (type === 'navigation-indices') {
+      console.log("[API-Metadata] navigation-indices requested (Not Implemented in DB yet)");
       // Add query for navigation indices if stored in DB
-      // Add logging if implemented
       return res.status(501).json({ error: 'Not implemented' });
     }
     
+    console.warn(`[API-Metadata] Invalid metadata type requested: ${type}`);
     return res.status(400).json({ error: 'Invalid metadata type requested' });
   } catch (err: any) {
-    console.error(`[API] Error fetching metadata (${type}):`, err);
+    console.error(`[API-Metadata] Error fetching metadata (${type}):`, err);
     return res.status(500).json({ error: 'Database error', message: err.message });
   } finally {
     if (client) {
-      console.log("[API] Releasing database connection");
+      console.log("[API-Metadata] Releasing database connection");
       client.release();
     }
   }

@@ -148,19 +148,27 @@ const VerseOfTheDay: React.FC = () => {
             fullReference: `Surah ${fetchedVerse.surahName} (${fetchedVerse.surahNumber}:${fetchedVerse.verseNumberInSurah})`,
           };
           setVerse(displayVerseData);
+          console.log('[VerseOfTheDay] Successfully fetched and processed new verse. Caching it.');
           await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(displayVerseData));
           await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, today);
         } else {
-          console.warn('[VerseOfTheDay] Fetched verse is considered invalid or an error object. Setting error state.', fetchedVerse);
-          setError(fetchedVerse?.english || 'Could not fetch a verse. Please try again later.'); // Use english field if it's the error object
+          console.warn('[VerseOfTheDay] Fetched verse is considered invalid or an error object. Setting error state and clearing cache for today.', fetchedVerse);
+          setError(fetchedVerse?.english || 'Could not fetch a verse. Please try again later.');
+          // Clear potentially bad cache for today to allow re-fetch on next load today
+          await AsyncStorage.removeItem(CACHE_KEY);
+          // Optionally, also remove the timestamp to force a full fetch next time,
+          // or leave it so it knows it tried and failed for today.
+          // For now, let's remove the verse data but keep the timestamp to avoid constant refetching on error.
+          // If we want to retry every time the component loads after an error for "today", remove timestamp too:
+          // await AsyncStorage.removeItem(CACHE_TIMESTAMP_KEY);
         }
       } catch (e: any) {
-        console.error('[VerseOfTheDay] useEffect: catch block error:', e.message, e.stack);
+        console.error('[VerseOfTheDay] useEffect: catch block error during fetch/processing:', e.message, e.stack);
         setError('An error occurred while fetching the verse.');
-        const cachedVerseData = await AsyncStorage.getItem(CACHE_KEY);
-        if (cachedVerseData) {
-          setVerse(JSON.parse(cachedVerseData));
-        }
+        // Do not fall back to potentially stale/error cache if a new fetch fails.
+        // Let the error state render. Clear today's cache.
+        await AsyncStorage.removeItem(CACHE_KEY);
+        // await AsyncStorage.removeItem(CACHE_TIMESTAMP_KEY); // To force refetch on next open today
       } finally {
         setLoading(false);
       }

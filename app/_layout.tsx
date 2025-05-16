@@ -18,6 +18,8 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepareApp() { // Renamed for clarity
       try {
+        // Temporary cache clearing logic has been removed.
+
         await Font.loadAsync({
           // Arabic Fonts
           "NotoNaskhArabic-Regular": require("../assets/fonts/NotoNaskhArabic-Regular.ttf"),

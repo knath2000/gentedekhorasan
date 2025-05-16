@@ -18,11 +18,21 @@ dbPool.on('error', (err: Error) => {
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log(`[API-Translation] Request received: ${req.url}`);
-  console.log(`[API-Translation] Query parameters: ${JSON.stringify(req.query)}`);
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle OPTIONS preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  console.log(`[API-GetTranslationVerses] Request received: ${req.url}`);
+  console.log(`[API-GetTranslationVerses] Query parameters: ${JSON.stringify(req.query)}`);
 
   if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET']);
+    // res.setHeader('Allow', ['GET']); // Allow header is less relevant
     return res.status(405).end('Method Not Allowed');
   }
 
@@ -48,12 +58,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let client;
   try {
     client = await dbPool.connect();
-    console.log("[API-Translation] Successfully connected to database");
+    console.log("[API-GetTranslationVerses] Successfully connected to database");
     // Note: The 'en_yusufali' table uses 'index' as the global verse ID.
     const query = `SELECT "index", sura, aya, text FROM ${tableName} WHERE sura = $1 ORDER BY aya ASC`;
-    console.log(`[API-Translation] Executing query: ${query} with params: [${surah}]`);
+    console.log(`[API-GetTranslationVerses] Executing query: ${query} with params: [${surah}]`);
     const result = await client.query(query, [surah]);
-    console.log(`[API-Translation] Query returned ${result.rows.length} rows for Surah ${surah}`);
+    console.log(`[API-GetTranslationVerses] Query returned ${result.rows.length} rows for Surah ${surah}`);
     
     // Map to a structure that includes the translation text
     // The client-side Verse type has 'id', 'surahId', 'numberInSurah', 'translation'
@@ -66,7 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     return res.status(200).json(verses);
   } catch (err: any) {
-    console.error(`[API-Translation] Detailed error in get-translation-verses for Surah ${surah}:`, {
+    console.error(`[API-GetTranslationVerses] Detailed error in get-translation-verses for Surah ${surah}:`, {
       message: err.message,
       code: err.code,
       stack: err.stack,
@@ -76,11 +86,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({
       error: 'Database error while fetching translation',
       details: err.message,
-      code: err.code 
+      code: err.code
     });
   } finally {
     if (client) {
-      console.log("[API-Translation] Releasing database connection");
+      console.log("[API-GetTranslationVerses] Releasing database connection");
       client.release();
     }
   }

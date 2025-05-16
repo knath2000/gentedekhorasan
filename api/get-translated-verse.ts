@@ -16,11 +16,21 @@ dbPool.on('error', (err: Error) => {
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log(`[API-SingleTranslatedVerse] Request received: ${req.url}`);
-  console.log(`[API-SingleTranslatedVerse] Query parameters: ${JSON.stringify(req.query)}`);
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle OPTIONS preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  console.log(`[API-GetSingleTranslatedVerse] Request received: ${req.url}`); // Changed log prefix
+  console.log(`[API-GetSingleTranslatedVerse] Query parameters: ${JSON.stringify(req.query)}`);
 
   if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET']);
+    // res.setHeader('Allow', ['GET']); // Allow header is less relevant
     return res.status(405).end('Method Not Allowed');
   }
 
@@ -47,34 +57,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let client;
   try {
     client = await dbPool.connect();
-    console.log("[API-SingleTranslatedVerse] Successfully connected to database");
+    console.log("[API-GetSingleTranslatedVerse] Successfully connected to database");
 
     // Fetch Arabic verse
     const arabicQuery = 'SELECT id, sura, aya, text FROM quran_text WHERE sura = $1 AND aya = $2 LIMIT 1';
-    console.log(`[API-SingleTranslatedVerse] Executing Arabic query: ${arabicQuery} with params: [${surah}, ${ayah}]`);
+    console.log(`[API-GetSingleTranslatedVerse] Executing Arabic query: ${arabicQuery} with params: [${surah}, ${ayah}]`);
     const arabicResult = await client.query(arabicQuery, [surah, ayah]);
     
     let arabicVerseData = null;
     if (arabicResult.rows.length > 0) {
       arabicVerseData = arabicResult.rows[0];
-      console.log(`[API-SingleTranslatedVerse] Arabic verse found: S${surah}:A${ayah}`);
+      console.log(`[API-GetSingleTranslatedVerse] Arabic verse found: S${surah}:A${ayah}`);
     } else {
-      console.warn(`[API-SingleTranslatedVerse] Arabic verse NOT found for S${surah}:A${ayah}`);
+      console.warn(`[API-GetSingleTranslatedVerse] Arabic verse NOT found for S${surah}:A${ayah}`);
     }
 
     // Fetch Translation verse
-    // The 'en_yusufali' table uses 'index' as its primary key (global verse ID), 
+    // The 'en_yusufali' table uses 'index' as its primary key (global verse ID),
     // but we query by sura and aya for consistency and to match quran_text.
     const translationQuery = `SELECT "index", sura, aya, text FROM ${translationTableName} WHERE sura = $1 AND aya = $2 LIMIT 1`;
-    console.log(`[API-SingleTranslatedVerse] Executing Translation query: ${translationQuery} with params: [${surah}, ${ayah}]`);
+    console.log(`[API-GetSingleTranslatedVerse] Executing Translation query: ${translationQuery} with params: [${surah}, ${ayah}]`);
     const translationResult = await client.query(translationQuery, [surah, ayah]);
 
     let translationText = null;
     if (translationResult.rows.length > 0) {
       translationText = translationResult.rows[0].text;
-      console.log(`[API-SingleTranslatedVerse] Translation found for S${surah}:A${ayah}`);
+      console.log(`[API-GetSingleTranslatedVerse] Translation found for S${surah}:A${ayah}`);
     } else {
-      console.warn(`[API-SingleTranslatedVerse] Translation NOT found for S${surah}:A${ayah} in ${translationTableName}`);
+      console.warn(`[API-GetSingleTranslatedVerse] Translation NOT found for S${surah}:A${ayah} in ${translationTableName}`);
     }
 
     if (!arabicVerseData && !translationText) {
@@ -95,7 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json(responseVerse);
 
   } catch (err: any) {
-    console.error(`[API-SingleTranslatedVerse] Detailed error for S${surah}:A${ayah}:`, {
+    console.error(`[API-GetSingleTranslatedVerse] Detailed error for S${surah}:A${ayah}:`, {
       message: err.message,
       code: err.code,
       stack: err.stack,
@@ -103,11 +113,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({
       error: 'Database error while fetching single translated verse',
       details: err.message,
-      code: err.code 
+      code: err.code
     });
   } finally {
     if (client) {
-      console.log("[API-SingleTranslatedVerse] Releasing database connection");
+      console.log("[API-GetSingleTranslatedVerse] Releasing database connection");
       client.release();
     }
   }
