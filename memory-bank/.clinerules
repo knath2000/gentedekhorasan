@@ -26,12 +26,12 @@
     -   **Client Interaction:** `src/services/apiClient.ts` handles `fetch` requests to these serverless functions.
     -   **Rationale:** Provides flexibility for core text data, allows for potential future features (advanced search, different Qira'at), and abstracts direct DB access from the client.
 -   **Vercel Blob:** Primary store for static assets:
-    -   Surah list (JSON).
+    -   Surah list (JSON) - *Now primarily fetched via API/DB, Blob is fallback/legacy for some parts.*
     -   Yusuf Ali translations (JSON).
     -   Audio files.
     -   **Access:** `src/services/surahService.ts` (for JSON data) and `src/services/audioService.ts` (for audio file URLs).
 -   **Hybrid Data Retrieval Orchestration:**
-    -   **Pattern:** `src/services/surahService.ts` acts as an orchestrator, fetching Arabic text via `apiClient.ts` (from API/DB) and translations/Surah list directly from Vercel Blob, then combining them into complete `Verse` objects for the UI.
+    -   **Pattern:** `src/services/surahService.ts` acts as an orchestrator, fetching Arabic text via `apiClient.ts` (from API/DB) and translations/Surah list (Surah list now primarily via API) directly from Vercel Blob, then combining them into complete `Verse` objects for the UI.
 -   **Lottie Animations:**
     -   `lottie-react-native` for native.
     -   `@lottiefiles/dotlottie-react` for web.
@@ -40,6 +40,7 @@
 -   **Audio Playback:** `expo-audio` is used. The core logic is managed by a custom hook `src/hooks/useAudioPlayer.ts` which uses `createAudioPlayer` directly from `expo-audio` and implements a `useReducer` pattern for state management. UI interaction (tap-to-play/pause) is handled in `src/components/VerseCard.tsx`.
 -   **Metro Bundler Polyfills:** Critical for cross-platform compatibility of certain libraries. Configuration in `metro.config.js`.
 -   **TypeScript DOM Lib:** `tsconfig.json` updated to include `"dom"` in `compilerOptions.lib` for web-specific typings (e.g., `HTMLInputElement` in `PlatformSlider.tsx`).
+
 ### 3. Development Workflow & Preferences:
 -   **Memory Bank:** Essential for project continuity. All core documents are to be maintained.
 -   **Iterative Development:** Features are built screen by screen. Bug fixing often involves iterative diagnosis.
@@ -52,7 +53,7 @@
 -   `read_file`: Essential before any modification.
 -   `apply_diff`: Can be problematic; `write_to_file` is a more reliable fallback. `apply_diff` requires exact string matches for search blocks.
 -   `sequential-thinking` MCP: Used for planning complex multi-step tasks, especially debugging.
--   `execute_command`: Used for running scripts.
+-   `execute_command`: Used for running scripts and git operations.
 
 ### 5. Potential Challenges / Areas to Watch:
 -   **Cross-platform UI consistency.**
@@ -62,6 +63,7 @@
 -   **Asynchronous Operations & State Sync:** Especially critical for audio. The custom `src/hooks/useAudioPlayer.ts` hook handles this with a detailed state machine and event-driven updates.
 -   **`expo-audio` Reliability:** The current implementation in `src/hooks/useAudioPlayer.ts` uses `createAudioPlayer` directly, coupled with robust error handling, retry mechanisms, and stall detection to ensure reliability. This approach was chosen for fine-grained control over the player lifecycle.
 -   **Accessibility Implementation:** Ensuring `AccessibilityInfo.announceForAccessibility` and correct ARIA props are used and effective across platforms.
+
 ## Layout & UI Development Patterns (2025-05-10)
 
 ### 6. Precise FlatList Sizing with Tab Bars & Safe Areas:
@@ -117,7 +119,7 @@
 ## Data Migration & Static Asset Handling (Vercel Blob) (2025-05-13)
 
 ### 15. Static Asset Strategy (Vercel Blob):
--   **Pattern:** Use static JSON files on Vercel Blob for translations and Surah lists. Audio files are also hosted on Vercel Blob. (Arabic Quranic text is now database-driven via API).
+-   **Pattern:** Use static JSON files on Vercel Blob for translations. Audio files are also hosted on Vercel Blob. (Arabic Quranic text and Surah list are now database-driven via API).
 
 ### 16. Migration Script Structure (Node.js):
 -   **Pattern:** Scripts use `dotenv`, Supabase client, `@vercel/blob` client. Specify `access: 'public'`, `contentType: 'application/json; charset=utf-8'`, `addRandomSuffix: false`.
@@ -127,8 +129,9 @@
 
 ### 18. Application Service Layer for Data Retrieval:
 -   **Pattern:**
-    -   `src/services/apiClient.ts`: Dedicated to fetching data (Arabic text) from Vercel Serverless Functions.
-    -   `src/services/surahService.ts`: Fetches static assets (translations, Surah list) directly from Vercel Blob and uses `apiClient.ts` for dynamic Arabic text, then combines them.
+    -   `src/services/apiClient.ts`: Dedicated to fetching data (Arabic text, metadata) from Vercel Serverless Functions.
+    -   `src/services/quranMetadataService.ts`: Handles fetching metadata, prioritizing Edge Config then falling back to API.
+    -   `src/services/surahService.ts`: Fetches static assets (translations) directly from Vercel Blob and uses `apiClient.ts` (via `quranMetadataService.ts`) for dynamic Arabic text and Surah list, then combines them.
     -   `src/services/audioService.ts`: Constructs URLs for audio files hosted on Vercel Blob.
 
 ### 19. Data Organization in Blob Storage:
@@ -246,3 +249,15 @@ This file will be updated as new patterns, preferences, or critical project inte
 ### 28. Pattern: Defensive Numeric Handling for Native Modules (Reiteration)
 -   **Rule:** (This reiterates Rule #20 for emphasis in the audio context) Always use `Math.round()` on numeric values (especially time in milliseconds derived from seconds) *before* passing them as props to native UI components (like Sliders) or into `accessibilityValue` objects.
 -   **Rationale:** Prevents "loss of precision during arithmetic conversion" errors when values cross the React Native bridge, ensuring stability and correct behavior of native elements and accessibility services.
+
+## Vercel Deployment & TypeScript Configuration (2025-05-15)
+
+### 33. Rule: Specialized TypeScript Configuration for Vercel API Routes
+-   **Pattern:** When deploying TypeScript serverless functions to Vercel (Node.js runtime), create a dedicated `tsconfig.json` (e.g., `api/tsconfig.json`) within the API directory.
+-   **Configuration:** This `tsconfig.json` should specify `"module": "commonjs"` and `"esModuleInterop": true` to ensure correct compilation for the Node.js environment. API source files can then use ES Module `import` syntax, which will be transpiled appropriately.
+-   **`vercel.json` Build:** Ensure the `builds` configuration in `vercel.json` for the API routes includes a reference to this specialized tsconfig (e.g., `"config": { "includeFiles": ["api/tsconfig.json"] }`).
+
+### 34. Rule: Vercel Routing to TypeScript Serverless Functions
+-   **Pattern:** When defining `routes` in `vercel.json` for TypeScript serverless functions, the `dest` path should point directly to the TypeScript source file (e.g., `{"src": "/api/get-metadata", "dest": "/api/get-metadata.ts"}`).
+-   **Observation:** Pointing to compiled `.js` files or just the route name without an extension can lead to 404 errors. Explicitly routing to the `.ts` file proved to be the reliable solution for this project.
+-   **Order of Routes:** Place more specific routes before more general/wildcard routes in `vercel.json` to ensure correct matching.

@@ -1,8 +1,7 @@
 // src/services/surahService.ts
-import Constants from 'expo-constants';
 import { Surah, Verse } from '../types/quran';
 // import { getVerseFromDb, getVersesBySurahFromDb } from './quranDbService'; // Old DB functions
-import { fetchVerseFromAPI, fetchVersesFromAPI } from './apiClient'; // New API client functions
+import { fetchTranslationVersesBySurah, fetchVerseFromAPI, fetchVersesFromAPI } from './apiClient'; // New API client functions
 import { getBasicSurahList } from './quranMetadataService'; // Import new service
 
 export const fetchSurahList = async (): Promise<Surah[]> => {
@@ -59,69 +58,52 @@ export const fetchSurahById = async (id: number): Promise<Surah | null> => {
   }
 }
 
-export const fetchTranslationsBySurahId = async (surahId: number): Promise<Record<number, string>> => {
+// Removed fetchTranslationsBySurahId as translations will now be fetched via API
+
+export const fetchVersesBySurahId = async (surahId: number, translator: string = "en.yusufali"): Promise<Verse[]> => {
   try {
-    console.log(`Fetching Yusuf Ali translations for surah ${surahId} from Vercel Blob...`);
-    const vercelBlobBaseUrl = Constants.expoConfig?.extra?.VERCEL_BLOB_URL_BASE as string;
-    if (!vercelBlobBaseUrl) {
-      console.error('VERCEL_BLOB_URL_BASE is not defined in app.json extra. Cannot fetch translations.');
-      throw new Error('Application configuration error: Vercel Blob URL base is missing.');
-    }
-
-    const translationUrl = `https://${vercelBlobBaseUrl.replace(/\/$/, '')}/quran-data/translation/yusufali/${surahId}.json`;
-    console.log(`Fetching translations from: ${translationUrl}`);
-
-    const response = await fetch(translationUrl);
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.warn(`No Yusuf Ali translation file found for surah ${surahId} at ${translationUrl}. Returning empty translations.`);
-        return {};
-      }
-      throw new Error(`Failed to fetch Yusuf Ali translations for Surah ${surahId} from Vercel Blob. Status: ${response.status}`);
-    }
-
-    const translationDataArray = await response.json() as { aya: number; text: string }[];
-
-    if (!translationDataArray || translationDataArray.length === 0) {
-      console.warn(`No translation items found in the JSON for surah ${surahId}`);
-      return {};
-    }
-
-    return translationDataArray.reduce((acc, item) => {
-      acc[item.aya] = item.text;
-      return acc;
-    }, {} as Record<number, string>);
-  } catch (error: any) {
-    console.error(`Error fetching Yusuf Ali translations for surah ${surahId}:`, error.message);
-    throw error; // Re-throw to be handled by the caller, e.g., fetchVersesBySurahId
-  }
-};
-
-export const fetchVersesBySurahId = async (surahId: number): Promise<Verse[]> => {
-  try {
-    console.log(`Fetching verses for surah ${surahId} (Arabic from API, Translation from Blob)`);
+    console.log(`Fetching verses for surah ${surahId} (Arabic and Translation from API)`);
 
     // Fetch Arabic text from Vercel API
     const arabicVersesFromAPI = await fetchVersesFromAPI(surahId);
 
     if (!arabicVersesFromAPI || arabicVersesFromAPI.length === 0) {
       console.warn(`No Arabic verses found for surah ${surahId} from API.`);
-      return [];
+      // Still try to fetch translations, maybe they exist independently
     }
 
-    // Fetch translations from Vercel Blob (existing logic)
-    const translationsData = await fetchTranslationsBySurahId(surahId);
+    // Fetch translations from Vercel API using the new function
+    // The new API returns an array of objects like: { id, surahId, numberInSurah, translation }
+    const translationVerseObjects = await fetchTranslationVersesBySurah(surahId, translator);
+    
+    // Create a map for quick lookup of translations by verse numberInSurah
+    const translationsMap = translationVerseObjects.reduce((acc, verse) => {
+      acc[verse.numberInSurah] = verse.translation;
+      return acc;
+    }, {} as Record<number, string | undefined>);
 
-    // Combine Arabic text from API with translations
+    // If arabicVersesFromAPI is empty, but translations exist, map translations
+    if ((!arabicVersesFromAPI || arabicVersesFromAPI.length === 0) && translationVerseObjects.length > 0) {
+      console.warn(`No Arabic verses from API for Surah ${surahId}, but translations found. Returning translations only.`);
+      return translationVerseObjects.map(tVerse => ({
+        id: tVerse.id,
+        surahId: tVerse.surahId,
+        numberInSurah: tVerse.numberInSurah,
+        text: '', // No Arabic text
+        translation: tVerse.translation,
+      }));
+    }
+    
+    // Combine Arabic text from API with translations from API
     return arabicVersesFromAPI.map(apiVerse => ({
-      id: apiVerse.id, 
-      surahId: apiVerse.surahId, 
+      id: apiVerse.id,
+      surahId: apiVerse.surahId,
       numberInSurah: apiVerse.numberInSurah,
-      text: apiVerse.text, 
-      translation: translationsData[apiVerse.numberInSurah] || undefined 
+      text: apiVerse.text,
+      translation: translationsMap[apiVerse.numberInSurah] || undefined
     }));
   } catch (error: any) {
-    console.error(`Error fetching verses for surah ${surahId}:`, error.message);
+    console.error(`Error fetching verses for surah ${surahId} with translator ${translator}:`, error.message);
     throw error;
   }
 };
@@ -163,9 +145,15 @@ export const fetchRandomVerse = async (): Promise<DailyVerse> => {
     }
     const arabicText = verseDataItem.text;
 
-    // Fetch the English translation for the verse using the existing service function (from Vercel Blob)
-    const translationsForSurah = await fetchTranslationsBySurahId(surahNumber);
-    const englishText = translationsForSurah[randomAyahNumber] || "Translation not available.";
+    // Fetch the English translation for the verse using the new API-based function
+    // We need to fetch all translations for the surah then pick the one we need.
+    // Or, ideally, have a get-translation-verse endpoint. For now, let's fetch all.
+    const translationVerseObjects = await fetchTranslationVersesBySurah(surahNumber, "en.yusufali");
+    const translationsMap = translationVerseObjects.reduce((acc, verse) => {
+      acc[verse.numberInSurah] = verse.translation;
+      return acc;
+    }, {} as Record<number, string | undefined>);
+    const englishText = translationsMap[randomAyahNumber] || "Translation not available.";
 
     return {
       arabic: arabicText,

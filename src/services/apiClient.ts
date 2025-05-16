@@ -86,3 +86,28 @@ export async function fetchMetadataFromAPI<T>(type: string): Promise<T | null> {
     throw error; // Re-throw to be handled by the caller
   }
 }
+
+/**
+ * Fetches all translation verses for a given Surah and translator from the Vercel API.
+ * @param surahId The number of the Surah (1-based).
+ * @param translator The key for the translator (e.g., "en.yusufali").
+ * @returns A Promise resolving to an array of objects containing translation text.
+ */
+export async function fetchTranslationVersesBySurah(surahId: number, translator: string): Promise<Pick<Verse, 'id' | 'surahId' | 'numberInSurah' | 'translation'>[]> {
+  if (!API_BASE_URL) {
+    throw new Error('API_BASE_URL is not configured. Cannot fetch translation verses.');
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/get-translation-verses?surah=${surahId}&translator=${translator}`);
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error(`API error fetching translation verses for Surah ${surahId} (translator: ${translator}): ${response.status}`, errorData);
+      throw new Error(`Failed to fetch translation verses for Surah ${surahId}, translator ${translator}. Status: ${response.status}`);
+    }
+    // The API returns data in Pick<Verse, 'id' | 'surahId' | 'numberInSurah' | 'translation'>[] structure
+    return await response.json() as Pick<Verse, 'id' | 'surahId' | 'numberInSurah' | 'translation'>[];
+  } catch (error) {
+    console.error(`Error in fetchTranslationVersesBySurah for Surah ${surahId} (translator: ${translator}):`, error);
+    throw error; // Re-throw to be handled by the caller
+  }
+}
