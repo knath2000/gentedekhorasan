@@ -1,7 +1,7 @@
 // src/services/surahService.ts
 import { Surah, Verse } from '../types/quran';
 // import { getVerseFromDb, getVersesBySurahFromDb } from './quranDbService'; // Old DB functions
-import { fetchTranslationVersesBySurah, fetchVerseFromAPI, fetchVersesFromAPI } from './apiClient'; // New API client functions
+import { fetchSingleTranslatedVerse, fetchTranslationVersesBySurah, fetchVersesFromAPI } from './apiClient'; // New API client functions
 import { getBasicSurahList } from './quranMetadataService'; // Import new service
 
 export const fetchSurahList = async (): Promise<Surah[]> => {
@@ -128,43 +128,30 @@ export const fetchRandomVerse = async (): Promise<DailyVerse> => {
 
     const randomAyahNumber = Math.floor(Math.random() * numberOfAyahsInSurah) + 1;
 
-    // Fetch Arabic text for the random verse from Vercel API
-    const verseDataItem = await fetchVerseFromAPI(surahNumber, randomAyahNumber);
+    // Fetch the Arabic text and its translation together
+    const translatedVerse = await fetchSingleTranslatedVerse(surahNumber, randomAyahNumber, "en.yusufali");
 
-    if (!verseDataItem) {
-      // API client already logs a warning if 404, or throws for other errors
-      console.error(`Verse ${surahNumber}:${randomAyahNumber} not found or error fetching from API.`);
-      // Return a default error structure or rethrow, depending on desired app behavior
+    if (!translatedVerse) {
+      console.error(`Translated verse ${surahNumber}:${randomAyahNumber} not found or error fetching from API.`);
       return {
         arabic: 'Error loading verse text.',
-        english: 'Please try again later.',
+        english: 'Translation not available.', // More specific error for English part
         surahName: surahEnglishName || 'Error',
         surahNumber: surahNumber || 0,
         verseNumberInSurah: randomAyahNumber || 0,
       };
     }
-    const arabicText = verseDataItem.text;
-
-    // Fetch the English translation for the verse using the new API-based function
-    // We need to fetch all translations for the surah then pick the one we need.
-    // Or, ideally, have a get-translation-verse endpoint. For now, let's fetch all.
-    const translationVerseObjects = await fetchTranslationVersesBySurah(surahNumber, "en.yusufali");
-    const translationsMap = translationVerseObjects.reduce((acc, verse) => {
-      acc[verse.numberInSurah] = verse.translation;
-      return acc;
-    }, {} as Record<number, string | undefined>);
-    const englishText = translationsMap[randomAyahNumber] || "Translation not available.";
 
     return {
-      arabic: arabicText,
-      english: englishText,
+      arabic: translatedVerse.text || 'Error loading verse text.', // Handle if text is empty
+      english: translatedVerse.translation || 'Translation not available.', // Handle if translation is empty
       surahName: surahEnglishName,
       surahNumber: surahNumber,
       verseNumberInSurah: randomAyahNumber,
     };
 
   } catch (error: any) {
-    console.error('Error fetching random verse:', error.message);
+    console.error('Error in fetchRandomVerse:', error.message);
     // Fallback structure in case of any error during the process
     return {
       arabic: 'Error loading verse.',

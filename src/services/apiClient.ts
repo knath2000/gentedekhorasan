@@ -111,3 +111,32 @@ export async function fetchTranslationVersesBySurah(surahId: number, translator:
     throw error; // Re-throw to be handled by the caller
   }
 }
+
+/**
+ * Fetches a single verse with its translation from the Vercel API.
+ * @param surahId The number of the Surah (1-based).
+ * @param ayahId The number of the Ayah within the Surah.
+ * @param translator The key for the translator (e.g., "en.yusufali").
+ * @returns A Promise resolving to a Verse object (with Arabic text and translation) or null if not found.
+ */
+export async function fetchSingleTranslatedVerse(surahId: number, ayahId: number, translator: string): Promise<Verse | null> {
+  if (!API_BASE_URL) {
+    throw new Error('API_BASE_URL is not configured. Cannot fetch translated verse.');
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`);
+    if (response.status === 404) {
+      console.warn(`Translated verse ${surahId}:${ayahId} (translator: ${translator}) not found via API.`);
+      return null;
+    }
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error(`API error fetching translated verse ${surahId}:${ayahId} (translator: ${translator}): ${response.status}`, errorData);
+      throw new Error(`Failed to fetch translated verse ${surahId}:${ayahId}, translator ${translator}. Status: ${response.status}`);
+    }
+    return await response.json() as Verse; // API returns the full Verse object
+  } catch (error) {
+    console.error(`Error in fetchSingleTranslatedVerse for ${surahId}:${ayahId} (translator: ${translator}):`, error);
+    throw error; // Re-throw to be handled by the caller
+  }
+}
