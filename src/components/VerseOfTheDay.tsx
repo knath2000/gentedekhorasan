@@ -113,23 +113,32 @@ const VerseOfTheDay: React.FC = () => {
 
   useEffect(() => {
     const getVerse = async () => {
+      console.log('[VerseOfTheDay] useEffect: getVerse initiated.');
       setLoading(true);
       setError(null);
       try {
         const today = new Date().toDateString();
         const cachedTimestamp = await AsyncStorage.getItem(CACHE_TIMESTAMP_KEY);
+        console.log(`[VerseOfTheDay] Today: ${today}, Cached Timestamp: ${cachedTimestamp}`);
         
         if (cachedTimestamp === today) {
           const cachedVerseData = await AsyncStorage.getItem(CACHE_KEY);
           if (cachedVerseData) {
+            console.log('[VerseOfTheDay] Found cached verse for today. Using cache.');
             setVerse(JSON.parse(cachedVerseData));
             setLoading(false);
             return;
           }
+          console.log('[VerseOfTheDay] Timestamp matches today, but no cached verse data found.');
+        } else {
+          console.log('[VerseOfTheDay] No valid cache for today. Fetching new verse.');
         }
 
         const fetchedVerse = await fetchRandomVerse();
-        if (fetchedVerse && fetchedVerse.surahNumber !== 0) { 
+        console.log('[VerseOfTheDay] useEffect: fetchRandomVerse returned:', JSON.stringify(fetchedVerse));
+
+        if (fetchedVerse && fetchedVerse.surahNumber !== 0 && fetchedVerse.arabic !== 'Error loading verse text.' && fetchedVerse.arabic !== 'Error loading verse.') {
+          console.log('[VerseOfTheDay] Fetched verse is valid. Setting state and cache.');
           const displayVerseData: DisplayVerse = {
             surahName: fetchedVerse.surahName,
             surahNumber: fetchedVerse.surahNumber,
@@ -142,10 +151,11 @@ const VerseOfTheDay: React.FC = () => {
           await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(displayVerseData));
           await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, today);
         } else {
-          setError('Could not fetch a verse. Please try again later.');
+          console.warn('[VerseOfTheDay] Fetched verse is considered invalid or an error object. Setting error state.', fetchedVerse);
+          setError(fetchedVerse?.english || 'Could not fetch a verse. Please try again later.'); // Use english field if it's the error object
         }
-      } catch (e) {
-        console.error('Failed to fetch or cache verse of the day:', e);
+      } catch (e: any) {
+        console.error('[VerseOfTheDay] useEffect: catch block error:', e.message, e.stack);
         setError('An error occurred while fetching the verse.');
         const cachedVerseData = await AsyncStorage.getItem(CACHE_KEY);
         if (cachedVerseData) {
