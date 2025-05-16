@@ -23,15 +23,15 @@ export default function RootLayout() {
 
         await Font.loadAsync({
           // Arabic Fonts
-          "NotoNaskhArabic-Regular": require("../assets/fonts/NotoNaskhArabic-Regular.ttf"),
-          "NotoNaskhArabic-Bold": require("../assets/fonts/NotoNaskhArabic-Bold.ttf"),
+          "NotoNaskhArabic-Regular": require("../assets/fonts/NotoNaskhArabic-Regular.woff2"),
+          "NotoNaskhArabic-Bold": require("../assets/fonts/NotoNaskhArabic-Bold.woff2"),
           // English Fonts
-          "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
-          "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
-          "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.ttf"),
-          "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
+          "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.woff2"),
+          "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.woff2"),
+          "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.woff2"),
+          "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.woff2"),
           // Existing font, keep or remove as needed
-          "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
+          "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.woff2"),
         });
       } catch (error) {
         setFontError(error as Error);
