@@ -1,14 +1,30 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
+    "target": "es2020",
     "module": "commonjs",
+    "lib": ["es2020"],
+    "allowJs": true,
+    "jsx": "preserve", // Added preserve as a safe default, though likely not used in API files
+    "noEmit": false,
+    "strict": true,
     "moduleResolution": "node",
-    "target": "es2017",
-    "outDir": "../dist/api",
-    "rootDir": "./",
-    "esModuleInterop": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true, // Often good for transpile-only builders
+    "rootDir": ".",
+    "baseUrl": ".",
+    // It's generally better to let Vercel's build process handle the output directory.
+    // "outDir": ".dist", // Example, but typically not needed for Vercel
+    "paths": { // Optional: if you need to resolve modules from the root project, adjust accordingly
+      "@/*": ["../*"] // Example: maps @/ to project root from api/ directory
+    }
   },
   "include": [
-    "./**/*.ts"
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
