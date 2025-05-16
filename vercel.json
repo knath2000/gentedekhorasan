@@ -12,19 +12,19 @@
   "routes": [
     {
       "src": "/api/get-metadata",
-      "dest": "/api/get-metadata.js"
+      "dest": "/api/get-metadata"
     },
     {
       "src": "/api/get-verse",
-      "dest": "/api/get-verse.js"
+      "dest": "/api/get-verse"
     },
     {
       "src": "/api/get-verses",
-      "dest": "/api/get-verses.js"
+      "dest": "/api/get-verses"
     },
     {
       "src": "/api/([^/]+)",
-      "dest": "/api/$1.js"
+      "dest": "/api/$1"
     }
   ]
 }
