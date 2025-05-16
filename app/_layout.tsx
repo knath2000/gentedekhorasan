@@ -1,6 +1,7 @@
 import * as Font from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen"; // Import SplashScreen
+import Head from 'next/head'; // Import Head from next/head
 import { useCallback, useEffect, useState } from "react"; // Add useCallback
 import { Text, View } from "react-native"; // For displaying errors & View. Removed Platform
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -76,6 +77,89 @@ export default function RootLayout() {
   return (
     <ThemeProvider theme={theme}>
       <SafeAreaProvider>
+        <Head>
+          <title>Luminous Verses - Quran Explorer</title>
+          <meta name="description" content="Explore the Quran with Luminous Verses. Read, listen, and discover the divine message." />
+          {/* Add other meta tags as needed, e.g., Open Graph, Twitter */}
+          <meta property="og:title" content="Luminous Verses - Quran Explorer" />
+          <meta property="og:description" content="Explore the Quran with Luminous Verses. Read, listen, and discover the divine message." />
+          <meta property="og:type" content="website" />
+          {/* <meta property="og:image" content="/assets/images/og-image.jpg" /> */}
+          <meta name="twitter:card" content="summary_large_image" />
+          {/* <meta name="twitter:image" content="/assets/images/og-image.jpg" /> */}
+<script type="application/ld+json">
+            {`
+              {
+                "@context": "https://schema.org",
+                "@graph": [
+                  {
+                    "@type": "WebSite",
+                    "@id": "https://onlyquranexpo.vercel.app/#website",
+                    "url": "https://onlyquranexpo.vercel.app/",
+                    "name": "Luminous Verses",
+                    "description": "Explore the Quran with Luminous Verses. Read, listen, and discover the divine message.",
+                    "publisher": {
+                      "@type": "Organization",
+                      "name": "Luminous Verses"
+                      // Add logo, url if available
+                    },
+                    "inLanguage": "en"
+                    // Consider adding potentialAction for search
+                  },
+                  {
+                    "@type": "Book",
+                    "@id": "https://onlyquranexpo.vercel.app/#quran",
+                    "name": "The Quran",
+                    "alternativeHeadline": "Al-Qur'an al-Karim",
+                    "inLanguage": ["ar", "en"],
+                    "genre": "Religious Text",
+                    "url": "https://onlyquranexpo.vercel.app/",
+                    "isPartOf": {
+                       "@id": "https://onlyquranexpo.vercel.app/#website"
+                    }
+                    // We can add hasPart for chapters later if needed
+                  }
+                ]
+              }
+            `}
+          </script>
+          <script type="application/ld+json">
+            {`
+              {
+                "@context": "https://schema.org",
+                "@graph": [
+                  {
+                    "@type": "WebSite",
+                    "@id": "https://onlyquranexpo.vercel.app/#website",
+                    "url": "https://onlyquranexpo.vercel.app/",
+                    "name": "Luminous Verses",
+                    "description": "Explore the Quran with Luminous Verses. Read, listen, and discover the divine message.",
+                    "publisher": {
+                      "@type": "Organization",
+                      "name": "Luminous Verses"
+                      // Add logo, url if available
+                    },
+                    "inLanguage": "en"
+                    // Consider adding potentialAction for search
+                  },
+                  {
+                    "@type": "Book",
+                    "@id": "https://onlyquranexpo.vercel.app/#quran",
+                    "name": "The Quran",
+                    "alternativeHeadline": "Al-Qur'an al-Karim",
+                    "inLanguage": ["ar", "en"],
+                    "genre": "Religious Text",
+                    "url": "https://onlyquranexpo.vercel.app/",
+                    "isPartOf": {
+                       "@id": "https://onlyquranexpo.vercel.app/#website"
+                    }
+                    // We can add hasPart for chapters later if needed
+                  }
+                ]
+              }
+            `}
+          </script>
+        </Head>
         <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
           {AppContent}
         </View>

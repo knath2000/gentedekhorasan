@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import Head from 'next/head'; // Import Head for structured data
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Platform, Text, View } from 'react-native'; // Removed ImageBackground
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -105,6 +106,42 @@ export default function SurahsScreen() {
 
   return (
     <ScreenBackground>
+      <Head>
+        <title>Surahs - Luminous Verses</title>
+        <meta name="description" content="Browse and select from the 114 Surahs (chapters) of the Holy Quran." />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              "name": "Surahs - Chapters of the Quran",
+              "description": "Browse and select from the 114 Surahs (chapters) of the Holy Quran.",
+              "url": "https://onlyquranexpo.vercel.app/surahs",
+              "mainEntity": {
+                "@type": "ItemList",
+                "numberOfItems": ${surahs.length},
+                "itemListOrder": "http://schema.org/ItemListOrderAscending",
+                "itemListElement": [
+                  ${surahs.map((surah, index) => `{
+                    "@type": "ListItem",
+                    "position": ${index + 1},
+                    "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}",
+                    "item": {
+                      "@type": "Chapter",
+                      "@id": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}#chapter",
+                      "name": "${surah.name}",
+                      "alternativeHeadline": "${surah.englishName}",
+                      "chapterNumber": ${surah.number},
+                      "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}"
+                      // Could add isPartOf Book schema here if needed
+                    }
+                  }`).join(',\n                  ')}
+                ]
+              }
+            }
+          `}
+        </script>
+      </Head>
       <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
         <View style={{ height: listContainerHeight }}>
           <FlatList

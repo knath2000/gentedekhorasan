@@ -7,10 +7,22 @@ module.exports = async function (env, argv) {
     {
       ...env,
       // Passing true will enable the default Workbox + Manifest plugins.
-      offline: false, 
+      offline: false,
       // Set to true to generate a bundle stats file for analysis.
       // You can also pass a string to define the output path.
       // analyze: true, // Option 1: Expo's built-in analyzer flag (might be simpler)
+      babel: {
+        dangerouslyAddModulePathsToTranspile: [],
+        // Target modern browsers to avoid unnecessary transpilation
+        targets: {
+          browsers: [
+            'last 2 Chrome versions',
+            'last 2 Firefox versions',
+            'last 2 Safari versions',
+            'last 2 Edge versions'
+          ]
+        }
+      }
     },
     argv
   );
