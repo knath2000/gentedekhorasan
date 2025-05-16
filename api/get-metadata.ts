@@ -1,9 +1,9 @@
 // api/get-metadata.ts
-const { VercelRequest, VercelResponse } = require('@vercel/node');
-const { Pool } = require('pg');
+const { VercelRequest: _VercelRequest, VercelResponse: _VercelResponse } = require('@vercel/node');
+const { Pool: PgPool } = require('pg');
 
 // Initialize the connection pool (same as other API endpoints)
-const pool = new Pool({
+const dbPool = new PgPool({
   connectionString: process.env.NEON_DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
@@ -13,11 +13,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
-pool.on('error', (err: Error) => {
+dbPool.on('error', (err: Error) => {
   console.error('Unexpected error on idle client in pool (get-metadata)', err);
 });
 
-module.exports = async function handler(req: typeof VercelRequest, res: typeof VercelResponse) {
+module.exports = async function handler(req: typeof _VercelRequest, res: typeof _VercelResponse) {
   console.log(`[API] Request received: ${req.url}`);
   console.log(`[API] Query parameters: ${JSON.stringify(req.query)}`);
   console.log(`[API] Environment variables available: ${Object.keys(process.env).filter(key => !key.includes('KEY') && !key.includes('SECRET')).join(', ')}`);
@@ -26,7 +26,7 @@ module.exports = async function handler(req: typeof VercelRequest, res: typeof V
   let client;
   
   try {
-    client = await pool.connect();
+    client = await dbPool.connect();
     console.log("[API] Successfully connected to database");
     
     // Handle different metadata requests
