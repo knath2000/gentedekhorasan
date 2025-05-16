@@ -64,3 +64,25 @@ export async function fetchVerseFromAPI(surahId: number, ayahId: number): Promis
     throw error; // Re-throw to be handled by the caller
   }
 }
+/**
+ * Fetches metadata from the API.
+ * @param type The type of metadata to fetch: 'surah-list', 'sajdas', etc.
+ * @returns A Promise resolving to the requested metadata or null if there was an error.
+ */
+export async function fetchMetadataFromAPI<T>(type: string): Promise<T | null> {
+  if (!API_BASE_URL) {
+    throw new Error('API_BASE_URL is not configured. Cannot fetch metadata.');
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/get-metadata?type=${type}`);
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error(`API error fetching metadata (${type}): ${response.status}`, errorData);
+      throw new Error(`Failed to fetch metadata. Status: ${response.status}`);
+    }
+    return await response.json() as T;
+  } catch (error) {
+    console.error(`Error in fetchMetadataFromAPI (${type}):`, error);
+    throw error; // Re-throw to be handled by the caller
+  }
+}

@@ -1,48 +1,7 @@
 import { createClient, EdgeConfigClient } from '@vercel/edge-config';
-import { Pool } from 'pg'; // Assuming 'pg' is available in the environment this service runs
+import { fetchMetadataFromAPI } from './apiClient';
 
-// Ensure NEON_DATABASE_URL and EDGE_CONFIG are set in the environment
-// For client-side (Expo app), direct DB connection is not typical.
-// This service, if running client-side, would need API endpoints for DB operations.
-// Assuming this service might be part of a backend layer or called by one for DB access,
-// or the environment (e.g., Next.js with API routes) allows it.
-
-let pool: Pool | null = null;
-
-// Initialize pool only if DB URL is available (might not be on pure client-side)
-if (process.env.NEON_DATABASE_URL) {
-  pool = new Pool({
-    connectionString: process.env.NEON_DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false, // Required for Neon DB
-    },
-    max: 1,
-    idleTimeoutMillis: 5000,
-    connectionTimeoutMillis: 10000,
-  });
-
-  pool.on('error', (err: Error) => {
-    console.error('Unexpected error on idle client in pool (quranMetadataService)', err);
-  });
-} else {
-  console.warn("NEON_DATABASE_URL not found. Database fallback in quranMetadataService will not be available.");
-}
-
-const edgeConfigConnectionString = process.env.EDGE_CONFIG;
-let edgeConfigClient: EdgeConfigClient | undefined;
-
-if (edgeConfigConnectionString) {
-  try {
-    edgeConfigClient = createClient(edgeConfigConnectionString);
-  } catch (error) {
-    console.error("Failed to create Edge Config client:", error);
-    console.warn("Edge Config functionality in quranMetadataService will not be available.");
-  }
-} else {
-  console.warn("EDGE_CONFIG connection string not found. Edge Config functionality will not be available.");
-}
-
-// Define types based on the expected structure from Edge Config and DB
+// Define types based on the expected structure from Edge Config and API
 // These should align with what the conversion script produces and the DB schema
 
 interface SurahBasicInfo {
@@ -70,86 +29,6 @@ interface SajdaVerse {
   type?: string; // 'recommended' or 'obligatory'
 }
 
-
-// Fallback function using database
-async function getBasicSurahListFromDb(): Promise<SurahBasicInfo[] | null> {
-  if (!pool) {
-    console.error("Database pool not initialized. Cannot fetch Surah list from DB.");
-    return null;
-  }
-  const client = await pool.connect();
-  try {
-    const res = await client.query(
-      'SELECT number, arabic_name AS name, transliteration AS tname, ' +
-      'english_name AS ename, ayas, revelation_type AS type, chronological_order AS order, rukus ' +
-      'FROM quran_surahs ORDER BY number'
-    );
-    // Ensure the returned structure matches SurahBasicInfo
-    return res.rows.map(row => ({
-        number: parseInt(row.number, 10),
-        name: row.name,
-        tname: row.tname,
-        ename: row.ename,
-        ayas: parseInt(row.ayas, 10),
-        type: row.type,
-        order: parseInt(row.order, 10),
-        rukus: parseInt(row.rukus, 10),
-    }));
-  } catch (dbError) {
-    console.error("Error fetching basic surah list from DB:", dbError);
-    return null; // Or throw error
-  }
-  finally {
-    client.release();
-  }
-}
-
-// Fast-path function using Edge Config
-export async function getBasicSurahList(): Promise<SurahBasicInfo[] | null> {
-  if (!edgeConfigClient) {
-    console.warn("Edge Config client not available, attempting DB fallback for getBasicSurahList.");
-    return getBasicSurahListFromDb();
-  }
-  try {
-    // The plan stores data under a top-level key, e.g., "quranMetadata"
-    // And then "surahBasicInfo" within that.
-    // Adjust the key if your Edge Config setup is different.
-    const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
-
-    if (metadata && typeof metadata === 'object' && metadata.surahBasicInfo) {
-      return metadata.surahBasicInfo;
-    }
-    console.warn('surahBasicInfo not found or metadata is not in expected format in Edge Config, attempting DB fallback.');
-    return getBasicSurahListFromDb();
-  } catch (error) {
-    console.error('Edge Config error in getBasicSurahList, falling back to database:', error);
-    return getBasicSurahListFromDb();
-  }
-}
-
-
-// Complex queries go directly to database
-// This function, if called from client-side, should be an API endpoint.
-export async function getSajdaVerses(): Promise<SajdaVerse[] | null> {
-  if (!pool) {
-    console.error("Database pool not initialized. Cannot fetch Sajda verses.");
-    return null;
-  }
-  const client = await pool.connect();
-  try {
-    const res = await client.query(
-      'SELECT sajda_id, surah_number, ayah_number, type FROM quran_sajdas ORDER BY surah_number, ayah_number'
-    );
-    return res.rows as SajdaVerse[];
-  } catch (dbError) {
-    console.error("Error fetching Sajda verses from DB:", dbError);
-    return null; // Or throw error
-  }
-  finally {
-    client.release();
-  }
-}
-
 // Example of how to get navigation indices (e.g., Juz starts) from Edge Config
 interface NavigationIndexItem {
   surah: number;
@@ -162,21 +41,84 @@ interface NavigationIndices {
   // Add other indices as needed
 }
 
-export async function getNavigationIndices(): Promise<NavigationIndices | null> {
-  if (!edgeConfigClient) {
-    console.warn("Edge Config client not available for getNavigationIndices.");
-    // Potentially fall back to DB if these are also stored there and critical
+
+const edgeConfigConnectionString = process.env.EDGE_CONFIG;
+let edgeConfigClient: EdgeConfigClient | undefined;
+
+if (edgeConfigConnectionString) {
+  try {
+    edgeConfigClient = createClient(edgeConfigConnectionString);
+  } catch (error) {
+    console.error("Failed to create Edge Config client:", error);
+    console.warn("Edge Config functionality in quranMetadataService will not be available.");
+  }
+} else {
+  console.warn("EDGE_CONFIG connection string not found. Edge Config functionality will not be available.");
+}
+
+
+// Use Edge Config with API fallback instead of DB fallback
+export async function getBasicSurahList(): Promise<SurahBasicInfo[] | null> {
+  if (edgeConfigClient) {
+    try {
+      const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
+      if (metadata && typeof metadata === 'object' && metadata.surahBasicInfo) {
+        return metadata.surahBasicInfo;
+      }
+      console.warn('surahBasicInfo not found or metadata is not in expected format in Edge Config, attempting API fallback.');
+    } catch (error) {
+      console.error('Edge Config error in getBasicSurahList, falling back to API:', error);
+      // Fall through to API fallback
+    }
+  } else {
+    console.warn("Edge Config client not available, attempting API fallback for getBasicSurahList.");
+  }
+  
+  // Fallback to API instead of direct DB connection
+  try {
+    const surahList = await fetchMetadataFromAPI<SurahBasicInfo[]>('surah-list');
+    return surahList;
+  } catch (apiError) {
+    console.error("API error fetching basic surah list:", apiError);
     return null;
   }
+}
+
+// Similar approach for other functions
+export async function getSajdaVerses(): Promise<SajdaVerse[] | null> {
+  // Sajda verses might not be in Edge Config, so directly try API
   try {
-    const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
-    if (metadata && typeof metadata === 'object' && metadata.navigationIndices) {
-      return metadata.navigationIndices;
-    }
-    console.warn('navigationIndices not found or metadata is not in expected format in Edge Config.');
+    const sajdaVerses = await fetchMetadataFromAPI<SajdaVerse[]>('sajdas');
+    return sajdaVerses;
+  } catch (apiError) {
+    console.error("API error fetching sajda verses:", apiError);
     return null;
-  } catch (error) {
-    console.error('Edge Config error in getNavigationIndices:', error);
+  }
+}
+
+export async function getNavigationIndices(): Promise<NavigationIndices | null> {
+  if (edgeConfigClient) {
+    try {
+      const metadata = await edgeConfigClient.get('quranMetadata') as QuranEdgeConfigData | undefined;
+      if (metadata && typeof metadata === 'object' && metadata.navigationIndices) {
+        return metadata.navigationIndices;
+      }
+      console.warn('navigationIndices not found or metadata is not in expected format in Edge Config, attempting API fallback.');
+    } catch (error) {
+      console.error('Edge Config error in getNavigationIndices, falling back to API:', error);
+      // Fall through to API fallback
+    }
+  } else {
+     console.warn("Edge Config client not available, attempting API fallback for getNavigationIndices.");
+  }
+  
+  // Fallback to API for navigation indices if available
+  try {
+    // Assuming 'navigation-indices' is a valid type for your get-metadata API endpoint
+    const navigationIndices = await fetchMetadataFromAPI<NavigationIndices>('navigation-indices');
+    return navigationIndices;
+  } catch (apiError) {
+    console.error("API error fetching navigation indices:", apiError);
     return null;
   }
 }
