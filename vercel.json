@@ -1,34 +1,14 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["api/tsconfig.json"]
-      }
-    }
-  ],
   "routes": [
+    { "src": "/api/get-metadata", "dest": "/api/get-metadata.ts" },
+    { "src": "/api/get-verse", "dest": "/api/get-verse.ts" },
+    { "src": "/api/get-verses", "dest": "/api/get-verses.ts" },
+    { "src": "/api/get-translation-verses", "dest": "/api/get-translation-verses.ts" },
+    { "src": "/api/get-translated-verse", "dest": "/api/get-translated-verse.ts" },
     {
-      "src": "/api/get-metadata",
-      "dest": "/api/get-metadata.ts"
-    },
-    {
-      "src": "/api/get-verse",
-      "dest": "/api/get-verse.ts"
-    },
-    {
-      "src": "/api/get-verses",
-      "dest": "/api/get-verses.ts"
-    },
-    {
-      "src": "/api/get-translation-verses",
-      "dest": "/api/get-translation-verses.ts"
-    },
-    {
-      "src": "/api/get-translated-verse",
-      "dest": "/api/get-translated-verse.ts"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }

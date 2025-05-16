@@ -1,6 +1,6 @@
 # Project Brief: Luminous Verses (Expo App)
 
-**Version:** 0.9.3 (Reflects API-Driven Architecture)
+**Version:** 0.9.5 (Reflects Database-Driven Translations & Metadata)
 **Date:** 2025-05-15
 **Original iOS Native Port Brief:** (This document adapts the vision of the original iOS native port for the current Expo-based cross-platform project.)
 
@@ -20,9 +20,13 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
     -   Verse-by-verse audio playback using `expo-audio`.
     -   Intuitive navigation using Expo Router.
 -   **Cross-Platform Reach:** Target iOS, Android, and Web from a single codebase.
--   **Data Management (Hybrid Model):**
-    -   **Arabic Verse Text:** Served dynamically from a Neon PostgreSQL database via Vercel Serverless Functions.
-    -   **Surah List & Yusuf Ali Translations:** Static JSON files served from Vercel Blob.
+-   **Data Management (API-Driven & Edge-Config Enhanced):**
+    -   **Arabic Verse Text:** Served dynamically from a Neon PostgreSQL database (`quran_text` table) via Vercel Serverless Functions (e.g., `api/get-verses.ts`).
+    -   **English Translations (Yusuf Ali):** Served dynamically from a Neon PostgreSQL database (`en_yusufali` table) via Vercel Serverless Functions (e.g., `api/get-translation-verses.ts`).
+    -   **Surah List & Other Metadata (Juz, Pages, Sajdas):**
+        -   Primarily served from Vercel Edge Config (item: `quranMetadata`) for optimal performance.
+        -   Falls back to Vercel Serverless Functions (`api/get-metadata.ts`) querying Neon PostgreSQL database tables (e.g., `quran_surahs`) if Edge Config is unavailable.
+        -   Original source for this metadata is `quran-data.xml`, processed by `scripts/convertQuranData.js`.
     -   **Audio Files:** Hosted on Vercel Blob.
     -   **User Data (Planned):** Supabase for features like user accounts and bookmarks.
 
@@ -35,8 +39,8 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
 
 -   **Quranic Text Display:**
     -   Clear, legible Arabic text (Uthmani script) - *Fetched from Neon PostgreSQL DB via Vercel Serverless Functions.*
-    -   Display of corresponding English translations (Yusuf Ali) - *Fetched from Vercel Blob.*
-    -   Accurate verse numbering - *Sourced from API (DB) for Arabic text, and Blob for translations.*
+    -   Display of corresponding English translations (Yusuf Ali) - *Fetched from Neon PostgreSQL DB via Vercel Serverless Functions.*
+    -   Accurate verse numbering - *Sourced from API (DB) for both Arabic text and translations.*
     -   Proper Right-to-Left (RTL) support for Arabic - *Implemented.*
 -   **Audio Playback (using `expo-audio`):**
     -   Individual audio playback functionality for each Quranic verse - *Implemented using a robust 'play-on-create' (mono-instance) pattern with event-driven UI state synchronization. This ensures reliable playback, pause, resume, and stop behaviors. UI (verse highlight, controls, buffering indicators, slider) accurately reflects actual player status, adhering to `expo-audio` best practices.*
@@ -45,7 +49,7 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
     -   Background audio support - *Planned (relies on `expo-audio` capabilities).*
 -   **Navigation:**
     -   Tab-based main navigation (Home, Surahs, Reader, Bookmarks, Settings) - *Implemented using Expo Router.*
-    -   Intuitive browsing by Surah (Chapter) - *Implemented in [`app/(tabs)/surahs.tsx`](app/(tabs)/surahs.tsx:1), fetches and displays Surah list from Vercel Blob.*
+    -   Intuitive browsing by Surah (Chapter) - *Implemented in [`app/(tabs)/surahs.tsx`](app/(tabs)/surahs.tsx:1), fetches and displays Surah list (from Edge Config or API/DB via `quranMetadataService.ts`).*
     -   Ability to navigate to specific verses - *Implemented.*
 -   **Visual Experience:**
     -   Implementation of the "Desert Oasis at Night" theme - *Theme file created ([`src/theme/theme.ts`](src/theme/theme.ts:1)), colors defined. Shared background component [`src/components/ScreenBackground.tsx`](src/components/ScreenBackground.tsx:1) implemented for consistent web background.*
@@ -54,14 +58,15 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
     -   Consistent static image background (`assets/images/webtest.png` for web, `assets/images/iOSbackground.png` for native) on Surahs, Reader, Bookmarks, and Settings screens via `ScreenBackground.tsx`.
     -   Smooth UI animations and transitions - *Ongoing.*
 -   **Core Screens (Expo Router):**
-    -   `app/(tabs)/index.tsx` (HomeScreen): Displays Lottie/static background and title.
-    -   `app/(tabs)/surahs.tsx` (SurahListScreen): Fetches and displays the list of Surahs from Vercel Blob.
-    -   `app/(tabs)/reader.tsx` (ReaderScreen): Displays Arabic text (from API/DB) and Yusuf Ali translations (from Vercel Blob), with audio playback controls using `expo-audio`.
+    -   `app/(tabs)/index.tsx` (HomeScreen): Displays Lottie/static background, title, and Verse of the Day.
+    -   `app/(tabs)/surahs.tsx` (SurahListScreen): Fetches and displays the list of Surahs (from Edge Config or API/DB).
+    -   `app/(tabs)/reader.tsx` (ReaderScreen): Displays Arabic text and Yusuf Ali translations (both from API/DB), with audio playback controls using `expo-audio`.
     -   `app/(tabs)/bookmarks.tsx` (BookmarksScreen): Placeholder, uses shared background.
     -   `app/(tabs)/settings.tsx` (SettingsScreen): Basic settings (e.g., autoplay toggle), uses shared background.
--   **Data Backend (Hybrid):**
-    -   **Neon PostgreSQL Database (via Vercel Serverless Functions):** Primary store for Arabic Quranic text. Accessed via `src/services/apiClient.ts`.
-    -   **Vercel Blob:** Store for static assets: Surah list (JSON), Yusuf Ali translations (JSON), and audio files. Accessed via `src/services/surahService.ts` and `src/services/audioService.ts`.
+-   **Data Backend (API-Driven & Edge-Config Enhanced):**
+    -   **Neon PostgreSQL Database (via Vercel Serverless Functions):** Primary store for Arabic Quranic text (`quran_text` table), English translations (`en_yusufali` table), and Quranic metadata (e.g., `quran_surahs` table). Accessed via `src/services/apiClient.ts`.
+    -   **Vercel Edge Config:** Primary cache for Quranic metadata (Surah list, navigation indices) for fast access. Data sourced from `quran-data.xml` via `scripts/convertQuranData.js`. Accessed via `src/services/quranMetadataService.ts`.
+    -   **Vercel Blob:** Store for audio files. Accessed via `src/services/audioService.ts`.
     -   **Supabase (Planned):** For dynamic user data (user accounts, bookmarks, etc.).
 
 ## 5. Design Aesthetic & User Experience (UX) Principles
@@ -76,7 +81,7 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
     -   Engaging and delightful, encouraging exploration and regular use.
     -   Visually immersive, creating a unique and memorable experience.
     -   Respectful and appropriate for the sacred nature of the content.
-    -   Optimized for cross-platform performance, leveraging CDN for static data.
+    -   Optimized for cross-platform performance, leveraging Edge Config and API for data.
 
 ## 6. Technical Foundation (Expo Project)
 
@@ -86,29 +91,31 @@ To develop a cross-platform Quran application using Expo (React Native) that pro
 -   **Navigation:** Expo Router
 -   **Animation:** Lottie (`lottie-react-native`, `@lottiefiles/dotlottie-react`)
 -   **Audio:** `expo-audio` (migrated from `expo-av`)
--   **Quranic Text Data (Arabic):** Neon PostgreSQL database, accessed via Vercel Serverless Functions (`api/*.ts`) using the `pg` library.
--   **Static Assets (Translations, Surah List, Audio):** Vercel Blob (JSON files, audio files).
+-   **Quranic Text Data (Arabic & Translations):** Neon PostgreSQL database, accessed via Vercel Serverless Functions (`api/*.ts`) using the `pg` library.
+-   **Quranic Metadata (Surah List, etc.):** Vercel Edge Config (primary) and Neon PostgreSQL database (fallback), accessed via `src/services/quranMetadataService.ts` and Vercel Serverless Functions (`api/get-metadata.ts`). Original source: `quran-data.xml`.
+-   **Audio Assets:** Vercel Blob.
 -   **Dynamic User Data (Planned):** Supabase (`@supabase/supabase-js`).
 -   **Fonts:** Noto Naskh Arabic (Arabic), Montserrat (English) - *Loaded via [`app/_layout.tsx`](app/_layout.tsx:1).*\
 -   **Bundler:** Metro (with custom polyfills for Node.js core modules configured in [`metro.config.js`](metro.config.js:1)).
+-   **CORS:** Configured in Vercel API functions to allow access from the web app origin.
 
 ## 7. Success Metrics (for Expo Port)
 
 -   High visual fidelity to the "Desert Oasis at Night" theme across platforms.
 -   Smooth, jank-free animations and UI interactions.
 -   Positive user feedback regarding the cross-platform experience, performance, and usability.
--   Successful and accurate delivery of Quranic text (from API/DB), translations (from Vercel Blob), and audio (from Vercel Blob).
+-   Successful and accurate delivery of Quranic text and translations (from API/DB), metadata (from Edge Config or API/DB), and audio (from Vercel Blob).
 -   Highly reliable and responsive audio playback, with UI state (including buffering, playing, paused, slider position) consistently synchronized with the actual player status, adhering to community best practices for `expo-audio`.
 -   Successful bundling and operation on iOS, (Android to be tested), and Web.
--   Efficient data loading from API (for Arabic text) and CDN (Vercel Blob for translations, Surah list, audio).
+-   Efficient data loading from API/DB and Edge Config.
 
 ## 8. Future Considerations (Post-MVP Port)
 *(Adapted from original iOS brief)*
 -   Full Surah list and navigation (Surah list implemented, full navigation to all Surahs pending).
--   Additional English translations and other languages (potentially also migrated to Vercel Blob).
+-   Additional English translations and other languages (potentially migrated to Neon DB and served via API).
 -   Verse-by-verse audio playback for all Surahs.
 -   Multiple reciter options.
--   Advanced search functionality (may require Supabase or other search service).
+-   Advanced search functionality (may require Supabase or other search service, or enhanced DB queries).
 -   User accounts for personalization (bookmarks, reading progress sync) using Supabase.
 -   Widget support (platform-dependent).
--   Offline access improvements (caching strategies for Blob data).
+-   Offline access improvements (caching strategies for API/DB data and Edge Config).

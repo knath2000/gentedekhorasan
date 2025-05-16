@@ -34,6 +34,7 @@ const VerseOfTheDayContainer = styled(View)(({ theme }: { theme: Theme }) => ({
   borderColor: 'rgba(255, 255, 255, 0.18)', // Subtle border for the glass edge
   borderWidth: 1, // Unitless
   overflow: 'hidden', // Important to clip BlurView to borderRadius
+  minHeight: 150, // Reserve space to reduce CLS
 }));
 
 const TitleText = styled.Text`

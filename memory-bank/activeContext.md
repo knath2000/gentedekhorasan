@@ -1,6 +1,6 @@
 # Active Context: Luminous Verses (Expo App)
 
-**Version:** 0.9.4 (API Routes Stable)
+**Version:** 0.9.5 (Database-Driven Translations & Metadata, CORS Fixes)
 **Date:** 2025-05-15
 **Related Brief:** `docs/projectbrief.md`
 **Related Progress:** `docs/progress.md`
@@ -8,64 +8,69 @@
 ## 1. Current Focus & State
 
 -   **Focus:**
-    1.  Confirming stability of Vercel API routes after routing and TypeScript configuration fixes.
-    2.  Thorough testing of data fetching from API and Vercel Blob.
-    3.  Updating documentation to reflect the API fixes and current architecture.
+    1.  Finalizing Memory Bank updates to reflect the new data architecture (API/DB for translations and metadata, Edge Config for metadata caching).
+    2.  Ensuring stability and correctness of the Verse of the Day feature after recent fixes (CORS, caching logic).
+    3.  Preparing for thorough testing of all data fetching paths.
 -   **State:**
-    -   **Memory Bank:** Core documents are being updated to version 0.9.4.
+    -   **Memory Bank:** Core documents are being updated to version 0.9.5.
     -   **Application Core:**
         -   Expo Router, theming, custom fonts, `react-native-safe-area-context` are integrated.
-        -   **Data Sources (Hybrid Model):**
-            -   **Arabic Text:** Neon PostgreSQL DB via Vercel Serverless Functions (e.g., `api/get-verses.ts`), accessed by `src/services/apiClient.ts`. **Status: Stable.**
-            -   **Translations & Surah List:** Static JSON files from Vercel Blob, accessed by `src/services/surahService.ts`. **Status: Stable.**
+        -   **Data Sources (API-Driven & Edge-Config Enhanced):**
+            -   **Arabic Text:** Neon PostgreSQL DB (`quran_text` table) via Vercel Serverless Functions (e.g., `api/get-verses.ts`), accessed by `src/services/apiClient.ts`. **Status: Stable.**
+            -   **English Translations (Yusuf Ali):** Neon PostgreSQL DB (`en_yusufali` table) via Vercel Serverless Functions (e.g., `api/get-translation-verses.ts`), accessed by `src/services/apiClient.ts`. **Status: Implemented, requires testing.**
+            -   **Surah List & Other Metadata:** Vercel Edge Config (primary, item `quranMetadata`) / Neon PostgreSQL DB (fallback, e.g., `quran_surahs` table) via `api/get-metadata.ts`. Accessed by `src/services/quranMetadataService.ts`. **Status: Implemented, requires testing.**
             -   **Audio Files:** Hosted on Vercel Blob, URLs managed by `src/services/audioService.ts`. **Status: Stable.**
-    -   **`src/hooks/useAudioPlayer.ts`**: Stable (as previously documented).
-    -   **UI Components (`PlatformSlider.tsx`, `VerseCard.tsx`, `AudioControlBar.tsx`)**: Stable (as previously documented).
+    -   **Service Layer:**
+        -   `src/services/apiClient.ts`: Handles all direct calls to Vercel API functions.
+        -   `src/services/quranMetadataService.ts`: Fetches metadata (Surah list, etc.) from Edge Config with API/DB fallback.
+        -   `src/services/surahService.ts`: Orchestrates data fetching using `apiClient.ts` and `quranMetadataService.ts`.
+        -   `src/services/quranDbService.ts`: Deprecated.
+    -   **`src/hooks/useAudioPlayer.ts`**: Stable.
+    -   **UI Components (`PlatformSlider.tsx`, `VerseCard.tsx`, `AudioControlBar.tsx`, `VerseOfTheDay.tsx`)**: VerseOfTheDay recently debugged for caching and data fetching.
     -   **Vercel API Functions (`api/*.ts`):**
-        -   **Resolved:** Previous module syntax and routing issues causing 404 errors have been fixed.
-        -   API functions are now correctly built using a specialized `api/tsconfig.json` (CommonJS modules).
-        -   API functions use ES Module `import` syntax, which is correctly transpiled.
-        -   Vercel routing in `vercel.json` now correctly maps requests to the `.ts` source files (e.g., `dest: "/api/get-metadata.ts"`).
-        -   Environment variables (`EDGE_CONFIG`, `NEON_DATABASE_URL`) are confirmed to be correctly set in Vercel.
+        -   All endpoints (`get-metadata`, `get-verse`, `get-verses`, `get-translation-verses`, `get-translated-verse`) now include CORS headers.
+        -   Build configuration and routing in `vercel.json` are stable.
+        -   Environment variables (`EDGE_CONFIG`, `NEON_DATABASE_URL`) are critical.
 
 ## 2. Recent Changes / Milestones
 
--   **API Routing and Build Fix (2025-05-15):**
-    -   Successfully resolved persistent 404 errors for Vercel API routes.
-    -   **Key Fixes:**
-        1.  Created a specialized `api/tsconfig.json` with `"module": "commonjs"` and `"esModuleInterop": true`.
-        2.  Updated API source files (`api/get-metadata.ts`, `api/get-verse.ts`, `api/get-verses.ts`) to use ES Module `import` syntax.
-        3.  Modified `vercel.json` `routes` to explicitly point the `dest` to the `.ts` source files (e.g., `"dest": "/api/get-metadata.ts"`), and removed the generic wildcard as the primary resolver for these specific routes.
-    -   This multi-step solution ensured correct TypeScript compilation for the Vercel Node.js environment and proper request routing to the deployed serverless functions.
--   **API Module Syntax Issue Investigation (2025-05-15):** (Details as before, now part of the resolved history)
--   **Architectural Shift to API-Driven Content (Approx. 2025-05-15 or prior):** (Stable)
--   **Comprehensive Audio Stability Refactor (2025-05-14):** (Stable)
+-   **Verse of the Day Fix (2025-05-15):**
+    -   Resolved "error loading verse text" by:
+        -   Implementing a new API endpoint `api/get-translated-verse.ts` to fetch Arabic text and translation for a single verse.
+        -   Updating `apiClient.ts` and `surahService.ts` (`fetchRandomVerse`) to use this new endpoint.
+        -   Correcting client-side caching logic in `VerseOfTheDay.tsx` to prevent caching of error states and ensure proper cache invalidation.
+        -   Adding CORS headers to all Vercel API functions to resolve cross-origin issues when running the web app locally against deployed APIs.
+-   **Data Migration for Translations (2025-05-15):**
+    -   Successfully migrated Yusuf Ali English translations from a MySQL dump (`dump4.sql`) to the `en_yusufali` table in Neon PostgreSQL DB using `scripts/migrateYusufaliDumpToNeon.js`.
+-   **API Routing and Build Fix (Prior - Stable):**
+    -   Resolved 404 errors for Vercel API routes.
 
 ## 3. Next Immediate Steps
 
-1.  **Thorough Testing (Manual by User & Automated if possible):**
-    -   **API Endpoints:** Systematically test all API endpoints (`/api/get-metadata`, `/api/get-verse`, `/api/get-verses`) with various valid and invalid parameters to ensure they return correct data and handle errors gracefully.
-    -   **Application Data Flow:** Verify in-app that Arabic text (from API/DB), translations (from Blob), and Surah lists (from API via Edge Config/DB or Blob) are fetched and displayed correctly on all relevant screens.
+1.  **Complete Memory Bank Update:** Ensure all memory bank documents accurately reflect the current architecture (API/DB for translations, Edge Config/API/DB for metadata, service roles, CORS).
+2.  **Thorough Testing (Manual & Automated if possible):**
+    -   **Verse of the Day:** Confirm it loads correctly on all platforms (iOS, Android, Web) after cache clearing and on subsequent loads (testing cache).
+    -   **Reader Screen:** Verify Arabic text and translations load correctly for various Surahs/verses.
+    -   **Surah List Screen:** Verify Surah list loads correctly.
+    -   **API Endpoints:** Systematically test all API endpoints with valid/invalid parameters.
+    -   **Edge Config:** Test behavior when Edge Config is available vs. when it falls back to API.
     -   **Audio Playback:** Re-verify overall audio playback stability.
-    -   **Accessibility:** Continue testing with VoiceOver/TalkBack.
-2.  **Update Memory Bank & `.clinerules`:** Complete documentation updates for the API fixes and current architecture.
 3.  **Address any bugs or UX issues identified during testing.**
-4.  **Consider re-adding a well-tested wildcard route to `vercel.json`** if needed for future API endpoints, ensuring it doesn't conflict with the explicit routes. For now, explicit routes are preferred for stability.
 
 ## 4. Key Decisions Made
 
--   **Vercel API Routing Strategy:** Explicitly defining `dest` paths in `vercel.json` routes to point directly to the `.ts` source files (e.g., `dest: "/api/get-metadata.ts"`) was crucial for resolving 404 errors, after ensuring correct TypeScript compilation.
--   **API TypeScript Configuration:** Using a specialized `api/tsconfig.json` with `"module": "commonjs"` and `"esModuleInterop": true` for the API directory, while API source files use ES Module `import` syntax.
--   **Edge Config with API Fallback:** (Stable)
--   **Hybrid Data Model:** (Stable)
--   **Serverless Functions for Data Access:** (Stable)
--   **Event-Driven State Synchronization for Audio:** (Stable)
+-   **API-Driven Translations:** Yusuf Ali translations are now served from the database via API, replacing Vercel Blob JSON files for this purpose.
+-   **Edge Config for Metadata:** Quranic structural metadata (Surah list, etc.) is primarily served from Vercel Edge Config, with API/DB as a fallback, replacing Vercel Blob JSON files.
+-   **Dedicated API for Single Translated Verse:** Created `api/get-translated-verse.ts` for efficient fetching for features like Verse of the Day.
+-   **CORS Configuration for APIs:** Implemented to support web app development and access.
+-   **Vercel API Routing Strategy:** Explicit `dest` paths in `vercel.json` (Stable).
+-   **API TypeScript Configuration:** Specialized `api/tsconfig.json` (Stable).
 
 ## 5. Open Questions / Considerations
 
--   **Vercel Routing Nuances:** The exact interaction between `vercel.json` builds, `routes`, and TypeScript compilation for serverless functions required careful iteration. Explicit `dest` paths to `.ts` files proved effective.
--   **Wildcard Route Reintroduction:** If a general wildcard route (e.g., `{"src": "/api/([^/]+)", "dest": "/api/$1.ts"}`) is added back to `vercel.json`, it needs to be placed *after* the explicit routes and tested thoroughly to ensure it doesn't override them or cause new issues.
--   **Thorough Testing of Hybrid Data & New Audio Architecture:** (Still relevant)
--   **API & Database Performance/Reliability:** (Still relevant)
+-   **Edge Config Population & Management:** Ensure the `edge-config-data.json` (generated by `scripts/convertQuranData.js`) is correctly uploaded to the Vercel Edge Config store associated with `process.env.EDGE_CONFIG`.
+-   **Performance of API vs. Edge Config:** Monitor and compare performance once Edge Config is fully utilized.
+-   **Error Handling & Resilience:** Continue to refine error handling in data fetching services and UI components.
+-   **Testing on Android:** Needs to be prioritized.
 
-This document reflects the context after successfully resolving the Vercel API 404 errors. The application's data fetching capabilities should now be operational.
+This document reflects the context after significant architectural changes to data fetching and recent debugging of the Verse of the Day feature.

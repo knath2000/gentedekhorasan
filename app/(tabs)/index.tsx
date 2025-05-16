@@ -48,11 +48,13 @@ const WelcomeText = styled(Text)<{ theme: Theme }>`
   text-align: center;
   margin-bottom: 20px; /* Space before resume button */
   ${Platform.OS === 'web' && `
-    text-shadow: 0px 0px 8px rgba(0,0,0,0.8);
+    text-shadow: 0px 1px 6px rgba(0,0,0,0.9); /* Adjusted for better contrast */
   `}
 `;
 
-const webImageSource = require('../../assets/images/webtest.png');
+const webImageSource = Platform.OS === 'web'
+  ? require('../../assets/images/webtest.webp')
+  : require('../../assets/images/webtest.png'); // Fallback or native if ever used
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
