@@ -5,10 +5,6 @@
     { "src": "/api/get-verse", "dest": "/api/get-verse.ts" },
     { "src": "/api/get-verses", "dest": "/api/get-verses.ts" },
     { "src": "/api/get-translation-verses", "dest": "/api/get-translation-verses.ts" },
-    { "src": "/api/get-translated-verse", "dest": "/api/get-translated-verse.ts" },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/api/get-translated-verse", "dest": "/api/get-translated-verse.ts" }
   ]
 }

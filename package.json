@@ -3,13 +3,13 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "preinstall": "npm config set legacy-peer-deps true",
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "web": "next dev"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -45,6 +45,7 @@
     "https-browserify": "^1.0.0",
     "lottie-ios": "4.5.0",
     "lottie-react-native": "^7.2.2",
+    "next": "^15.3.2",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "pg": "^8.16.0",
