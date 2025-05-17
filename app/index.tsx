@@ -1,4 +1,10 @@
 // app/index.tsx
-import HomeScreen from './(tabs)/index';
+import { Text, View } from 'react-native';
 
-export default HomeScreen;
+export default function MinimalRootPage() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>This is a minimal root index page. Test.</Text>
+    </View>
+  );
+}
