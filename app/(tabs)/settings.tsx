@@ -1,10 +1,12 @@
 // app/(tabs)/settings.tsx
-import React, { useEffect, useState } from 'react';
-import { Platform, StyleSheet, Switch, Text, View } from 'react-native'; // Removed ImageBackground
+import { useEffect, useState } from 'react';
+import { ImageBackground, Platform, StyleSheet, Switch, Text, View } from 'react-native'; // Added ImageBackground
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenBackground } from '../../src/components/ScreenBackground'; // Added ScreenBackground import
 import { ThemeConsumer } from '../../src/components/ThemeProvider';
 import { getAutoplayEnabled, setAutoplayEnabled as saveAutoplaySetting } from '../../src/services/settingsService';
+
+const webImageSource = require('../../assets/images/webtest.webp');
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -36,46 +38,92 @@ export default function SettingsScreen() {
   return (
     <ThemeConsumer>
       {(theme) => (
-        <ScreenBackground
-          style={[
-            styles.backgroundContainer, // Use a more generic name for the style on ScreenBackground
-            {
-              paddingTop: insets.top,
-              paddingBottom: insets.bottom,
-              paddingLeft: insets.left,
-              paddingRight: insets.right,
-            }
-          ]}
-        >
-          <View style={styles.titleContainer}>
-            <Text style={[styles.screenTitle, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishBold }]}>
-              Settings
-            </Text>
-          </View>
-
-          <View style={[styles.settingsSection, { backgroundColor: theme.colors.cardBackground, borderRadius: theme.radii.md }]}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.desertHighlightGold, fontFamily: theme.typography.fonts.englishBold }]}>
-              Playback Options
-            </Text>
-            <View style={styles.settingRow}>
-              <View style={styles.settingLabelContainer}>
-                <Text style={[styles.settingLabel, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishRegular }]}>
-                  Autoplay Verses
-                </Text>
-                <Text style={[styles.settingDescription, { color: theme.colors.textSecondary, fontFamily: theme.typography.fonts.englishRegular }]}>
-                  Automatically play the next verse after the current one finishes
-                </Text>
-              </View>
-              <Switch
-                value={autoplayEnabled}
-                onValueChange={handleAutoplayToggle}
-                trackColor={{ false: theme.colors.textSecondary || '#767577', true: theme.colors.desertHighlightGold }}
-                thumbColor={Platform.OS === 'ios' ? undefined : autoplayEnabled ? theme.colors.desertSandGold : theme.colors.white}
-                ios_backgroundColor={theme.colors.textSecondary || '#767577'}
-              />
+        Platform.OS === 'web' ? (
+          <ImageBackground
+            source={webImageSource}
+            resizeMode="cover"
+            style={[
+              styles.backgroundContainer,
+              {
+                paddingTop: insets.top,
+                paddingBottom: insets.bottom,
+                paddingLeft: insets.left,
+                paddingRight: insets.right,
+              },
+              { flex: 1, width: '100%' } // Ensure full coverage
+            ]}
+          >
+            <View style={styles.titleContainer}>
+              <Text style={[styles.screenTitle, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishBold }]}>
+                Settings
+              </Text>
             </View>
-          </View>
-        </ScreenBackground>
+
+            <View style={[styles.settingsSection, { backgroundColor: theme.colors.cardBackground, borderRadius: theme.radii.md }]}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.desertHighlightGold, fontFamily: theme.typography.fonts.englishBold }]}>
+                Playback Options
+              </Text>
+              <View style={styles.settingRow}>
+                <View style={styles.settingLabelContainer}>
+                  <Text style={[styles.settingLabel, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishRegular }]}>
+                    Autoplay Verses
+                  </Text>
+                  <Text style={[styles.settingDescription, { color: theme.colors.textSecondary, fontFamily: theme.typography.fonts.englishRegular }]}>
+                    Automatically play the next verse after the current one finishes
+                  </Text>
+                </View>
+                <Switch
+                  value={autoplayEnabled}
+                  onValueChange={handleAutoplayToggle}
+                  trackColor={{ false: theme.colors.textSecondary || '#767577', true: theme.colors.desertHighlightGold }}
+                  thumbColor={autoplayEnabled ? theme.colors.desertSandGold : theme.colors.white} // Corrected for web context
+                  ios_backgroundColor={theme.colors.textSecondary || '#767577'}
+                />
+              </View>
+            </View>
+          </ImageBackground>
+        ) : ( // Native
+          <ScreenBackground
+            style={[
+              styles.backgroundContainer,
+              {
+                paddingTop: insets.top,
+                paddingBottom: insets.bottom,
+                paddingLeft: insets.left,
+                paddingRight: insets.right,
+              }
+            ]}
+          >
+            <View style={styles.titleContainer}>
+              <Text style={[styles.screenTitle, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishBold }]}>
+                Settings
+              </Text>
+            </View>
+
+            <View style={[styles.settingsSection, { backgroundColor: theme.colors.cardBackground, borderRadius: theme.radii.md }]}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.desertHighlightGold, fontFamily: theme.typography.fonts.englishBold }]}>
+                Playback Options
+              </Text>
+              <View style={styles.settingRow}>
+                <View style={styles.settingLabelContainer}>
+                  <Text style={[styles.settingLabel, { color: theme.colors.textPrimary, fontFamily: theme.typography.fonts.englishRegular }]}>
+                    Autoplay Verses
+                  </Text>
+                  <Text style={[styles.settingDescription, { color: theme.colors.textSecondary, fontFamily: theme.typography.fonts.englishRegular }]}>
+                    Automatically play the next verse after the current one finishes
+                  </Text>
+                </View>
+                <Switch
+                  value={autoplayEnabled}
+                  onValueChange={handleAutoplayToggle}
+                  trackColor={{ false: theme.colors.textSecondary || '#767577', true: theme.colors.desertHighlightGold }}
+                  thumbColor={Platform.OS === 'ios' ? undefined : autoplayEnabled ? theme.colors.desertSandGold : theme.colors.white}
+                  ios_backgroundColor={theme.colors.textSecondary || '#767577'}
+                />
+              </View>
+            </View>
+          </ScreenBackground>
+        )
       )}
     </ThemeConsumer>
   );

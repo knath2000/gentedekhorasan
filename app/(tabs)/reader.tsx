@@ -2,8 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import dynamic from 'next/dynamic';
 import Head from 'next/head'; // Import Head for structured data
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Dimensions, FlatList, Platform, StatusBar, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Dimensions, FlatList, ImageBackground, Platform, StatusBar, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled, { useTheme } from 'styled-components/native';
 import { ScreenBackground } from '../../src/components/ScreenBackground';
@@ -14,6 +14,8 @@ import { getAutoplayEnabled, setAutoplayEnabled as saveAutoplaySetting } from '.
 import { fetchSurahById, fetchVersesBySurahId } from '../../src/services/surahService';
 import { Theme } from '../../src/theme/theme';
 import { Surah, Verse } from '../../src/types/quran';
+
+const webImageSource = require('../../assets/images/webtest.webp');
 
 const AudioControlBar = dynamic(
   () => import('../../src/components/AudioControlBar'),
@@ -296,7 +298,23 @@ export default function ReaderScreen() {
   }, [seekAudio]);
 
   if (loading) {
-    return (
+    if (Platform.OS === 'web') {
+      return (
+        <ImageBackground
+          source={webImageSource}
+          resizeMode="cover"
+          style={{ flex: 1, width: '100%' }}
+        >
+          <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
+            <StatusBar barStyle="light-content" />
+            <LoadingContainer>
+              <ActivityIndicator size="large" color={theme.colors.desertHighlightGold} />
+            </LoadingContainer>
+          </MainContainer>
+        </ImageBackground>
+      );
+    }
+    return ( // Native
       <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <StatusBar barStyle="light-content" />
@@ -309,7 +327,24 @@ export default function ReaderScreen() {
   }
 
   if (error) {
-    return (
+    if (Platform.OS === 'web') {
+      return (
+        <ImageBackground
+          source={webImageSource}
+          resizeMode="cover"
+          style={{ flex: 1, width: '100%' }}
+        >
+          <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
+            <StatusBar barStyle="light-content" />
+            {surah && <SurahHeader surah={surah} onBackPress={handleBackPress} onSettingsPress={handleSettingsPress} />}
+            <LoadingContainer>
+              <ErrorText>{error}</ErrorText>
+            </LoadingContainer>
+          </MainContainer>
+        </ImageBackground>
+      );
+    }
+    return ( // Native
       <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <StatusBar barStyle="light-content" />
@@ -323,7 +358,23 @@ export default function ReaderScreen() {
   }
 
   if (!surah) {
-    return (
+    if (Platform.OS === 'web') {
+      return (
+        <ImageBackground
+          source={webImageSource}
+          resizeMode="cover"
+          style={{ flex: 1, width: '100%' }}
+        >
+          <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
+            <StatusBar barStyle="light-content" />
+            <LoadingContainer>
+              <ErrorText>Surah data could not be loaded.</ErrorText>
+            </LoadingContainer>
+          </MainContainer>
+        </ImageBackground>
+      );
+    }
+    return ( // Native
       <ScreenBackground>
         <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
           <StatusBar barStyle="light-content" />
@@ -336,93 +387,188 @@ export default function ReaderScreen() {
   }
 
   return (
-    <ScreenBackground>
-      {surah && (
-        <Head>
-          <title>{`${surah.englishName} - Surah ${surah.number} - Luminous Verses`}</title>
-          <meta name="description" content={`Read and listen to Surah ${surah.englishName} (${surah.number}) from the Holy Quran.`} />
-          <script type="application/ld+json">
-            {`
-              {
-                "@context": "https://schema.org",
-                "@type": "WebPage",
-                "name": "${surah.englishName} - Surah ${surah.number}",
-                "description": "Read and listen to Surah ${surah.englishName} (${surah.number}) from the Holy Quran.",
-                "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}",
-                "mainEntity": {
-                  "@type": "Chapter",
-                  "@id": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}#chapter",
-                  "name": "${surah.name}",
-                  "alternativeHeadline": "${surah.englishName}",
-                  "chapterNumber": ${surah.number},
+    Platform.OS === 'web' ? (
+      <ImageBackground
+        source={webImageSource}
+        resizeMode="cover"
+        style={{ flex: 1, width: '100%' }}
+      >
+        {surah && (
+          <Head>
+            <title>{`${surah.englishName} - Surah ${surah.number} - Luminous Verses`}</title>
+            <meta name="description" content={`Read and listen to Surah ${surah.englishName} (${surah.number}) from the Holy Quran.`} />
+            <script type="application/ld+json">
+              {`
+                {
+                  "@context": "https://schema.org",
+                  "@type": "WebPage",
+                  "name": "${surah.englishName} - Surah ${surah.number}",
+                  "description": "Read and listen to Surah ${surah.englishName} (${surah.number}) from the Holy Quran.",
                   "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}",
-                  "isPartOf": {
-                     "@type": "Book",
-                     "@id": "https://onlyquranexpo.vercel.app/#quran"
+                  "mainEntity": {
+                    "@type": "Chapter",
+                    "@id": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}#chapter",
+                    "name": "${surah.name}",
+                    "alternativeHeadline": "${surah.englishName}",
+                    "chapterNumber": ${surah.number},
+                    "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}",
+                    "isPartOf": {
+                       "@type": "Book",
+                       "@id": "https://onlyquranexpo.vercel.app/#quran"
+                    }
+                    // We can add hasPart for verses later if needed
                   }
-                  // We can add hasPart for verses later if needed
                 }
-              }
-            `}
-          </script>
-        </Head>
-      )}
-      <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
-        <StatusBar barStyle="light-content" />
-        <View style={{ height: listContainerHeight }}>
-          {verses.length > 0 ? (
-            <FlatList
-              ref={flatListRef}
-              data={verses}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <VerseCard
-                  verse={item}
-                  showTranslation={showTranslation}
-                  isActive={item.numberInSurah === activeVerseNumber}
-                  isPlaying={item.numberInSurah === activeVerseNumber && audioIsPlaying}
-                  isLoading={item.numberInSurah === activeVerseNumber && audioIsLoading}
-                  isBuffering={item.numberInSurah === activeVerseNumber && audioIsBuffering}
-                  durationMillis={item.numberInSurah === activeVerseNumber ? durationMillis : 0}
-                  positionMillis={item.numberInSurah === activeVerseNumber ? positionMillis : 0}
-                  onPress={handleVersePress}
-                  onSeek={handleSeek}
-                  onTogglePlayback={handleVersePress} // Use the same handler for toggling
-                />
-              )}
-              ListHeaderComponent={
-                surah && <SurahHeader surah={surah} onBackPress={handleBackPress} onSettingsPress={handleSettingsPress} />
-              }
-              contentContainerStyle={{
-                paddingHorizontal: theme.spacing.md,
-                paddingBottom: Platform.OS === 'ios' ? theme.spacing.xl * 2 : theme.spacing.xl,
-              }}
-              removeClippedSubviews={true}
-              maxToRenderPerBatch={10}
-              windowSize={21}
-              initialNumToRender={10}
-              getItemLayout={(data, index) => (
-                { length: 150, offset: 150 * index, index }
-              )}
-            />
-          ) : (
-            <LoadingContainer>
-              <Text style={{ color: theme.colors.textSecondary, fontFamily: theme.typography.fonts.englishRegular }}>
-                {`Verses for Surah ${surah?.englishName || ''} are not available yet.`}
-              </Text>
-            </LoadingContainer>
-          )}
-        </View>
-        {showAudioControls && surah && (
-          <AudioControlBar
-            isLoading={audioIsLoading}
-            durationMillis={durationMillis}
-            positionMillis={positionMillis}
-            onSkipNext={handleSkipNextPress}
-            onStop={handleStopPress}
-          />
+              `}
+            </script>
+          </Head>
         )}
-      </MainContainer>
-    </ScreenBackground>
+        <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
+          <StatusBar barStyle="light-content" />
+          <View style={{ height: listContainerHeight }}>
+            {verses.length > 0 ? (
+              <FlatList
+                ref={flatListRef}
+                data={verses}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <VerseCard
+                    verse={item}
+                    showTranslation={showTranslation}
+                    isActive={item.numberInSurah === activeVerseNumber}
+                    isPlaying={item.numberInSurah === activeVerseNumber && audioIsPlaying}
+                    isLoading={item.numberInSurah === activeVerseNumber && audioIsLoading}
+                    isBuffering={item.numberInSurah === activeVerseNumber && audioIsBuffering}
+                    durationMillis={item.numberInSurah === activeVerseNumber ? durationMillis : 0}
+                    positionMillis={item.numberInSurah === activeVerseNumber ? positionMillis : 0}
+                    onPress={handleVersePress}
+                    onSeek={handleSeek}
+                    onTogglePlayback={handleVersePress} // Use the same handler for toggling
+                  />
+                )}
+                ListHeaderComponent={
+                  surah && <SurahHeader surah={surah} onBackPress={handleBackPress} onSettingsPress={handleSettingsPress} />
+                }
+                contentContainerStyle={{
+                  paddingHorizontal: theme.spacing.md,
+                  paddingBottom: theme.spacing.xl, // Corrected for web context
+                }}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={10}
+                windowSize={21}
+                initialNumToRender={10}
+                getItemLayout={(data, index) => (
+                  { length: 150, offset: 150 * index, index }
+                )}
+              />
+            ) : (
+              <LoadingContainer>
+                <Text style={{ color: theme.colors.textSecondary, fontFamily: theme.typography.fonts.englishRegular }}>
+                  {`Verses for Surah ${surah?.englishName || ''} are not available yet.`}
+                </Text>
+              </LoadingContainer>
+            )}
+          </View>
+          {showAudioControls && surah && (
+            <AudioControlBar
+              isLoading={audioIsLoading}
+              durationMillis={durationMillis}
+              positionMillis={positionMillis}
+              onSkipNext={handleSkipNextPress}
+              onStop={handleStopPress}
+            />
+          )}
+        </MainContainer>
+      </ImageBackground>
+    ) : ( // Native
+      <ScreenBackground>
+        {surah && (
+          <Head>
+            <title>{`${surah.englishName} - Surah ${surah.number} - Luminous Verses`}</title>
+            <meta name="description" content={`Read and listen to Surah ${surah.englishName} (${surah.number}) from the Holy Quran.`} />
+            <script type="application/ld+json">
+              {`
+                {
+                  "@context": "https://schema.org",
+                  "@type": "WebPage",
+                  "name": "${surah.englishName} - Surah ${surah.number}",
+                  "description": "Read and listen to Surah ${surah.englishName} (${surah.number}) from the Holy Quran.",
+                  "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}",
+                  "mainEntity": {
+                    "@type": "Chapter",
+                    "@id": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}#chapter",
+                    "name": "${surah.name}",
+                    "alternativeHeadline": "${surah.englishName}",
+                    "chapterNumber": ${surah.number},
+                    "url": "https://onlyquranexpo.vercel.app/reader?surahId=${surah.number}",
+                    "isPartOf": {
+                       "@type": "Book",
+                       "@id": "https://onlyquranexpo.vercel.app/#quran"
+                    }
+                    // We can add hasPart for verses later if needed
+                  }
+                }
+              `}
+            </script>
+          </Head>
+        )}
+        <MainContainer pt={insets.top} pl={insets.left} pr={insets.right}>
+          <StatusBar barStyle="light-content" />
+          <View style={{ height: listContainerHeight }}>
+            {verses.length > 0 ? (
+              <FlatList
+                ref={flatListRef}
+                data={verses}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <VerseCard
+                    verse={item}
+                    showTranslation={showTranslation}
+                    isActive={item.numberInSurah === activeVerseNumber}
+                    isPlaying={item.numberInSurah === activeVerseNumber && audioIsPlaying}
+                    isLoading={item.numberInSurah === activeVerseNumber && audioIsLoading}
+                    isBuffering={item.numberInSurah === activeVerseNumber && audioIsBuffering}
+                    durationMillis={item.numberInSurah === activeVerseNumber ? durationMillis : 0}
+                    positionMillis={item.numberInSurah === activeVerseNumber ? positionMillis : 0}
+                    onPress={handleVersePress}
+                    onSeek={handleSeek}
+                    onTogglePlayback={handleVersePress} // Use the same handler for toggling
+                  />
+                )}
+                ListHeaderComponent={
+                  surah && <SurahHeader surah={surah} onBackPress={handleBackPress} onSettingsPress={handleSettingsPress} />
+                }
+                contentContainerStyle={{
+                  paddingHorizontal: theme.spacing.md,
+                  paddingBottom: Platform.OS === 'ios' ? theme.spacing.xl * 2 : theme.spacing.xl,
+                }}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={10}
+                windowSize={21}
+                initialNumToRender={10}
+                getItemLayout={(data, index) => (
+                  { length: 150, offset: 150 * index, index }
+                )}
+              />
+            ) : (
+              <LoadingContainer>
+                <Text style={{ color: theme.colors.textSecondary, fontFamily: theme.typography.fonts.englishRegular }}>
+                  {`Verses for Surah ${surah?.englishName || ''} are not available yet.`}
+                </Text>
+              </LoadingContainer>
+            )}
+          </View>
+          {showAudioControls && surah && (
+            <AudioControlBar
+              isLoading={audioIsLoading}
+              durationMillis={durationMillis}
+              positionMillis={positionMillis}
+              onSkipNext={handleSkipNextPress}
+              onStop={handleStopPress}
+            />
+          )}
+        </MainContainer>
+      </ScreenBackground>
+    )
   );
 }
