@@ -1,9 +1,6 @@
-import * as Font from "expo-font";
 import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen"; // Import SplashScreen
 import Head from 'next/head'; // Import Head from next/head
-import { useCallback, useEffect, useState } from "react"; // Add useCallback
-import { Text, View } from "react-native"; // For displaying errors & View. Removed Platform
+import { View } from "react-native"; // For displaying errors & View. Removed Platform
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "styled-components/native"; // Removed styled
 // import AnimatedBackground from "../src/components/AnimatedBackground"; // Remove AnimatedBackground import
@@ -12,54 +9,54 @@ import theme from "../src/theme/theme"; // Adjusted path, removed Theme type imp
 // SplashScreen.preventAutoHideAsync(); // Moved inside component
 
 export default function RootLayout() {
-  SplashScreen.preventAutoHideAsync(); // Call inside component
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [fontError, setFontError] = useState<Error | null>(null);
+  // SplashScreen.preventAutoHideAsync(); // Call inside component
+  // const [fontsLoaded, setFontsLoaded] = useState(false);
+  // const [fontError, setFontError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    async function prepareApp() { // Renamed for clarity
-      try {
-        // Temporary cache clearing logic has been removed.
+  // useEffect(() => {
+  //   async function prepareApp() { // Renamed for clarity
+  //     try {
+  //       // Temporary cache clearing logic has been removed.
 
-        await Font.loadAsync({
-          // Arabic Fonts
-          "NotoNaskhArabic-Regular": require("../assets/fonts/NotoNaskhArabic-Regular.woff2"),
-          "NotoNaskhArabic-Bold": require("../assets/fonts/NotoNaskhArabic-Bold.woff2"),
-          // English Fonts
-          "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.woff2"),
-          "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.woff2"),
-          "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.woff2"),
-          "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.woff2"),
-          // Existing font, keep or remove as needed
-          "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.woff2"),
-        });
-      } catch (error) {
-        setFontError(error as Error);
-        console.error("Font loading error:", error);
-      } finally {
-        setFontsLoaded(true);
-        // No need to hide splash screen here if onLayoutRootView is used
-        // await SplashScreen.hideAsync();
-      }
-    }
-    prepareApp(); // Call prepareApp
-  }, []);
+  //       // await Font.loadAsync({
+  //       //   // Arabic Fonts
+  //       //   "NotoNaskhArabic-Regular": require("../assets/fonts/NotoNaskhArabic-Regular.woff2"),
+  //       //   "NotoNaskhArabic-Bold": require("../assets/fonts/NotoNaskhArabic-Bold.woff2"),
+  //       //   // English Fonts
+  //       //   "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.woff2"),
+  //       //   "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.woff2"),
+  //       //   "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.woff2"),
+  //       //   "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.woff2"),
+  //       //   // Existing font, keep or remove as needed
+  //       //   "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.woff2"),
+  //       // });
+  //     } catch (error) {
+  //       // setFontError(error as Error);
+  //       console.error("Font loading error:", error);
+  //     } finally {
+  //       // setFontsLoaded(true);
+  //       // No need to hide splash screen here if onLayoutRootView is used
+  //       // await SplashScreen.hideAsync();
+  //     }
+  //   }
+  //   prepareApp(); // Call prepareApp
+  // }, []);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      // This will hide the splash screen once the fonts are loaded or an error occurs
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
+  // const onLayoutRootView = useCallback(async () => {
+  //   // if (fontsLoaded || fontError) {
+  //   //   // This will hide the splash screen once the fonts are loaded or an error occurs
+  //   //   await SplashScreen.hideAsync();
+  //   // }
+  // }, [/*fontsLoaded, fontError*/]); // Commented out dependencies too
 
   // If there's a font error, display it. The splash screen will be hidden by onLayoutRootView.
-  if (fontError) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onLayout={onLayoutRootView}>
-        <Text>Error loading fonts: {fontError.message}</Text>
-      </View>
-    );
-  }
+  // if (fontError) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} /*onLayout={onLayoutRootView}*/>
+  //       <Text>Error loading fonts: {/*fontError.message*/}</Text>
+  //     </View>
+  //   );
+  // }
 
   // If fonts are loaded and no error, render the app. The splash screen will be hidden by onLayoutRootView.
   const AppContent = (
@@ -156,7 +153,7 @@ export default function RootLayout() {
             `}
           </script>
         </Head>
-        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <View style={{ flex: 1 }} /*onLayout={onLayoutRootView}*/>
           {AppContent}
         </View>
       </SafeAreaProvider>
