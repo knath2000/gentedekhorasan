@@ -52,10 +52,6 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) { // Show null only if fonts are not loaded AND no error
-    return null;
-  }
-
   // If there's a font error, display it. The splash screen will be hidden by onLayoutRootView.
   if (fontError) {
     return (
