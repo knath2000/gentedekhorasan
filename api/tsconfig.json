@@ -13,11 +13,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true, // Often good for transpile-only builders
-    "rootDir": "../", // Allow imports from parent directory
-    "baseUrl": "../", // Resolve modules from project root
+    "rootDir": ".", // Root directory for API source files
+    "baseUrl": ".", // Base URL for module resolution
     "paths": {
-      "@/api/*": ["api/*"], // Map api/ to @/api/
-      "@/lib/*": ["lib/*"] // Map lib/ to @/lib/
+      "../lib/prisma": ["./lib/prisma"] // Map ../lib/prisma to api/lib/prisma
     }
   },
   "include": [
