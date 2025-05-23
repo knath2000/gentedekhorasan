@@ -34,12 +34,10 @@
     -   **Pattern:** `src/services/surahService.ts` acts as an orchestrator, fetching Arabic text via `apiClient.ts` (from API/DB) and translations/Surah list (Surah list now primarily via API) directly from Vercel Blob, then combining them into complete `Verse` objects for the UI.
 -   **Lottie Animations:**
     -   `lottie-react-native` for native.
-    -   `@lottiefiles/dotlottie-react` for web.
     -   Current issue: Native Lottie animation plays once and freezes on Home screen.
 -   **Custom Fonts:** Loaded via `expo-font` in the root layout.
 -   **Audio Playback:** `expo-audio` is used. The core logic is managed by a custom hook `src/hooks/useAudioPlayer.ts` which uses `createAudioPlayer` directly from `expo-audio` and implements a `useReducer` pattern for state management. UI interaction (tap-to-play/pause) is handled in `src/components/VerseCard.tsx`.
--   **Metro Bundler Polyfills:** Critical for cross-platform compatibility of certain libraries. Configuration in `metro.config.js`.
--   **TypeScript DOM Lib:** `tsconfig.json` updated to include `"dom"` in `compilerOptions.lib` for web-specific typings (e.g., `HTMLInputElement` in `PlatformSlider.tsx`).
+-   **Metro Bundler Polyfills:** For Node.js module compatibility if needed by native libraries. Configuration in `metro.config.js`.
 
 ### 3. Development Workflow & Preferences:
 -   **Memory Bank:** Essential for project continuity. All core documents are to be maintained.
@@ -56,7 +54,7 @@
 -   `execute_command`: Used for running scripts and git operations.
 
 ### 5. Potential Challenges / Areas to Watch:
--   **Cross-platform UI consistency.**
+-   **Native Cross-Platform UI consistency (iOS/Android).**
 -   **Performance:** Lottie animations, data fetching.
 -   **State Management Complexity:** As features grow.
 -   **Metro Bundler Configuration.**
@@ -96,7 +94,7 @@
     -   Implements accessibility features (ARIA props, announcements, haptics).
 -   **`AudioControlBar.tsx`:** Global controls (Stop, Skip Next), time display. (Remains largely unchanged by this refactor phase).
 -   **`PlatformSlider.tsx`:**
-    -   Provides a cross-platform slider component.
+    -   Provides a native slider component.
     -   Updated to accept and pass through accessibility props.
 
 ### 13. Tap-to-Play/Pause Interaction (`VerseCard.tsx` & `ReaderScreen.tsx`):
@@ -114,7 +112,7 @@
     -   `accessibilityState` including `selected`, `busy`, `checked` (for play/pause).
     -   `AccessibilityInfo.announceForAccessibility` for detailed state changes (loading, buffering, playing, paused, selected).
 -   **`PlatformSlider.tsx`:**
-    -   Passes `accessibilityLabel`, `accessibilityHint`, `accessibilityRole="adjustable"`, and `accessibilityValue` to the underlying native/web sliders.
+    -   Passes `accessibilityLabel`, `accessibilityHint`, `accessibilityRole="adjustable"`, and `accessibilityValue` to the underlying native slider.
 
 ## Data Migration & Static Asset Handling (Vercel Blob) (2025-05-13)
 
@@ -128,10 +126,10 @@
 -   **Rule:** Ensure consistency for `VERCEL_BLOB_URL_BASE` etc., across `.env.local`, `app.json`, and scripts.
 
 ### 18. Application Service Layer for Data Retrieval:
--   **Pattern:**
-    -   `src/services/apiClient.ts`: Dedicated to fetching data (Arabic text, metadata) from Vercel Serverless Functions.
-    -   `src/services/quranMetadataService.ts`: Handles fetching metadata, prioritizing Edge Config then falling back to API.
-    -   `src/services/surahService.ts`: Fetches static assets (translations) directly from Vercel Blob and uses `apiClient.ts` (via `quranMetadataService.ts`) for dynamic Arabic text and Surah list, then combines them.
+-   **Pattern:** A layered approach is used for fetching and orchestrating Quranic data.
+    -   `src/services/apiClient.ts`: Dedicated to direct communication with Vercel Serverless Functions for fetching core data like Arabic text, translations, and raw metadata.
+    -   `src/services/quranMetadataService.ts`: Handles fetching and caching/prioritizing Surah list metadata (potentially from Edge Config with API fallback via `apiClient.ts`).
+    -   `src/services/surahService.ts`: Acts as the primary orchestrator for UI components. It uses `quranMetadataService.ts` to get the Surah list, and `apiClient.ts` to fetch Arabic verse text and corresponding translations. It then combines this data into complete `Verse` objects.
     -   `src/services/audioService.ts`: Constructs URLs for audio files hosted on Vercel Blob.
 
 ### 19. Data Organization in Blob Storage:
@@ -152,9 +150,6 @@
 ### 16. Current Approach: Library's `useAudioPlayer` Hook
 -   **Pattern:** The `src/hooks/useAudioPlayer.ts` directly calls `createAudioPlayer({ uri: audioUrl }, UPDATE_INTERVAL_MS)` and manages the lifecycle of the returned `AudioPlayer` instance, including attaching status listeners, handling play/pause/stop/seek operations, and cleaning up resources.
 -   **Benefit:** This approach is generally more stable and aligns with `expo-audio`'s intended usage, abstracting away some of the complexities of manual player creation and management.
-
-### 17. TypeScript Configuration for Web (`tsconfig.json`):
--   **Rule:** When implementing web-specific features that use DOM elements (like `input type="range"` in `PlatformSlider.tsx`), ensure `"dom"` is included in the `compilerOptions.lib` array in `tsconfig.json` to provide correct typings for `HTMLInputElement` and other DOM APIs.
 
 ### 18. Tool Usage for Refactoring:
 -   **Pattern:**
@@ -200,12 +195,12 @@ This file will be updated as new patterns, preferences, or critical project inte
 -   **Responsibilities:** This service should handle URL construction, request/response processing, and initial error handling/logging for API interactions.
 -   **Environment Variables:** Use environment variables (e.g., `API_BASE_URL` from `expo-constants`) for the base URL of the API to allow for different environments (dev, prod).
 
-### 31. Pattern: Hybrid Data Orchestration Service
--   **Pattern:** When data comes from multiple sources (e.g., API/DB for Arabic text, Vercel Blob for translations), use an orchestrating service (e.g., `src/services/surahService.ts`) to:
-    1.  Fetch data from each source (using `apiClient.ts` for API calls, direct `fetch` for Blob).
-    2.  Combine or merge the data into a unified structure required by the UI (e.g., a complete `Verse` object with both Arabic text and translation).
+### 31. Pattern: API-Driven Data Orchestration Service
+-   **Pattern:** When primary content data (like Arabic text, translations, Surah list metadata) is sourced from multiple API endpoints, use an orchestrating service (e.g., `src/services/surahService.ts`) to:
+    1.  Utilize other specialized services (e.g., `apiClient.ts` directly for text/translations, `quranMetadataService.ts` for Surah lists) to fetch data from respective API endpoints.
+    2.  Combine or merge the data from these API sources into a unified structure required by the UI (e.g., a complete `Verse` object with Arabic text and translation).
     3.  Handle errors from underlying fetch operations.
--   **Rationale:** Decouples UI components from the specifics of multiple data sources, simplifying component logic.
+-   **Rationale:** Decouples UI components from the specifics of multiple API calls and data sources, simplifying component logic and centralizing data aggregation.
 
 ### 32. Learning: Transition from Client-Side DB to Serverless API
 -   **Observation:** The project initially had `src/services/quranDbService.ts` for direct client-side connection to Neon DB. This was transitioned to Vercel Serverless Functions querying the database.
@@ -261,3 +256,24 @@ This file will be updated as new patterns, preferences, or critical project inte
 -   **Pattern:** When defining `routes` in `vercel.json` for TypeScript serverless functions, the `dest` path should point directly to the TypeScript source file (e.g., `{"src": "/api/get-metadata", "dest": "/api/get-metadata.ts"}`).
 -   **Observation:** Pointing to compiled `.js` files or just the route name without an extension can lead to 404 errors. Explicitly routing to the `.ts` file proved to be the reliable solution for this project.
 -   **Order of Routes:** Place more specific routes before more general/wildcard routes in `vercel.json` to ensure correct matching.
+## App Initialization & UX Patterns (2025-05-19)
+
+### 35. Rule: Expo Splash Screen Management with Font Loading
+-   **Pattern:** To ensure a smooth app startup, use `expo-splash-screen` in conjunction with `expo-font`.
+    1.  Call `SplashScreen.preventAutoHideAsync()` at the beginning of the root layout component.
+    2.  Load fonts using `Font.loadAsync()`.
+    3.  Use a `useCallback` function (e.g., `onLayoutRootView`) that calls `SplashScreen.hideAsync()` once fonts are confirmed loaded or an error has occurred.
+    4.  Attach this callback to the `onLayout` prop of the root `View` of your application.
+-   **Rationale:** This pattern prevents the splash screen from disappearing prematurely before essential assets like fonts are ready, and ensures it hides once the app is prepared to render, providing a good user experience.
+-   **Example:** See implementation in [`app/_layout.tsx`](app/_layout.tsx:1).
+## Screen-Specific UI Patterns (2025-05-19)
+
+### 36. Rule: Dynamically Hiding/Showing Expo Router Tab Bar
+-   **Pattern:** When a screen-specific UI element (e.g., an audio control bar on the Reader screen) needs to occupy the space normally taken by the main Expo Router Tab Bar, or to prevent overlap, the tab bar's visibility can be controlled dynamically.
+    1.  Obtain the `navigation` object (e.g., using `useNavigation()` from `expo-router`).
+    2.  Define styles for the default visible tab bar and a hidden tab bar (e.g., `display: 'none'`).
+    3.  Use `useEffect` to monitor the state that determines if the tab bar should be hidden (e.g., `showAudioControls` state in the screen).
+    4.  Call `navigation.setOptions({ tabBarStyle: hiddenTabBarStyle })` to hide and `navigation.setOptions({ tabBarStyle: defaultTabBarStyle })` to show the tab bar.
+    5.  Ensure the tab bar style is reset to its default visible state in the `useEffect` cleanup function to prevent it from remaining hidden when navigating away from the screen.
+-   **Rationale:** Provides a cleaner UI by preventing overlapping elements and maximizing screen real estate for contextual controls, improving the user experience on screens with temporary full-height or bottom-anchored elements.
+-   **Example:** See implementation in [`app/(tabs)/reader.tsx`](app/(tabs)/reader.tsx:267-276) for hiding the main tab bar when the `AudioControlBar` is shown.

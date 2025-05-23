@@ -91,20 +91,16 @@ const SurahCard: React.FC<SurahCardProps> = ({ surah, onPress }) => {
 
   return (
     <CardContainer onPress={() => onPress(surah)}>
-      {Platform.OS !== 'web' && (
-        <BlurView
-          style={[StyleSheet.absoluteFill, { borderRadius: theme.radii.md }]}
-          tint="dark"
-          intensity={Platform.OS === 'ios' ? 60 : 80} // Slightly less intense for cards
-        />
-      )}
+      <BlurView
+        style={[StyleSheet.absoluteFill, { borderRadius: theme.radii.md }]}
+        tint="dark"
+        intensity={Platform.OS === 'ios' ? 60 : 80} // Slightly less intense for cards
+      />
       <View
         style={[
           StyleSheet.absoluteFill,
           {
-            backgroundColor: Platform.OS === 'web'
-              ? 'rgba(40, 25, 70, 0.65)' // Web fallback
-              : 'rgba(25, 15, 45, 0.30)', // Native overlay
+            backgroundColor: 'rgba(25, 15, 45, 0.30)', // Native overlay
             borderRadius: theme.radii.md,
           },
         ]}

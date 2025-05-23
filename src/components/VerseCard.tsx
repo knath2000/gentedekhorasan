@@ -190,7 +190,7 @@ const VerseCard: React.FC<VerseCardProps> = ({
 
   const handleCardPress = () => {
     console.log(`[VerseCard] handleCardPress: verse ${verse.numberInSurah}, isActive: ${isActive}, isPlaying: ${isPlaying}`);
-    if (isActive && Platform.OS !== 'web') {
+    if (isActive) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     
@@ -218,22 +218,20 @@ const VerseCard: React.FC<VerseCardProps> = ({
         checked: isPlaying // 'checked' can represent play/pause state for a toggle button
       }}
     >
-      {Platform.OS !== 'web' && (
-        <BlurView
-          style={[StyleSheet.absoluteFill, { borderRadius: theme.radii.md }]}
-          tint="dark"
-          intensity={Platform.OS === 'ios' ? 60 : 80} 
-        />
-      )}
+      <BlurView
+        style={[StyleSheet.absoluteFill, { borderRadius: theme.radii.md }]}
+        tint="dark"
+        intensity={Platform.OS === 'ios' ? 60 : 80}
+      />
       <View
         style={[
           StyleSheet.absoluteFill,
           {
-            backgroundColor: isActive 
+            backgroundColor: isActive
               ? isPlaying
-                ? (Platform.OS === 'web' ? 'rgba(45, 85, 65, 0.75)' : 'rgba(35, 70, 55, 0.45)') // Greenish for playing
-                : (Platform.OS === 'web' ? 'rgba(60, 45, 90, 0.75)' : 'rgba(45, 35, 65, 0.45)') // Original purple for active/paused
-              : (Platform.OS === 'web' ? 'rgba(40, 25, 70, 0.65)' : 'rgba(25, 15, 45, 0.30)'), // Original for inactive
+                ? 'rgba(35, 70, 55, 0.45)' // Greenish for playing
+                : 'rgba(45, 35, 65, 0.45)' // Original purple for active/paused
+              : 'rgba(25, 15, 45, 0.30)', // Original for inactive
             borderRadius: theme.radii.md,
           },
         ]}

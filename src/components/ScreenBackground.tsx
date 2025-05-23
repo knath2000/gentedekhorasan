@@ -1,8 +1,7 @@
 import React from 'react';
-import { ImageBackground, Platform, StyleSheet, ViewProps } from 'react-native';
+import { ImageBackground, StyleSheet, ViewProps } from 'react-native'; // Removed Platform
 
 // Define the image sources
-const webImage = require('../../assets/images/webtest.png');
 const nativeImage = require('../../assets/images/iOSbackground.png'); // Using iOSbackground for native on other screens for now
 
 interface ScreenBackgroundProps extends ViewProps {
@@ -10,7 +9,7 @@ interface ScreenBackgroundProps extends ViewProps {
 }
 
 export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({ children, style, ...rest }) => {
-  const backgroundSource = Platform.OS === 'web' ? webImage : nativeImage;
+  const backgroundSource = nativeImage;
 
   return (
     <ImageBackground

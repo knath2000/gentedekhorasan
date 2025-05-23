@@ -206,24 +206,20 @@ const VerseOfTheDay: React.FC = () => {
 
   return (
     <VerseOfTheDayContainer>
-      {Platform.OS !== 'web' && ( // BlurView might not be ideal for web or could be styled differently via CSS
-        <BlurView
-          style={[StyleSheet.absoluteFill, { borderRadius: 15 /* Match container */ }]}
-          tint="dark" // 'light', 'dark', 'default' (iOS), or 'regular', 'prominent' (iOS 13+)
-          intensity={Platform.OS === 'ios' ? 70 : 90} // Adjust intensity per platform if needed
-        />
-      )}
-      {/* Optional: A semi-transparent overlay for a more pronounced effect or web fallback */}
-      <View 
+      <BlurView
+        style={[StyleSheet.absoluteFill, { borderRadius: 15 /* Match container */ }]}
+        tint="dark" // 'light', 'dark', 'default' (iOS), or 'regular', 'prominent' (iOS 13+)
+        intensity={Platform.OS === 'ios' ? 70 : 90} // Adjust intensity per platform if needed
+      />
+      {/* Optional: A semi-transparent overlay for a more pronounced effect */}
+      <View
         style={[
-          StyleSheet.absoluteFill, 
-          { 
-            backgroundColor: Platform.OS === 'web' 
-              ? 'rgba(40, 25, 70, 0.7)' // Web fallback if BlurView is not used or for consistent look
-              : 'rgba(25, 15, 45, 0.35)', // Slightly darker tint for native blur
-            borderRadius: 15 
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: 'rgba(25, 15, 45, 0.35)', // Slightly darker tint for native blur
+            borderRadius: 15
           }
-        ]} 
+        ]}
       />
       {renderContent()}
     </VerseOfTheDayContainer>

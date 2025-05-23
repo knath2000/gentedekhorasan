@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Verse } from '../types/quran'; // Assuming Verse type is defined here
 
 // Ensure API_BASE_URL is set in app.json extra, e.g., "https://your-vercel-deployment.vercel.app"
-const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL as string | undefined;
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL || '/api/v2'; // Default to /api/v2
 
 if (!API_BASE_URL) {
   console.warn(
@@ -22,7 +22,7 @@ export async function fetchVersesFromAPI(surahId: number): Promise<Omit<Verse, '
     throw new Error('API_BASE_URL is not configured. Cannot fetch verses.');
   }
   try {
-    const response = await fetch(`${API_BASE_URL}/api/get-verses?surah=${surahId}`);
+    const response = await fetch(`${API_BASE_URL}/get-verses?surah=${surahId}`);
     if (!response.ok) {
       const errorData = await response.text();
       console.error(`API error fetching verses for Surah ${surahId}: ${response.status}`, errorData);
@@ -47,7 +47,7 @@ export async function fetchVerseFromAPI(surahId: number, ayahId: number): Promis
     throw new Error('API_BASE_URL is not configured. Cannot fetch verse.');
   }
   try {
-    const response = await fetch(`${API_BASE_URL}/api/get-verse?surah=${surahId}&ayah=${ayahId}`);
+    const response = await fetch(`${API_BASE_URL}/get-verse?surah=${surahId}&ayah=${ayahId}`);
     if (response.status === 404) {
       console.warn(`Verse ${surahId}:${ayahId} not found via API.`);
       return null;
@@ -74,7 +74,7 @@ export async function fetchMetadataFromAPI<T>(type: string): Promise<T | null> {
     throw new Error('API_BASE_URL is not configured. Cannot fetch metadata.');
   }
   try {
-    const response = await fetch(`${API_BASE_URL}/api/get-metadata?type=${type}`);
+    const response = await fetch(`${API_BASE_URL}/get-metadata?type=${type}`);
     if (!response.ok) {
       const errorData = await response.text();
       console.error(`API error fetching metadata (${type}): ${response.status}`, errorData);
@@ -98,7 +98,7 @@ export async function fetchTranslationVersesBySurah(surahId: number, translator:
     throw new Error('API_BASE_URL is not configured. Cannot fetch translation verses.');
   }
   try {
-    const response = await fetch(`${API_BASE_URL}/api/get-translation-verses?surah=${surahId}&translator=${translator}`);
+    const response = await fetch(`${API_BASE_URL}/get-translation-verses?surah=${surahId}&translator=${translator}`);
     if (!response.ok) {
       const errorData = await response.text();
       console.error(`API error fetching translation verses for Surah ${surahId} (translator: ${translator}): ${response.status}`, errorData);
@@ -124,7 +124,7 @@ export async function fetchSingleTranslatedVerse(surahId: number, ayahId: number
     throw new Error('API_BASE_URL is not configured. Cannot fetch translated verse.');
   }
   try {
-    const response = await fetch(`${API_BASE_URL}/api/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`);
+    const response = await fetch(`${API_BASE_URL}/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`);
     if (response.status === 404) {
       console.warn(`Translated verse ${surahId}:${ayahId} (translator: ${translator}) not found via API.`);
       return null;

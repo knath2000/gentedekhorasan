@@ -1,8 +1,8 @@
 # System Patterns: Luminous Verses (Expo App)
 
-**Version:** 0.9.3 (Reflects API-Driven Architecture)
-**Date:** 2025-05-15
-**Related Brief:** `docs/projectbrief.md`
+**Version:** 0.9.4 (Reflects API-Driven Architecture & Ongoing Review)
+**Date:** 2025-05-19
+**Related Brief:** `memory-bank/projectbrief.md`
 **Original iOS Native Port Patterns:** (This document adapts system patterns for the current Expo-based project.)
 
 ## 1. Overall Architecture (Expo - MVVM-like with Hooks & API Integration)
@@ -24,7 +24,6 @@ graph TD
 
     subgraph Screens & Components
         HomeScreen --> AnimBG[AnimatedBackground (`src/components/AnimatedBackground.tsx`)]
-        HomeScreen --> ScreenBGComp[ScreenBackground (`src/components/ScreenBackground.tsx`)] %% For web
         SurahsScreen -- Uses --> SurahCard[SurahCard (`src/components/SurahCard.tsx`)]
         SurahsScreen -- Fetches List --> AppServices[App Services (`src/services/surahService.ts`)]
         SurahsScreen -- Uses --> ScreenBGComp
@@ -45,7 +44,7 @@ graph TD
 
     subgraph "Services & Data Layer"
         AppServices -- Uses --> ApiClient[API Client (`src/services/apiClient.ts`)]
-        AppServices -- Fetches Surah List & Translations --> VercelBlob[Vercel Blob (JSON files)]
+        %% AppServices -- Fetches Translations --> VercelBlob[Vercel Blob (JSON files)] %% This is now via APIClient
         ApiClient -- Calls --> VercelFunctions[Vercel Serverless Functions (`api/*.ts`)]
         VercelFunctions -- Queries --> NeonDB[Neon PostgreSQL Database (Quran Text)]
         
@@ -85,10 +84,11 @@ graph TD
     style ExpoAudio fill:#fcf,stroke:#333,stroke-width:1px
 ```
 
--   **Client-Side Application:** Expo (React Native) app targeting iOS, Android, and Web.
+-   **Client-Side Application:** Expo (React Native) app targeting iOS and Android.
 -   **Quranic Content Data Sources:**
     -   **Arabic Text:** Fetched from a Neon PostgreSQL database via Vercel Serverless Functions. Accessed through `src/services/apiClient.ts` which calls endpoints like `/api/get-verses`.
-    -   **Surah List & English Translations (Yusuf Ali):** Vercel Blob (JSON files). Data fetched directly via `src/services/surahService.ts`.
+    -   **Surah List:** Fetched via API (through `quranMetadataService` which uses `apiClient.ts`).
+    -   **English Translations (Yusuf Ali):** Fetched via API (through `surahService.ts` which uses `apiClient.ts`).
     -   **Audio Files:** Hosted on Vercel Blob, URLs constructed by `src/services/audioService.ts`.
 -   **Dynamic User Data (User Accounts, Bookmarks - Planned):** Supabase (PostgreSQL).
 -   **UI Framework:** React Native with custom components.
@@ -113,14 +113,15 @@ graph TD
     -   Tab-based navigation for main sections.
 -   **Data Fetching Pattern (Hybrid Model):**
     -   **Arabic Verse Text:** Fetched from Vercel Serverless Functions (which query PostgreSQL) via `src/services/apiClient.ts` and then integrated by `src/services/surahService.ts`.
-    -   **Translations & Surah List (Static):** Fetched as JSON files from Vercel Blob URLs directly by `src/services/surahService.ts`.
+    -   **Translations (Dynamic):** Fetched via API (through `surahService.ts` which uses `apiClient.ts`).
+    -   **Surah List (Dynamic):** Fetched via API (through `quranMetadataService`).
     -   **Audio Files:** URLs constructed by `src/services/audioService.ts` pointing to Vercel Blob.
     -   **Dynamic User Content (Planned):** `@supabase/supabase-js` client.
     -   `async/await` with `useEffect` hook in components for data loading.
 -   **API-Driven Content & Hybrid Retrieval:**
     -   The application employs a hybrid data retrieval strategy. Core Quranic text (Arabic) is served dynamically via an API layer (Vercel Serverless Functions backed by PostgreSQL) to allow for more flexible data management and potential future enhancements (e.g., different Qira'at, advanced search).
-    -   Supporting static content like translations and the Surah list are still fetched from Vercel Blob for simplicity and CDN benefits.
-    -   The `src/services/surahService.ts` acts as an orchestrator, combining data from these different sources (API for Arabic text, Blob for translations) to form complete `Verse` objects for the UI.
+    -   Supporting static content like audio files are still fetched from Vercel Blob for simplicity and CDN benefits. Quranic text, Surah list, and translations are now fetched via API.
+    -   The `src/services/surahService.ts` acts as an orchestrator, combining data from API sources (Arabic text, Surah list metadata, and translations) to form complete `Verse` objects for the UI.
     -   Error handling for API requests is managed within `src/services/apiClient.ts`, with further handling in `src/services/surahService.ts`.
     -   A cache-first strategy is not yet explicitly implemented but could be a future enhancement for API-fetched data.
 -   **View Composition & Layout:**
@@ -130,12 +131,12 @@ graph TD
 -   **Theming and Styling:**
     -   **`styled-components`**. Theme object provided via `ThemeProvider`.
 -   **Animation System:**
-    -   **Lottie:** `lottie-react-native` (native) / `@lottiefiles/dotlottie-react` (web).
+    -   **Lottie:** `lottie-react-native`.
 -   **Asynchronous Operations:**
     -   `async/await` for Promises.
     -   `useEffect` for side effects and cleanup.
     -   `useCallback` to memoize callbacks.
--   **Polyfills for Web/Node.js Compatibility:**
+-   **Polyfills for Node.js module compatibility (configured in `metro.config.js`):**
     -   Metro bundler configured in `metro.config.js`.
 
 -   **Audio Playback & UI Synchronization Pattern:**
@@ -186,4 +187,4 @@ graph TD
 -   **Metro Bundler Configuration:** Customizations in `metro.config.js`.
 -   **TypeScript Integration:** Strong typing.
 
-This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices. It now incorporates a hybrid data model with API-driven content for core Quranic text and a stable, robust audio playback system.
+This structure aims for a maintainable, scalable, native application (iOS and Android) using Expo and React Native best practices. It now incorporates a hybrid data model with API-driven content for core Quranic text and a stable, robust audio playback system.

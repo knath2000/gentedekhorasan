@@ -13,12 +13,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true, // Often good for transpile-only builders
-    "rootDir": ".",
-    "baseUrl": ".",
-    // It's generally better to let Vercel's build process handle the output directory.
-    // "outDir": ".dist", // Example, but typically not needed for Vercel
-    "paths": { // Optional: if you need to resolve modules from the root project, adjust accordingly
-      "@/*": ["../*"] // Example: maps @/ to project root from api/ directory
+    "rootDir": "../", // Allow imports from parent directory
+    "baseUrl": "../", // Resolve modules from project root
+    "paths": {
+      "@/api/*": ["api/*"], // Map api/ to @/api/
+      "@/lib/*": ["lib/*"] // Map lib/ to @/lib/
     }
   },
   "include": [
