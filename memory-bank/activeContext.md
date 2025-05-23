@@ -1,7 +1,7 @@
 # Active Context: Luminous Verses (Expo App)
 
 <<<<<<< HEAD
-**Version:** 0.9.5 (Database-Driven Translations & Metadata, CORS Fixes)
+**Version:** 0.9.5 (Prisma ORM Migration Completed)
 **Date:** 2025-05-23
 **Related Brief:** `memory-bank/projectbrief.md`
 **Related Progress:** `memory-bank/progress.md`
@@ -16,31 +16,31 @@
 
 -   **Focus:**
 <<<<<<< HEAD
-    1.  Migración a Prisma ORM + Neon (Fases 1, 2 y 3 completadas).
-    2.  Preparación para la Fase 4: Testing paralelo, migración gradual del frontend y deprecación de endpoints antiguos.
+    1.  Finalización de la migración a Prisma ORM y eliminación de endpoints antiguos.
+    2.  Testing exhaustivo de la aplicación completa con la nueva arquitectura de datos.
     3.  Finalización de las actualizaciones de Memory Bank para reflejar la arquitectura nativa-only y la integración de Prisma.
 -   **State:**
-    -   **Project Direction:** En transición a nativo-only (iOS y Android). El soporte web ha sido eliminado.
+    -   **Project Direction:** Nativo-only (iOS y Android). El soporte web ha sido completamente eliminado.
     -   **Memory Bank:** Actualizado a la versión 0.9.5 para reflejar la integración de Prisma y el enfoque nativo-only.
     -   **Application Core (Native):** Funcionalidades clave (obtención de datos, audio, componentes de UI) estables para plataformas nativas.
         -   Expo Router, theming, fuentes personalizadas, `react-native-safe-area-context` integrados.
         -   **Data Sources (API-Driven con Prisma):**
-            -   **Arabic Text, Surah List, Translations:** Ahora servidos a través de Vercel Serverless Functions utilizando Prisma ORM con Neon Adapter. **Status: Implementado, requiere testing.**
+            -   **Arabic Text, Surah List, Translations:** Ahora servidos a través de Vercel Serverless Functions utilizando Prisma ORM con Neon Adapter. **Status: Implementado y probado.**
             -   **Audio Files:** Alojados en Vercel Blob. **Status: Estable.**
     -   **`src/hooks/useAudioPlayer.ts`**: Estable.
     -   **UI Components (Versiones Nativas)**: `PlatformSlider.tsx` (ahora solo nativo), `VerseCard.tsx`, `AudioControlBar.tsx` estables para nativo.
-    -   **Vercel API Functions (`api/*.ts` y `api/v2/*.ts`):** Los endpoints antiguos (`api/*`) siguen funcionando, los nuevos (`api/v2/*`) están implementados con Prisma. **Status: Implementado, requiere testing.**
+    -   **Vercel API Functions (`api/v2/*.ts`):** Los endpoints antiguos (`api/*`) han sido eliminados. Los nuevos (`api/v2/*`) están implementados con Prisma. **Status: Implementado y probado.**
 
 ## 2. Recent Changes / Milestones
 
--   **Migración a Prisma ORM + Neon (2025-05-23):**
-    -   **Fase 1 (Preparación y Setup):** Dependencias instaladas, `prisma/schema.prisma` configurado e introspeccionado, cliente Prisma generado.
-    -   **Fase 2 (Migración de Endpoints):** Cliente Prisma centralizado creado (`lib/prisma.ts`), nuevos endpoints `/api/v2/get-verses.ts`, `/api/v2/get-metadata.ts`, `/api/v2/get-translated-verse.ts` implementados con Prisma.
+-   **Migración a Prisma ORM + Neon Completada (2025-05-23):**
+    -   **Fase 1 (Preparación y Setup):** Dependencias instaladas, `prisma/schema.prisma` configurado e introspeccionado, cliente Prisma generado con `binaryTargets` para Vercel.
+    -   **Fase 2 (Migración de Endpoints):** Cliente Prisma centralizado creado (`api/lib/prisma.ts`), nuevos endpoints `/api/v2/get-verses.ts`, `/api/v2/get-metadata.ts`, `/api/v2/get-translated-verse.ts` implementados con Prisma.
     -   **Fase 3 (Actualización del Frontend):** `src/services/apiClient.ts` modificado para usar los nuevos endpoints `/api/v2/`.
-    -   **Configuración:** `api/tsconfig.json` y `vercel.json` actualizados para soportar la nueva estructura y el build de Prisma.
--   **Eliminación de la Plataforma Web (2025-05-19):**
-    -   Configuraciones y dependencias web eliminadas.
-    -   Lógica condicional y código específico de la web refactorizados/eliminados.
+    -   **Fase 4 (Testing y Deprecación):** Endpoints `/api/v2/` probados y confirmados como funcionales. Endpoints antiguos (`api/*.ts`) eliminados del proyecto.
+    -   **Correcciones de Despliegue:** Resueltos problemas de "Cannot find module" y errores de tipo `TS7006` en Vercel.
+-   **Eliminación Completa de la Plataforma Web (2025-05-19):**
+    -   Configuraciones, dependencias y código específicos de la web eliminados.
     -   Confirmado que la aplicación iOS sigue funcionando.
 -   **Actualización Integral del Memory Bank (En curso - 2025-05-23):**
     -   Todos los documentos del Memory Bank están siendo revisados y actualizados para reflejar la arquitectura nativa-only y la integración de Prisma.
@@ -50,36 +50,34 @@
 
 ## 3. Próximos Pasos Inmediatos
 
-1.  **Fase 4: Testing y Deprecación (Migración Prisma):**
-    -   **Despliegue a Vercel:** El usuario debe desplegar los cambios a Vercel (fusionando a `main` y empujando) para que los nuevos endpoints `/api/v2/` estén disponibles en producción.
-    -   **Testing Paralelo:** Realizar pruebas exhaustivas de la aplicación Expo (iOS/Android) para asegurar que todas las funcionalidades que dependen de la API (obtención de versos, metadata, traducciones) funcionan correctamente con los nuevos endpoints.
-    -   **Comparación de Rendimiento:** Comparar el rendimiento y la fiabilidad de los endpoints `/api/` (antiguos) y `/api/v2/` (nuevos).
-    -   **Deprecación:** Una vez validada la nueva implementación, proceder a deprecar los endpoints antiguos (`/api/`).
-2.  **Limpieza Final del Proyecto (Post-Migración y Post-Eliminación Web):**
-    -   Guía al usuario para eliminar directorios como `node_modules` y `.expo` y reinstalar dependencias para asegurar un estado limpio.
-    -   Considerar `npx expo prebuild --clean` si los directorios de proyectos nativos (`ios`, `android`) existen y podrían contener configuraciones web obsoletas.
+1.  **Testing Exhaustivo de la Aplicación Completa:**
+    -   Realizar pruebas exhaustivas de todas las funcionalidades de la aplicación (lectura, audio, navegación, etc.) en iOS y Android con la nueva arquitectura de datos basada en Prisma.
+    -   Monitorear el rendimiento y la estabilidad.
+2.  **Limpieza Final del Proyecto:**
+    -   Guía al usuario para eliminar archivos y directorios temporales/obsoletos (`.expo`, `node_modules` y reinstalar dependencias).
+    -   Considerar `npx expo prebuild --clean` si es necesario.
 3.  **Finalizar Documentación del Memory Bank:**
     -   Asegurar que todos los documentos del Memory Bank (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`, `.clinerules`) reflejen completamente la arquitectura nativa-only y la integración de Prisma.
 
 ## 4. Decisiones Clave Tomadas
 
--   **Migración a Prisma ORM + Neon (2025-05-23):** Decisión de adoptar Prisma ORM con el adaptador Neon para mejorar el type safety, la experiencia del desarrollador y la mantenibilidad, manteniendo la infraestructura de base de datos existente.
--   **Transición a Enfoque Nativo-Only (iOS/Android) (2025-05-19):** Decisión de eliminar el soporte de la plataforma web para optimizar el desarrollo y enfocar los recursos en la calidad de la aplicación nativa.
--   **Datos Impulsados por API para Contenido Central (2025-05-19):** Confirmado y documentado que las listas de Surahs y las traducciones ahora son completamente impulsadas por API, alejándose de Vercel Blob para estos tipos de datos específicos.
+-   **Migración a Prisma ORM + Neon Completada (2025-05-23):** Se ha completado la migración a Prisma ORM con el adaptador Neon, mejorando el type safety, la experiencia del desarrollador y la mantenibilidad. Los endpoints antiguos han sido eliminados.
+-   **Transición a Enfoque Nativo-Only (iOS/Android) (2025-05-19):** Se ha eliminado completamente el soporte de la plataforma web para optimizar el desarrollo y enfocar los recursos en la calidad de la aplicación nativa.
+-   **Datos Impulsados por API para Contenido Central (2025-05-19):** Las listas de Surahs y las traducciones ahora son completamente impulsadas por API a través de Prisma ORM.
 -   **Estrategia de Enrutamiento de API de Vercel:** (Estable, como se documentó previamente)
 -   **Configuración de TypeScript de API:** (Estable, como se documentó previamente)
 -   **Sincronización de Estado Impulsada por Eventos para Audio:** (Estable, como se documentó previamente)
 
 ## 5. Preguntas Abiertas / Consideraciones
 
--   **Rendimiento de Prisma ORM:** Monitorear de cerca el rendimiento de los nuevos endpoints de Prisma en un entorno de producción.
--   **Revisión de Polyfills:** Reevaluar los polyfills de `metro.config.js` para determinar si alguno puede eliminarse de forma segura ahora que el soporte web ha desaparecido (requiere una verificación cuidadosa contra las dependencias nativas).
--   **`tsconfig.json` `"dom"` lib:** Reevaluar si la biblioteca `"dom"` puede eliminarse de `compilerOptions.lib` del `tsconfig.json` raíz ahora que la web no es un objetivo.
--   **Plataforma Android:** Confirmar si el soporte de Android es un objetivo activo junto con iOS para todo el desarrollo y las pruebas futuras.
+-   **Testing Exhaustivo:** La prioridad principal es el testing completo de la aplicación para asegurar la estabilidad y el rendimiento con la nueva arquitectura de datos.
+-   **Revisión de Polyfills:** Reevaluar los polyfills de `metro.config.js` para determinar si alguno puede eliminarse de forma segura ahora que el soporte web ha desaparecido.
+-   **`tsconfig.json` `"dom"` lib:** Reevaluar si la biblioteca `"dom"` puede eliminarse de `compilerOptions.lib` del `tsconfig.json` raíz.
+-   **Plataforma Android:** Confirmar si el soporte de Android es un objetivo activo para el testing y desarrollo.
 -   **Matices de Enrutamiento de Vercel y Ruta Comodín:** (Sigue siendo relevante si la estructura de la API evoluciona)
 -   **Rendimiento/Fiabilidad de la API y la Base de Datos para Nativo:** (Sigue siendo relevante)
 
-Este documento refleja el contexto activo durante la migración a Prisma ORM + Neon y la transición a una aplicación nativa-only (iOS y Android).
+Este documento refleja el contexto activo después de la finalización de la migración a Prisma ORM + Neon y la transición a una aplicación nativa-only (iOS y Android).
 =======
     1.  Finalizing Memory Bank updates to reflect the new data architecture (API/DB for translations and metadata, Edge Config for metadata caching).
     2.  Ensuring stability and correctness of the Verse of the Day feature after recent fixes (CORS, caching logic).
