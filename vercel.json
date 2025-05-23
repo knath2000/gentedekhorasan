@@ -1,11 +1,12 @@
 {
   "version": 2,
+  "buildCommand": "npx prisma generate --no-engine",
   "builds": [
     {
       "src": "api/**/*.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["api/tsconfig.json", "prisma/**", "lib/prisma.ts", "node_modules/.prisma/**"]
+        "includeFiles": ["api/tsconfig.json", "prisma/**", "api/lib/prisma.ts", "node_modules/.prisma/**"]
       }
     }
   ],
