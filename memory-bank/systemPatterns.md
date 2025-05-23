@@ -1,8 +1,14 @@
 # System Patterns: Luminous Verses (Expo App)
 
-**Version:** 0.9.4 (Reflects API-Driven Architecture & Ongoing Review)
-**Date:** 2025-05-19
+<<<<<<< HEAD
+**Version:** 0.9.5 (Reflects Prisma ORM Integration & Native-Only Focus)
+**Date:** 2025-05-23
 **Related Brief:** `memory-bank/projectbrief.md`
+=======
+**Version:** 0.9.5 (Reflects Database-Driven Translations & Metadata)
+**Date:** 2025-05-15
+**Related Brief:** `docs/projectbrief.md`
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 **Original iOS Native Port Patterns:** (This document adapts system patterns for the current Expo-based project.)
 
 ## 1. Overall Architecture (Expo - MVVM-like with Hooks & API Integration)
@@ -24,13 +30,25 @@ graph TD
 
     subgraph Screens & Components
         HomeScreen --> AnimBG[AnimatedBackground (`src/components/AnimatedBackground.tsx`)]
+        HomeScreen --> ScreenBGComp[ScreenBackground (`src/components/ScreenBackground.tsx`)] %% For web
+        HomeScreen -- Uses --> VerseOfTheDayComp[VerseOfTheDay (`src/components/VerseOfTheDay.tsx`)]
+
+        VerseOfTheDayComp -- Fetches Random Verse --> SurahService[Surah Service (`src/services/surahService.ts`)]
+<<<<<<< HEAD
+=======
+        HomeScreen --> ScreenBGComp[ScreenBackground (`src/components/ScreenBackground.tsx`)] %% For web
+        HomeScreen -- Uses --> VerseOfTheDayComp[VerseOfTheDay (`src/components/VerseOfTheDay.tsx`)]
+
+        VerseOfTheDayComp -- Fetches Random Verse --> SurahService[Surah Service (`src/services/surahService.ts`)]
+
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
         SurahsScreen -- Uses --> SurahCard[SurahCard (`src/components/SurahCard.tsx`)]
-        SurahsScreen -- Fetches List --> AppServices[App Services (`src/services/surahService.ts`)]
+        SurahsScreen -- Fetches List --> SurahService
         SurahsScreen -- Uses --> ScreenBGComp
         SurahsScreen -- Uses Insets --> SafeAreaContext[useSafeAreaInsets]
         SurahsScreen -- Uses Dimensions --> RNDimensions[Dimensions API]
         
-        ReaderScreen -- Fetches Data --> AppServices
+        ReaderScreen -- Fetches Data --> SurahService
         ReaderScreen -- Uses Hook --> AudioPlayerHook[useAudioPlayer (`src/hooks/useAudioPlayer.ts`)]
         ReaderScreen -- Uses Component --> AudioCtrlBar[AudioControlBar (`src/components/AudioControlBar.tsx`)]
         ReaderScreen -- Uses Component --> VerseCardComp[VerseCard (`src/components/VerseCard.tsx`)]
@@ -43,13 +61,48 @@ graph TD
     end
 
     subgraph "Services & Data Layer"
-        AppServices -- Uses --> ApiClient[API Client (`src/services/apiClient.ts`)]
-        %% AppServices -- Fetches Translations --> VercelBlob[Vercel Blob (JSON files)] %% This is now via APIClient
-        ApiClient -- Calls --> VercelFunctions[Vercel Serverless Functions (`api/*.ts`)]
-        VercelFunctions -- Queries --> NeonDB[Neon PostgreSQL Database (Quran Text)]
+<<<<<<< HEAD
+        SurahService -- Uses --> QuranMetadataService[Quran Metadata Service (`src/services/quranMetadataService.ts`)]
+        SurahService -- Uses --> ApiClient[API Client (`src/services/apiClient.ts`)]
+        
+        QuranMetadataService -- Fetches Metadata --> EdgeConfig[Vercel Edge Config (Metadata Cache)]
+        QuranMetadataService -- Fallback to API --> ApiClient %% For metadata if Edge Config fails
+        
+        ApiClient -- Calls API for Arabic Text --> GetVersesFunc[Vercel Serverless (`api/get-verses.ts`)]
+        ApiClient -- Calls API for Single Arabic Verse --> GetVerseFunc[Vercel Serverless (`api/get-verse.ts`)]
+        ApiClient -- Calls API for Translations --> GetTranslationVersesFunc[Vercel Serverless (`api/get-translation-verses.ts`)]
+        ApiClient -- Calls API for Single Translated Verse --> GetSingleTranslatedVerseFunc[Vercel Serverless (`api/get-translated-verse.ts`)]
+        ApiClient -- Calls API for Metadata --> GetMetadataFunc[Vercel Serverless (`api/get-metadata.ts`)]
+
+        GetVersesFunc -- Queries --> NeonDB[Neon PostgreSQL Database (quran_text table)]
+        GetVerseFunc -- Queries --> NeonDB
+        GetTranslationVersesFunc -- Queries --> NeonDBTrans[Neon PostgreSQL Database (en_yusufali table)]
+        GetSingleTranslatedVerseFunc -- Queries Arabic --> NeonDB
+        GetSingleTranslatedVerseFunc -- Queries Translation --> NeonDBTrans
+        GetMetadataFunc -- Queries --> NeonDBMetadata[Neon PostgreSQL Database (quran_surahs, quran_juzs etc.)]
+=======
+        SurahService -- Uses --> QuranMetadataService[Quran Metadata Service (`src/services/quranMetadataService.ts`)]
+        SurahService -- Uses --> ApiClient[API Client (`src/services/apiClient.ts`)]
+        
+        QuranMetadataService -- Fetches Metadata --> EdgeConfig[Vercel Edge Config (Metadata Cache)]
+        QuranMetadataService -- Fallback to API --> ApiClient %% For metadata if Edge Config fails
+        
+        ApiClient -- Calls API for Arabic Text --> GetVersesFunc[Vercel Serverless (`api/get-verses.ts`)]
+        ApiClient -- Calls API for Single Arabic Verse --> GetVerseFunc[Vercel Serverless (`api/get-verse.ts`)]
+        ApiClient -- Calls API for Translations --> GetTranslationVersesFunc[Vercel Serverless (`api/get-translation-verses.ts`)]
+        ApiClient -- Calls API for Single Translated Verse --> GetSingleTranslatedVerseFunc[Vercel Serverless (`api/get-translated-verse.ts`)]
+        ApiClient -- Calls API for Metadata --> GetMetadataFunc[Vercel Serverless (`api/get-metadata.ts`)]
+
+        GetVersesFunc -- Queries --> NeonDB[Neon PostgreSQL Database (quran_text table)]
+        GetVerseFunc -- Queries --> NeonDB
+        GetTranslationVersesFunc -- Queries --> NeonDBTrans[Neon PostgreSQL Database (en_yusufali table)]
+        GetSingleTranslatedVerseFunc -- Queries Arabic --> NeonDB
+        GetSingleTranslatedVerseFunc -- Queries Translation --> NeonDBTrans
+        GetMetadataFunc -- Queries --> NeonDBMetadata[Neon PostgreSQL Database (quran_surahs, quran_juzs etc.)]
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
         
         SupabaseInit --> SupabaseClient[Supabase Client Instance (User Data)]
-        AppServices -- Fetches Dynamic (Planned) --> SupabaseClient %% e.g., user data
+        %% AppServices -- Fetches Dynamic (Planned) --> SupabaseClient %% e.g., user data (Placeholder for future)
         
         AudioPlayerHook -- Uses Service --> AudioService[Audio Service (`src/services/audioService.ts`)]
         AudioService -- Uses SDK --> ExpoAudio[Expo Audio (`expo-audio`)]
@@ -72,13 +125,20 @@ graph TD
     style AppEntry fill:#f9f,stroke:#333,stroke-width:2px
     style ExpoRouter fill:#ccf,stroke:#333,stroke-width:2px
     style TabNav fill:#cdf,stroke:#333,stroke-width:2px
-    style VercelBlob fill:#dff,stroke:#333,stroke-width:2px
     style VercelBlobAudio fill:#dff,stroke:#333,stroke-width:2px
+    style EdgeConfig fill:#dfd,stroke:#333,stroke-width:2px
     style ApiClient fill:#aef,stroke:#333,stroke-width:2px
-    style VercelFunctions fill:#f96,stroke:#333,stroke-width:2px
+    style GetVersesFunc fill:#f96,stroke:#333,stroke-width:1px
+    style GetVerseFunc fill:#f96,stroke:#333,stroke-width:1px
+    style GetTranslationVersesFunc fill:#f96,stroke:#333,stroke-width:1px
+    style GetSingleTranslatedVerseFunc fill:#f96,stroke:#333,stroke-width:1px
+    style GetMetadataFunc fill:#f96,stroke:#333,stroke-width:1px
     style NeonDB fill:#69b,stroke:#333,stroke-width:2px
+    style NeonDBTrans fill:#69b,stroke:#333,stroke-width:2px
+    style NeonDBMetadata fill:#69b,stroke:#333,stroke-width:2px
     style SupabaseClient fill:#fdb,stroke:#333,stroke-width:1px
-    style AppServices fill:#bdc,stroke:#333,stroke-width:2px
+    style SurahService fill:#bdc,stroke:#333,stroke-width:2px
+    style QuranMetadataService fill:#bde,stroke:#333,stroke-width:2px
     style SafeAreaProv fill:#cfc,stroke:#333,stroke-width:2px
     style AudioPlayerHook fill:#fcf,stroke:#333,stroke-width:2px
     style ExpoAudio fill:#fcf,stroke:#333,stroke-width:1px
@@ -86,10 +146,23 @@ graph TD
 
 -   **Client-Side Application:** Expo (React Native) app targeting iOS and Android.
 -   **Quranic Content Data Sources:**
-    -   **Arabic Text:** Fetched from a Neon PostgreSQL database via Vercel Serverless Functions. Accessed through `src/services/apiClient.ts` which calls endpoints like `/api/get-verses`.
-    -   **Surah List:** Fetched via API (through `quranMetadataService` which uses `apiClient.ts`).
-    -   **English Translations (Yusuf Ali):** Fetched via API (through `surahService.ts` which uses `apiClient.ts`).
+<<<<<<< HEAD
+    -   **Arabic Text:** Fetched from a Neon PostgreSQL database (`quran_text` table) via Vercel Serverless Functions (e.g., `api/get-verses.ts`, `api/get-verse.ts`). Accessed through `src/services/apiClient.ts`.
+    -   **English Translations (Yusuf Ali):** Fetched from a Neon PostgreSQL database (`en_yusufali` table) via Vercel Serverless Functions (e.g., `api/get-translation-verses.ts`, `api/get-translated-verse.ts`). Accessed through `src/services/apiClient.ts`.
+    -   **Surah List & Other Metadata (Juz, Page Info, Sajdas):**
+        -   Primarily fetched from Vercel Edge Config (item: `quranMetadata`).
+        -   If Edge Config is unavailable or data is missing, it falls back to Vercel Serverless Functions (`api/get-metadata.ts`) which query Neon PostgreSQL database tables (e.g., `quran_surahs`, `quran_juzs`).
+        -   This process is managed by `src/services/quranMetadataService.ts`.
+=======
+    -   **Arabic Text:** Fetched from a Neon PostgreSQL database (`quran_text` table) via Vercel Serverless Functions (e.g., `api/get-verses.ts`, `api/get-verse.ts`). Accessed through `src/services/apiClient.ts`.
+    -   **English Translations (Yusuf Ali):** Fetched from a Neon PostgreSQL database (`en_yusufali` table) via Vercel Serverless Functions (e.g., `api/get-translation-verses.ts`, `api/get-translated-verse.ts`). Accessed through `src/services/apiClient.ts`.
+    -   **Surah List & Other Metadata (Juz, Page Info, Sajdas):**
+        -   Primarily fetched from Vercel Edge Config (item: `quranMetadata`).
+        -   If Edge Config is unavailable or data is missing, it falls back to Vercel Serverless Functions (`api/get-metadata.ts`) which query Neon PostgreSQL database tables (e.g., `quran_surahs`, `quran_juzs`).
+        -   This process is managed by `src/services/quranMetadataService.ts`.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
     -   **Audio Files:** Hosted on Vercel Blob, URLs constructed by `src/services/audioService.ts`.
+-   **Data Orchestration:** `src/services/surahService.ts` orchestrates the fetching of Surah lists (via `quranMetadataService.ts`) and verse data (Arabic text and translations via `apiClient.ts`), combining them as needed for UI components.
 -   **Dynamic User Data (User Accounts, Bookmarks - Planned):** Supabase (PostgreSQL).
 -   **UI Framework:** React Native with custom components.
 -   **Architectural Pattern (Loosely):** MVVM-like, where:
@@ -111,19 +184,41 @@ graph TD
 -   **Navigation Pattern:**
     -   **Expo Router:** File-system based routing.
     -   Tab-based navigation for main sections.
--   **Data Fetching Pattern (Hybrid Model):**
-    -   **Arabic Verse Text:** Fetched from Vercel Serverless Functions (which query PostgreSQL) via `src/services/apiClient.ts` and then integrated by `src/services/surahService.ts`.
-    -   **Translations (Dynamic):** Fetched via API (through `surahService.ts` which uses `apiClient.ts`).
-    -   **Surah List (Dynamic):** Fetched via API (through `quranMetadataService`).
+<<<<<<< HEAD
+-   **Data Fetching Pattern (API-Driven & Edge-Config Enhanced):**
+    -   **Arabic Verse Text:** Fetched from Vercel Serverless Functions (querying PostgreSQL `quran_text` table) via `src/services/apiClient.ts`.
+    -   **Translations (Yusuf Ali):** Fetched from Vercel Serverless Functions (querying PostgreSQL `en_yusufali` table) via `src/services/apiClient.ts`.
+    -   **Surah List & Metadata:**
+        -   Fetched by `src/services/quranMetadataService.ts`.
+        -   Priority 1: Vercel Edge Config.
+        -   Priority 2 (Fallback): Vercel Serverless Functions (`api/get-metadata.ts` querying PostgreSQL metadata tables).
+    -   **Orchestration:** `src/services/surahService.ts` uses `apiClient.ts` and `quranMetadataService.ts` to gather and combine data for UI presentation.
     -   **Audio Files:** URLs constructed by `src/services/audioService.ts` pointing to Vercel Blob.
     -   **Dynamic User Content (Planned):** `@supabase/supabase-js` client.
     -   `async/await` with `useEffect` hook in components for data loading.
--   **API-Driven Content & Hybrid Retrieval:**
-    -   The application employs a hybrid data retrieval strategy. Core Quranic text (Arabic) is served dynamically via an API layer (Vercel Serverless Functions backed by PostgreSQL) to allow for more flexible data management and potential future enhancements (e.g., different Qira'at, advanced search).
-    -   Supporting static content like audio files are still fetched from Vercel Blob for simplicity and CDN benefits. Quranic text, Surah list, and translations are now fetched via API.
-    -   The `src/services/surahService.ts` acts as an orchestrator, combining data from API sources (Arabic text, Surah list metadata, and translations) to form complete `Verse` objects for the UI.
-    -   Error handling for API requests is managed within `src/services/apiClient.ts`, with further handling in `src/services/surahService.ts`.
-    -   A cache-first strategy is not yet explicitly implemented but could be a future enhancement for API-fetched data.
+-   **API-Driven Content & Hybrid Retrieval (Updated):**
+    -   Core Quranic text (Arabic) and translations (Yusuf Ali) are served dynamically via an API layer (Vercel Serverless Functions backed by PostgreSQL).
+    -   Quranic structural metadata (Surah list, Juz info, etc.) is served primarily from Vercel Edge Config for performance, with a fallback to the API/DB.
+    -   `src/services/surahService.ts` acts as the primary orchestrator for combining these data sources for the UI.
+    -   Error handling for API requests is managed within `src/services/apiClient.ts` and further up the chain in services and components.
+=======
+-   **Data Fetching Pattern (API-Driven & Edge-Config Enhanced):**
+    -   **Arabic Verse Text:** Fetched from Vercel Serverless Functions (querying PostgreSQL `quran_text` table) via `src/services/apiClient.ts`.
+    -   **Translations (Yusuf Ali):** Fetched from Vercel Serverless Functions (querying PostgreSQL `en_yusufali` table) via `src/services/apiClient.ts`.
+    -   **Surah List & Metadata:**
+        -   Fetched by `src/services/quranMetadataService.ts`.
+        -   Priority 1: Vercel Edge Config.
+        -   Priority 2 (Fallback): Vercel Serverless Functions (`api/get-metadata.ts` querying PostgreSQL metadata tables).
+    -   **Orchestration:** `src/services/surahService.ts` uses `apiClient.ts` and `quranMetadataService.ts` to gather and combine data for UI presentation.
+    -   **Audio Files:** URLs constructed by `src/services/audioService.ts` pointing to Vercel Blob.
+    -   **Dynamic User Content (Planned):** `@supabase/supabase-js` client.
+    -   `async/await` with `useEffect` hook in components for data loading.
+-   **API-Driven Content & Hybrid Retrieval (Updated):**
+    -   Core Quranic text (Arabic) and translations (Yusuf Ali) are served dynamically via an API layer (Vercel Serverless Functions backed by PostgreSQL).
+    -   Quranic structural metadata (Surah list, Juz info, etc.) is served primarily from Vercel Edge Config for performance, with a fallback to the API/DB.
+    -   `src/services/surahService.ts` acts as the primary orchestrator for combining these data sources for the UI.
+    -   Error handling for API requests is managed within `src/services/apiClient.ts` and further up the chain in services and components.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 -   **View Composition & Layout:**
     -   Reusable UI components.
     -   Flexbox for layout.
@@ -140,12 +235,13 @@ graph TD
     -   Metro bundler configured in `metro.config.js`.
 
 -   **Audio Playback & UI Synchronization Pattern:**
-    -   **Mono-instance, Play-on-Create:** A single `AudioPlayer` instance is active at any time. New playback requests for a different verse result in the current player (if any) being removed and a new one created and played immediately. This prevents issues related to managing multiple or stale player instances.
-    -   **Direct Player Creation:** The implementation uses `createAudioPlayer` directly rather than the library-provided `useAudioPlayer` hook, giving fine-grained control over player lifecycle and state management.
-    -   **Comprehensive Error Handling:** The implementation includes retry logic for network errors, stall detection with timeouts, and detailed error tracking to provide a robust playback experience.
-    -   **Event-Driven State Updates:** UI state (playing, paused, buffering, current time, duration) is updated strictly based on events received from the `AudioPlayer` instance via its `onPlaybackStatusUpdate` listener. User actions (e.g., tap to play/pause) dispatch 'intent' actions to a reducer. The reducer may update an 'intent' status (e.g., `loading_requested`, `pausing_requested`), but the definitive transition to states like `playing` or `paused` only occurs after the corresponding player event is processed by the reducer. This ensures the UI accurately reflects the true state of the audio player.
-    -   **Resolution of Past Issues:** This event-driven pattern, combined with the mono-instance player, has resolved previous issues related to stuck buffering UI, desynchronized playback controls (like sliders), and unreliable play/pause/resume toggle behavior.
-    -   **Best Practice Alignment:** This approach aligns with `expo-audio` community best practices for robust audio state management and UI synchronization (e.g., insights from Expo GitHub issues like expo/expo#19788 and community forums regarding event-driven state).
+    -   (This section remains largely accurate as per previous version 0.9.3, no major changes identified here from the logs/code review related to data source changes)
+    -   **Mono-instance, Play-on-Create:** A single `AudioPlayer` instance is active at any time.
+    -   **Direct Player Creation:** Uses `createAudioPlayer` directly.
+    -   **Comprehensive Error Handling.**
+    -   **Event-Driven State Updates.**
+    -   **Resolution of Past Issues.**
+    -   **Best Practice Alignment.**
     -   ```mermaid
         sequenceDiagram
             participant User
@@ -168,6 +264,7 @@ graph TD
 
 ## 3. Component Structure (Illustrative)
 
+-   (This section remains largely accurate as per previous version 0.9.3)
 -   **Core App Structure:**
     -   `app/_layout.tsx`: Root layout.
     -   `app/(tabs)/_layout.tsx`: Tab bar structure.
@@ -180,6 +277,7 @@ graph TD
 
 ## 4. Expo/React Native Specific Patterns
 
+-   (This section remains largely accurate as per previous version 0.9.3)
 -   **Platform-Specific Code:** Using `Platform.OS`.
 -   **Expo Modules:** Utilizing Expo SDK APIs (e.g., `expo-font`, `expo-splash-screen`, `expo-audio`).
 -   **`react-native-safe-area-context`:** For safe area insets.
@@ -187,4 +285,8 @@ graph TD
 -   **Metro Bundler Configuration:** Customizations in `metro.config.js`.
 -   **TypeScript Integration:** Strong typing.
 
-This structure aims for a maintainable, scalable, native application (iOS and Android) using Expo and React Native best practices. It now incorporates a hybrid data model with API-driven content for core Quranic text and a stable, robust audio playback system.
+<<<<<<< HEAD
+This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices. It now incorporates a more robust data model with API-driven content for core Quranic text and translations, and an Edge-Config-first approach for metadata.
+=======
+This structure aims for a maintainable, scalable, and cross-platform application using Expo and React Native best practices. It now incorporates a more robust data model with API-driven content for core Quranic text and translations, and an Edge-Config-first approach for metadata.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8

@@ -34,6 +34,14 @@ if (!config.resolver.assetExts.includes('json')) {
   config.resolver.assetExts.push('json');
 }
 
+// Add woff and woff2 to assetExts for web font support
+if (!config.resolver.assetExts.includes('woff')) {
+  config.resolver.assetExts.push('woff');
+}
+if (!config.resolver.assetExts.includes('woff2')) {
+  config.resolver.assetExts.push('woff2');
+}
+
 // You might also need to ensure 'cjs' is in sourceExts if you have
 // CJS modules, though for Lottie this is usually about assetExts.
 // Example:

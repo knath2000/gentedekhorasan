@@ -34,6 +34,7 @@ const VerseOfTheDayContainer = styled(View)(({ theme }: { theme: Theme }) => ({
   borderColor: 'rgba(255, 255, 255, 0.18)', // Subtle border for the glass edge
   borderWidth: 1, // Unitless
   overflow: 'hidden', // Important to clip BlurView to borderRadius
+  minHeight: 150, // Reserve space to reduce CLS
 }));
 
 const TitleText = styled.Text`
@@ -113,23 +114,32 @@ const VerseOfTheDay: React.FC = () => {
 
   useEffect(() => {
     const getVerse = async () => {
+      console.log('[VerseOfTheDay] useEffect: getVerse initiated.');
       setLoading(true);
       setError(null);
       try {
         const today = new Date().toDateString();
         const cachedTimestamp = await AsyncStorage.getItem(CACHE_TIMESTAMP_KEY);
+        console.log(`[VerseOfTheDay] Today: ${today}, Cached Timestamp: ${cachedTimestamp}`);
         
         if (cachedTimestamp === today) {
           const cachedVerseData = await AsyncStorage.getItem(CACHE_KEY);
           if (cachedVerseData) {
+            console.log('[VerseOfTheDay] Found cached verse for today. Using cache.');
             setVerse(JSON.parse(cachedVerseData));
             setLoading(false);
             return;
           }
+          console.log('[VerseOfTheDay] Timestamp matches today, but no cached verse data found.');
+        } else {
+          console.log('[VerseOfTheDay] No valid cache for today. Fetching new verse.');
         }
 
         const fetchedVerse = await fetchRandomVerse();
-        if (fetchedVerse && fetchedVerse.surahNumber !== 0) { 
+        console.log('[VerseOfTheDay] useEffect: fetchRandomVerse returned:', JSON.stringify(fetchedVerse));
+
+        if (fetchedVerse && fetchedVerse.surahNumber !== 0 && fetchedVerse.arabic !== 'Error loading verse text.' && fetchedVerse.arabic !== 'Error loading verse.') {
+          console.log('[VerseOfTheDay] Fetched verse is valid. Setting state and cache.');
           const displayVerseData: DisplayVerse = {
             surahName: fetchedVerse.surahName,
             surahNumber: fetchedVerse.surahNumber,
@@ -139,18 +149,27 @@ const VerseOfTheDay: React.FC = () => {
             fullReference: `Surah ${fetchedVerse.surahName} (${fetchedVerse.surahNumber}:${fetchedVerse.verseNumberInSurah})`,
           };
           setVerse(displayVerseData);
+          console.log('[VerseOfTheDay] Successfully fetched and processed new verse. Caching it.');
           await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(displayVerseData));
           await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, today);
         } else {
-          setError('Could not fetch a verse. Please try again later.');
+          console.warn('[VerseOfTheDay] Fetched verse is considered invalid or an error object. Setting error state and clearing cache for today.', fetchedVerse);
+          setError(fetchedVerse?.english || 'Could not fetch a verse. Please try again later.');
+          // Clear potentially bad cache for today to allow re-fetch on next load today
+          await AsyncStorage.removeItem(CACHE_KEY);
+          // Optionally, also remove the timestamp to force a full fetch next time,
+          // or leave it so it knows it tried and failed for today.
+          // For now, let's remove the verse data but keep the timestamp to avoid constant refetching on error.
+          // If we want to retry every time the component loads after an error for "today", remove timestamp too:
+          // await AsyncStorage.removeItem(CACHE_TIMESTAMP_KEY);
         }
-      } catch (e) {
-        console.error('Failed to fetch or cache verse of the day:', e);
+      } catch (e: any) {
+        console.error('[VerseOfTheDay] useEffect: catch block error during fetch/processing:', e.message, e.stack);
         setError('An error occurred while fetching the verse.');
-        const cachedVerseData = await AsyncStorage.getItem(CACHE_KEY);
-        if (cachedVerseData) {
-          setVerse(JSON.parse(cachedVerseData));
-        }
+        // Do not fall back to potentially stale/error cache if a new fetch fails.
+        // Let the error state render. Clear today's cache.
+        await AsyncStorage.removeItem(CACHE_KEY);
+        // await AsyncStorage.removeItem(CACHE_TIMESTAMP_KEY); // To force refetch on next open today
       } finally {
         setLoading(false);
       }

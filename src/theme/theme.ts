@@ -25,16 +25,16 @@ export const colors = {
  
   // Text Colors
   textPrimary: '#F5F5F5', // Off-white for primary text on dark backgrounds
-  textSecondary: '#A9A9A9', // Light grey for secondary text
+  textSecondary: '#CCCCCC', // Adjusted for better contrast
   textArabic: '#FFFFFF', // Pure white for Arabic script for clarity
   textEnglish: '#E0E0E0', // Slightly softer white for English
 
   // UI Elements
   background: '#0B0724', // Same as skyDeepBlue for overall background
-  cardBackground: 'rgba(44, 29, 93, 0.5)', // Semi-transparent skyPurple for cards
+  cardBackground: 'rgba(44, 29, 93, 0.6)', // Slightly less transparent for better contrast
   tabBarBackground: '#1C1240', // A slightly lighter dark purple for tab bar
   activeTabIcon: '#FFD700', // desertHighlightGold
-  inactiveTabIcon: '#A9A9A9', // textSecondary
+  inactiveTabIcon: '#CCCCCC', // Adjusted for better contrast (matches textSecondary)
   buttonPrimaryBackground: '#E09F3E', // desertWarmOrange
   buttonPrimaryText: '#0B0724', // skyDeepBlue (for contrast on warm orange)
   buttonSecondaryBackground: '#4A3F8E', // skyIndigo

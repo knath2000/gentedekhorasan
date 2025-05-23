@@ -41,8 +41,20 @@ const WelcomeText = styled(Text)<{ theme: Theme }>`
   font-family: ${({ theme }) => theme.typography.fonts.englishBold};
   text-align: center;
   margin-bottom: 20px; /* Space before resume button */
+<<<<<<< HEAD
 `;
 
+=======
+  ${Platform.OS === 'web' && `
+    text-shadow: 0px 1px 6px rgba(0,0,0,0.9); /* Adjusted for better contrast */
+  `}
+`;
+
+const webImageSource = Platform.OS === 'web'
+  ? require('../../assets/images/webtest.webp')
+  : require('../../assets/images/webtest.webp'); // Fallback for bundler, native uses AnimatedBackground
+
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   // Adjust paddingBottom for the tab bar height

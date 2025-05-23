@@ -7,7 +7,7 @@
       "dom"
     ],
     "allowJs": true,
-    "jsx": "react-native",
+    "jsx": "preserve",
     "noEmit": false, // Allow TypeScript to emit files; Vercel will handle output for API routes
     "strict": true,
     "moduleResolution": "bundler", // Changed to "bundler" to support customConditions from base
@@ -18,13 +18,21 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "incremental": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    ".next/types/**/*.ts"
   ],
   "extends": "expo/tsconfig.base"
 }

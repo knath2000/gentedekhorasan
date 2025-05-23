@@ -1,0 +1,10 @@
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:iOS Simulator, arch:arm64, id:F1826190-E27A-42B3-9C33-0316D21BE9A2, OS:18.4, name:iPhone 16 Pro Max }
+{ platform:iOS Simulator, arch:x86_64, id:F1826190-E27A-42B3-9C33-0316D21BE9A2, OS:18.4, name:iPhone 16 Pro Max }
+** BUILD FAILED **
+
+
+The following build commands failed:
+	PhaseScriptExecution [CP-User]\ [Hermes]\ Replace\ Hermes\ for\ the\ right\ configuration,\ if\ needed /Users/kalyannath/Library/Developer/Xcode/DerivedData/quranexpo2-akiamlnvnsmuwzfiwykwpgotqgbj/Build/Intermediates.noindex/Pods.build/Debug-iphonesimulator/hermes-engine.build/Script-46EB2E0002B330.sh (in target 'hermes-engine' from project 'Pods')
+	Building workspace quranexpo2 with scheme quranexpo2 and configuration Debug
+(2 failures)

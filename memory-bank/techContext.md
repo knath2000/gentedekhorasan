@@ -1,8 +1,14 @@
 # Technical Context: Luminous Verses (Expo App)
 
-**Version:** 0.9.4 (Reflects API-Driven Architecture & Ongoing Review)
-**Date:** 2025-05-19
+<<<<<<< HEAD
+**Version:** 0.9.5 (Reflects Prisma ORM Integration & Native-Only Focus)
+**Date:** 2025-05-23
 **Related Brief:** `memory-bank/projectbrief.md`
+=======
+**Version:** 0.9.5 (Reflects Database-Driven Translations & Metadata)
+**Date:** 2025-05-15
+**Related Brief:** `docs/projectbrief.md`
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 **Original iOS Native Port Context:** (This document adapts the technical context of the original iOS native port for the current Expo-based cross-platform project.)
 
 ## 1. Core Framework & Platform (Expo)
@@ -16,35 +22,57 @@
 
 ## 2. Key Technologies & Libraries (Expo Project)
 
--   **API-Driven Quran Data (Arabic Text, Surah List & Translations):**
-    -   **Arabic Text Backend:** Vercel Serverless Functions (`api/*.ts`) connecting to a Neon PostgreSQL database.
-    -   **Surah List Backend:** API (via `quranMetadataService.ts`, which utilizes Edge Config and/or database lookups through `apiClient.ts`).
-    -   **Database Client (Serverless Functions):** `pg` (Node-postgres) used for all database interactions.
-    -   **Fetching (Client-side):**
-        -   Arabic Text: Via HTTPS GET requests to Vercel Function endpoints (e.g., `/api/get-verses`).
-        -   Surah List: Through `src/services/quranMetadataService.ts`.
-    -   **Client Service Layer Integration:**
-        -   `src/services/apiClient.ts`: Makes direct API calls for Arabic text, translations, and is used by `quranMetadataService`.
-        -   `src/services/quranMetadataService.ts`: Provides the Surah list.
-        -   `src/services/surahService.ts`: Orchestrates data, using `quranMetadataService` for the Surah list and `apiClient.ts` for verse text and translations.
+<<<<<<< HEAD
+-   **API-Driven Quran Data (Arabic Text & Translations):**
+    -   **Backend:** Vercel Serverless Functions (`api/*.ts`) connecting to a Neon PostgreSQL database.
+        -   `api/get-verses.ts`: Fetches Arabic verses for a Surah.
+        -   `api/get-verse.ts`: Fetches a single Arabic verse.
+        -   `api/get-translation-verses.ts`: Fetches translation verses for a Surah (e.g., Yusuf Ali).
+        -   `api/get-translated-verse.ts`: Fetches a single verse with its translation.
+    -   **Database:** Neon PostgreSQL. Tables include `quran_text` (Arabic), `en_yusufali` (Yusuf Ali translation), and metadata tables like `quran_surahs`.
+    -   **Database Client (Serverless Functions):** `pg` (Node-postgres).
+    -   **Fetching (Client-side):** Via HTTPS GET requests to Vercel Function endpoints.
+    -   **Client Service Layer:**
+        -   `src/services/apiClient.ts`: Makes `fetch` calls to all API endpoints.
+        -   `src/services/surahService.ts`: Orchestrates fetching of verse data (Arabic and translations) using `apiClient.ts`, and Surah list/metadata using `quranMetadataService.ts`.
+-   **Quranic Metadata (Surah List, Juz Info, etc.):**
+    -   **Primary Source:** Vercel Edge Config (item: `quranMetadata`). Data is shaped by `scripts/convertQuranData.js` from `quran-data.xml`.
+    -   **Fallback Source:** Vercel Serverless Function (`api/get-metadata.ts`) querying Neon PostgreSQL metadata tables (e.g., `quran_surahs`).
+    -   **Client Service Layer:** `src/services/quranMetadataService.ts` handles fetching from Edge Config with API/DB fallback.
+=======
+-   **API-Driven Quran Data (Arabic Text & Translations):**
+    -   **Backend:** Vercel Serverless Functions (`api/*.ts`) connecting to a Neon PostgreSQL database.
+        -   `api/get-verses.ts`: Fetches Arabic verses for a Surah.
+        -   `api/get-verse.ts`: Fetches a single Arabic verse.
+        -   `api/get-translation-verses.ts`: Fetches translation verses for a Surah (e.g., Yusuf Ali).
+        -   `api/get-translated-verse.ts`: Fetches a single verse with its translation.
+    -   **Database:** Neon PostgreSQL. Tables include `quran_text` (Arabic), `en_yusufali` (Yusuf Ali translation), and metadata tables like `quran_surahs`.
+    -   **Database Client (Serverless Functions):** `pg` (Node-postgres).
+    -   **Fetching (Client-side):** Via HTTPS GET requests to Vercel Function endpoints.
+    -   **Client Service Layer:**
+        -   `src/services/apiClient.ts`: Makes `fetch` calls to all API endpoints.
+        -   `src/services/surahService.ts`: Orchestrates fetching of verse data (Arabic and translations) using `apiClient.ts`, and Surah list/metadata using `quranMetadataService.ts`.
+-   **Quranic Metadata (Surah List, Juz Info, etc.):**
+    -   **Primary Source:** Vercel Edge Config (item: `quranMetadata`). Data is shaped by `scripts/convertQuranData.js` from `quran-data.xml`.
+    -   **Fallback Source:** Vercel Serverless Function (`api/get-metadata.ts`) querying Neon PostgreSQL metadata tables (e.g., `quran_surahs`).
+    -   **Client Service Layer:** `src/services/quranMetadataService.ts` handles fetching from Edge Config with API/DB fallback.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 -   **Audio Data & Playback:**
     -   **Audio File Hosting:** Vercel Blob. URLs constructed by `src/services/audioService.ts`.
+    -   **Audio Library:** `expo-audio` (Bundled version `~0.4.5` as per docs).
+        -   Managed primarily via the `useAudioPlayer` custom hook ([`src/hooks/useAudioPlayer.ts`](src/hooks/useAudioPlayer.ts:1)).
+        -   `src/services/audioService.ts` constructs audio URLs.
+    -   **Key `expo-audio` APIs in use:** `createAudioPlayer` (used directly in hook), `AudioPlayer` instance methods, `AudioStatus`, `AudioModule.setAudioModeAsync`.
 -   **Dynamic User Data (User Accounts, Bookmarks - Planned):**
     -   **Backend:** Supabase (PostgreSQL).
     -   **Client:** `@supabase/supabase-js` - Initialized in [`src/lib/supabaseClient.ts`](src/lib/supabaseClient.ts:1).
--   **Local App Settings Persistence:**
-    -   **Mechanism:** `AsyncStorage` (from `@react-native-async-storage/async-storage`).
-    -   **Service Layer:** `src/services/settingsService.ts` provides an abstraction for getting/setting local preferences (e.g., autoplay toggle, show translation preference).
-    -   **Audio Library:** `expo-audio` (Bundled version `~0.4.5` as per docs).
-        -   Managed primarily via the `useAudioPlayer` custom hook ([`src/hooks/useAudioPlayer.ts`](src/hooks/useAudioPlayer.ts:1)). This hook now implements a stable 'play-on-create' (mono-instance) pattern using `createAudioPlayer` directly from `expo-audio`, with UI state reliably synchronized through player events and a reducer. This aligns with `expo-audio` best practices for robust playback.
-        -   `src/services/audioService.ts` constructs audio URLs.
-    -   **Key `expo-audio` APIs in use:** `createAudioPlayer`, `AudioPlayer` instance methods (`play`, `pause`, `seekTo`, `remove`, `addListener`), `AudioStatus`, `AudioModule.setAudioModeAsync`.
--   **HTTP Client (for Vercel Blob, Vercel Functions, Supabase & future APIs):**
-    -   Native `fetch` API, used in `src/services/apiClient.ts` and `src/services/surahService.ts`.
--   **Vercel Platform SDKs:**
-    -   `@vercel/blob`: Client for interacting with Vercel Blob storage (primarily used by data migration scripts).
-    -   `@vercel/edge-config`: Client for Vercel Edge Config (used by `quranMetadataService.ts`).
-    -   `@vercel/node`: Provides types for Vercel Serverless Functions (e.g., `VercelRequest`, `VercelResponse` used in `api/*.ts` files).
+<<<<<<< HEAD
+-   **HTTP Client (for Vercel Functions, Supabase & future APIs):**
+    -   Native `fetch` API, used in `src/services/apiClient.ts`.
+=======
+-   **HTTP Client (for Vercel Functions, Supabase & future APIs):**
+    -   Native `fetch` API, used in `src/services/apiClient.ts`.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 -   **Navigation:**
     -   **Expo Router:** File-system based routing. Tab navigation implemented in [`app/(tabs)/_layout.tsx`](app/(tabs)/_layout.tsx:1).
 -   **Layout & Safe Area Management:**
@@ -63,9 +91,21 @@
 -   **Typography & Fonts:**
     -   **Custom Fonts:** Noto Naskh Arabic, Montserrat, SpaceMono. Loaded via `expo-font`.
 -   **Bundler & Polyfills:**
-    -   **Metro Bundler.** Polyfills for Node.js module compatibility configured in [`metro.config.js`](metro.config.js:1) (if needed by native modules).
--   **Migration Scripts (Node.js):**
-    -   Located in `scripts/` directory. Use `dotenv`, `@supabase/supabase-js`, `@vercel/blob`.
+<<<<<<< HEAD
+    -   **Metro Bundler.** Custom Polyfills configured in [`metro.config.js`](metro.config.js:1).
+-   **Data Processing & Migration Scripts (Node.js):**
+    -   Located in `scripts/` directory.
+    -   `scripts/convertQuranData.js`: Parses `quran-data.xml` to generate `edge-config-data.json` and `quran_metadata_schema.sql`.
+    -   `scripts/migrateYusufaliDumpToNeon.js`: Migrates Yusuf Ali translation data from a MySQL dump (`dump4.sql`) to the `en_yusufali` table in Neon DB.
+    -   Dependencies: `xml2js`, `dotenv`, `pg`.
+=======
+    -   **Metro Bundler.** Custom Polyfills configured in [`metro.config.js`](metro.config.js:1).
+-   **Data Processing & Migration Scripts (Node.js):**
+    -   Located in `scripts/` directory.
+    -   `scripts/convertQuranData.js`: Parses `quran-data.xml` to generate `edge-config-data.json` and `quran_metadata_schema.sql`.
+    -   `scripts/migrateYusufaliDumpToNeon.js`: Migrates Yusuf Ali translation data from a MySQL dump (`dump4.sql`) to the `en_yusufali` table in Neon DB.
+    -   Dependencies: `xml2js`, `dotenv`, `pg`.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 
 ## 3. Development Environment & Tools
 
@@ -74,22 +114,36 @@
 -   **IDE:** Visual Studio Code
 -   **Linters/Formatters:** ESLint (configured in [`eslint.config.js`](eslint.config.js:1)), Prettier.
 -   **Debugging:** React Native Debugger, Chrome DevTools, `console.log`.
+-   **Local Development Server for APIs:** `vercel dev` (optional, for testing serverless functions locally).
 
 ## 4. Technical Constraints & Considerations (Expo Project)
 
--   **Native Cross-Platform Compatibility (iOS/Android).**
--   **Performance:** Lottie animation performance. CDN caching benefits from Vercel Blob.
--   **`expo-audio` Playback Reliability:** Ensuring continued `expo-audio` playback reliability through adherence to event-driven state management and mono-instance player patterns.
--   **iOS Audio Configuration:** `UIBackgroundModes` in `app.json`/`Info.plist` is critical for background audio and sometimes affects foreground playback reliability, especially in managed workflows or simulators.
--   **Device Testing:** Real device testing (especially for iOS audio) is crucial as simulators may not fully replicate device behavior or audio session handling.
+<<<<<<< HEAD
+-   **Cross-Platform Compatibility.**
+-   **Performance:** Lottie animation performance. Efficient data fetching from API/DB and Edge Config.
+-   **`expo-audio` Playback Reliability.**
+-   **iOS Audio Configuration.**
+-   **Device Testing.**
+=======
+-   **Cross-Platform Compatibility.**
+-   **Performance:** Lottie animation performance. Efficient data fetching from API/DB and Edge Config.
+-   **`expo-audio` Playback Reliability.**
+-   **iOS Audio Configuration.**
+-   **Device Testing.**
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 -   **Bundle Size.**
 -   **Arabic RTL Layout.**
 -   **API Rate Limiting (Vercel Functions & External Services).**
 -   **Database Connection Management (Serverless Functions):** Efficient use of connection pooling (`pg` library configuration in API routes).
--   **Offline Capabilities (Considerations for API data).**
+-   **CORS Configuration:** Vercel API functions require CORS headers (e.g., `Access-Control-Allow-Origin`) to be accessible from the web app running on a different origin (like `localhost` during development).
+-   **Offline Capabilities (Considerations for API data & Edge Config).**
 -   **Expo SDK Version.**
--   **State Synchronization:** Maintaining robust synchronization for audio playback by strictly adhering to event-driven updates from the player to the reducer and UI, a pattern that has resolved previous stability issues.
--   **Environment Variable Management (NEON_DATABASE_URL, API_BASE_URL, VERCEL_BLOB_URL_BASE).**
+-   **State Synchronization (Audio).**
+-   **Environment Variable Management:**
+    -   `NEON_DATABASE_URL`: For Vercel functions (set in Vercel project) and local scripts (via `.env.local`).
+    -   `API_BASE_URL`: For Expo app (in `app.json`, can be overridden by `.env.local` for local `vercel dev` testing).
+    -   `EDGE_CONFIG`: For `quranMetadataService.ts` (in `.env.local` for local `vercel dev` or live Edge Config, and in Vercel project for deployed app).
+    -   `VERCEL_BLOB_URL_BASE`: For audio file URLs (in `app.json`).
 
 ## 5. Asset Management
 
@@ -97,7 +151,18 @@
 -   **Fonts:** `.ttf` files in `assets/fonts/`.
 -   **Images:** Stored in `assets/images/`.
 -   **Theme Colors/Styles:** Defined in [`src/theme/theme.ts`](src/theme/theme.ts:1).
--   **Static Assets (Audio):** Audio files are hosted on Vercel Blob. (Translations are now via API).
--   **Surah List Data:** Sourced via API (see "Key Technologies & Libraries" section for details). (Arabic text is also database-driven via API).
+<<<<<<< HEAD
+-   **Audio Files:** Hosted on Vercel Blob.
+-   **Core Data Sources (Not client-side assets but foundational):**
+    -   `quran-data.xml`: Master source for Quranic structural metadata.
+    -   `dump4.sql`: Source for Yusuf Ali English translations.
+ 
+This technical context outlines the stack and considerations for building the Luminous Verses Expo app, featuring an API-driven model for Quranic text and translations, and an Edge-Config-first approach for metadata.
+=======
+-   **Audio Files:** Hosted on Vercel Blob.
+-   **Core Data Sources (Not client-side assets but foundational):**
+    -   `quran-data.xml`: Master source for Quranic structural metadata.
+    -   `dump4.sql`: Source for Yusuf Ali English translations.
 
-This technical context outlines the stack and considerations for building the Luminous Verses Expo app, featuring a hybrid data model (API/DB for Arabic text, Surah list, and translations; Vercel Blob for static audio assets) and a stable audio playback system based on `expo-audio` best practices.
+This technical context outlines the stack and considerations for building the Luminous Verses Expo app, featuring an API-driven model for Quranic text and translations, and an Edge-Config-first approach for metadata.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8

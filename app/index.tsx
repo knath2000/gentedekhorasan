@@ -1,6 +1,10 @@
-import { Redirect } from "expo-router";
+// app/index.tsx
+import { Text, View } from 'react-native';
 
-export default function Index() {
-  // Redirect to the (tabs) group, which will default to the 'index' screen (HomeScreen)
-  return <Redirect href="/(tabs)" />;
+export default function MinimalRootPage() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>This is a minimal root index page. Test.</Text>
+    </View>
+  );
 }

@@ -28,7 +28,7 @@
     },
     {
       "src": "/api/get-verse",
-      "dest": "/api/get/verse.ts"
+      "dest": "/api/get-verse.ts"
     },
     {
       "src": "/api/get-verses",

@@ -1,23 +1,28 @@
 # .clinerules - Luminous Verses (Expo App) - Project Intelligence
+**Last Updated:** 2025-05-15
 
-## Initial Observations & Patterns (2025-05-09)
+## Core Architectural Principles:
+-   **API-First for Data:** All Quranic text (Arabic, translations) and primary metadata (Surah lists, Juz info) are served via Vercel Serverless Functions querying a Neon PostgreSQL database. This centralizes data logic and enhances security.
+-   **Edge Config for Performance:** Vercel Edge Config is used as a high-performance cache for frequently accessed, relatively static metadata (like Surah lists and navigation indices). The app attempts to fetch from Edge Config first, falling back to API/DB.
+-   **Service Layer Orchestration:**
+    -   `src/services/apiClient.ts`: Solely responsible for raw `fetch` calls to API endpoints.
+    -   `src/services/quranMetadataService.ts`: Handles fetching/caching of Quranic structural metadata (Surah list, Juz info, etc.), prioritizing Edge Config, then API/DB.
+    -   `src/services/surahService.ts`: Orchestrates data for UI components, combining data from `apiClient.ts` (for verse text/translations) and `quranMetadataService.ts` (for Surah info).
+-   **Client-Side DB Deprecated:** Direct client-side database connections (previously in `quranDbService.ts`) are deprecated in favor of the API-first approach.
 
-### 1. Project Structure & Conventions:
--   **Expo Managed Workflow:** Project relies heavily on Expo's ecosystem and tools.
--   **Expo Router:** File-system based routing is a core navigation pattern.
-    -   Tabs: `app/(tabs)/_layout.tsx` and `app/(tabs)/[screen].tsx`.
-    -   Root: `app/_layout.tsx`.
--   **TypeScript:** Strictly typed codebase.
--   **Styling:** `styled-components` with a `ThemeProvider` is the chosen method for styling.
-    -   Theme definition: `src/theme/theme.ts`.
-    -   Typed theme: `src/styled.d.ts`.
--   **Component Organization:**
-    -   Screens (route components) are in `app/`.
-    -   Reusable UI components are in `src/components/`.
-    -   Libraries/services (like Supabase client) are in `src/lib/`.
-    -   Custom hooks are in `src/hooks/`.
--   **Asset Organization:** `assets/` directory with subfolders for `animations`, `fonts`, `images`.
+## Data Management & Migration:
+-   **Master Data Sources:**
+    -   `quran-data.xml`: The definitive source for Quranic structural metadata (Surah details, Juz, page mappings, Sajda locations).
+    -   `dump4.sql` (MySQL dump): The definitive source for Yusuf Ali English translations.
+    -   Arabic text (`quran_text` table): Assumed to be pre-existing and managed directly in the Neon DB.
+-   **Processing Scripts:**
+    -   `scripts/convertQuranData.js`: Parses `quran-data.xml` to generate:
+        -   `edge-config-data.json`: For populating Vercel Edge Config (item: `quranMetadata`).
+        -   `quran_metadata_schema.sql`: For creating and populating metadata tables in Neon DB (e.g., `quran_surahs`, `quran_juzs`).
+    -   `scripts/migrateYusufaliDumpToNeon.js`: Migrates translations from `dump4.sql` to the `en_yusufali` table in Neon DB.
+-   **Vercel Blob Usage:** Now primarily for storing audio files. Textual/JSON data has been migrated to DB/API/Edge Config.
 
+<<<<<<< HEAD
 ### 2. Key Technologies & Integration Patterns:
 -   **Supabase:** Used for dynamic user data needs (planned: user accounts, bookmarks).
     -   Client initialization: `src/lib/supabaseClient.ts`.
@@ -38,21 +43,37 @@
 -   **Custom Fonts:** Loaded via `expo-font` in the root layout.
 -   **Audio Playback:** `expo-audio` is used. The core logic is managed by a custom hook `src/hooks/useAudioPlayer.ts` which uses `createAudioPlayer` directly from `expo-audio` and implements a `useReducer` pattern for state management. UI interaction (tap-to-play/pause) is handled in `src/components/VerseCard.tsx`.
 -   **Metro Bundler Polyfills:** For Node.js module compatibility if needed by native libraries. Configuration in `metro.config.js`.
+=======
+## Vercel Serverless Functions (`api/*.ts`):
+-   **TypeScript Configuration:** Use a dedicated `api/tsconfig.json` with `"module": "commonjs"` and `"esModuleInterop": true`. API source files can use ES Module `import` syntax.
+-   **Routing (`vercel.json`):** Define explicit routes with the `dest` path pointing directly to the `.ts` source file (e.g., `{"src": "/api/get-metadata", "dest": "/api/get-metadata.ts"}`). Place specific routes before general/wildcard routes.
+-   **CORS Headers:** Essential for all API functions to allow cross-origin requests from the web app (especially during local development). Implement by setting `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`, and `Access-Control-Allow-Headers`. Handle `OPTIONS` preflight requests.
+-   **Database Connection:** Use `pg` library with appropriate pooling for serverless environments (e.g., `max: 1`, short `idleTimeoutMillis`).
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8
 
-### 3. Development Workflow & Preferences:
--   **Memory Bank:** Essential for project continuity. All core documents are to be maintained.
--   **Iterative Development:** Features are built screen by screen. Bug fixing often involves iterative diagnosis.
--   **Cross-Platform First (with caveats):** Aim for maximum code sharing.
--   **Clear Documentation:** Emphasis on documenting current state, next steps, and decisions.
--   **Debugging:** Heavy reliance on `console.log`.
+## Expo Client Development:
+-   **Environment Variables:**
+    -   `API_BASE_URL`: Defined in `app.json` (for deployed app) and can be overridden by `.env.local` (for local development, e.g., pointing to `vercel dev`).
+    -   `EDGE_CONFIG`: Connection string for Vercel Edge Config. Can be in `.env.local` for local testing against live Edge Config or Vercel project settings for deployment. If not found locally, `quranMetadataService.ts` falls back to API.
+    -   `NEON_DATABASE_URL`: Used by local scripts and potentially `vercel dev` (if running API functions locally). Deployed Vercel functions use the value from Vercel project settings.
+    -   `VERCEL_BLOB_URL_BASE`: In `app.json` for constructing audio URLs.
+-   **Client-Side Caching (`AsyncStorage`):**
+    -   Used for features like "Verse of the Day" to reduce redundant fetches.
+    -   **Learning:** Ensure error states are not cached, or that cached error states are handled appropriately (e.g., by attempting a re-fetch). Implement logic to clear bad/stale cache entries during development or if a fetch fails.
+-   **Debugging:**
+    -   Utilize `console.log` extensively in client services, components, and API functions.
+    -   Check browser console for web app errors (including CORS issues).
+    -   Check Vercel function logs for backend API errors.
+    -   For `expo-audio`, detailed state logging in `useAudioPlayer` hook is invaluable.
 
-### 4. Tool Usage Patterns:
--   `write_to_file`: Primary tool for creating/updating documentation and code files.
--   `read_file`: Essential before any modification.
--   `apply_diff`: Can be problematic; `write_to_file` is a more reliable fallback. `apply_diff` requires exact string matches for search blocks.
--   `sequential-thinking` MCP: Used for planning complex multi-step tasks, especially debugging.
--   `execute_command`: Used for running scripts and git operations.
+## General Patterns & Learnings:
+-   **Project Structure & Conventions:** (Largely as initially observed - Expo managed workflow, Expo Router, TypeScript, styled-components, standard component/asset organization).
+-   **Audio Playback (`expo-audio`):** The custom `useAudioPlayer` hook using `createAudioPlayer` directly with a reducer for state management has proven stable. Event-driven UI updates are key.
+-   **Numeric Precision for Native Modules:** Always round floating-point numbers before passing to native UI components or accessibility props to avoid "loss of precision" errors.
+-   **Tool Usage:** `write_to_file` and `apply_diff` are primary for code/doc changes. `read_file` is essential before edits. `execute_command` for scripts.
+-   **Memory Bank Maintenance:** Crucial for project continuity. Regular updates reflecting architectural changes are necessary.
 
+<<<<<<< HEAD
 ### 5. Potential Challenges / Areas to Watch:
 -   **Native Cross-Platform UI consistency (iOS/Android).**
 -   **Performance:** Lottie animations, data fetching.
@@ -277,3 +298,6 @@ This file will be updated as new patterns, preferences, or critical project inte
     5.  Ensure the tab bar style is reset to its default visible state in the `useEffect` cleanup function to prevent it from remaining hidden when navigating away from the screen.
 -   **Rationale:** Provides a cleaner UI by preventing overlapping elements and maximizing screen real estate for contextual controls, improving the user experience on screens with temporary full-height or bottom-anchored elements.
 -   **Example:** See implementation in [`app/(tabs)/reader.tsx`](app/(tabs)/reader.tsx:267-276) for hiding the main tab bar when the `AudioControlBar` is shown.
+=======
+This file will be updated as new patterns, preferences, or critical project intelligence emerge.
+>>>>>>> 6782f209f2ec1abb8fff5d8bb212e5ef19bceef8

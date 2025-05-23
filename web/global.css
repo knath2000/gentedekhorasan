@@ -1,0 +1,57 @@
+/* web/global.css */
+
+/* NotoNaskhArabic */
+@font-face {
+  font-family: 'NotoNaskhArabic-Regular';
+  src: url('/assets/./assets/fonts/NotoNaskhArabic-Regular.woff2') format('woff2'),
+       url('/assets/./assets/fonts/NotoNaskhArabic-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'NotoNaskhArabic-Bold';
+  src: url('/assets/./assets/fonts/NotoNaskhArabic-Bold.woff2') format('woff2'),
+       url('/assets/./assets/fonts/NotoNaskhArabic-Bold.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Montserrat */
+@font-face {
+  font-family: 'Montserrat-Regular';
+  src: url('/assets/./assets/fonts/Montserrat-Regular.woff2') format('woff2'),
+       url('/assets/./assets/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat-Medium';
+  src: url('/assets/./assets/fonts/Montserrat-Medium.woff2') format('woff2'),
+       url('/assets/./assets/fonts/Montserrat-Medium.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat-SemiBold';
+  src: url('/assets/./assets/fonts/Montserrat-SemiBold.woff2') format('woff2'),
+       url('/assets/./assets/fonts/Montserrat-SemiBold.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat-Bold';
+  src: url('/assets/./assets/fonts/Montserrat-Bold.woff2') format('woff2'),
+       url('/assets/./assets/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* SpaceMono */
+@font-face {
+  font-family: 'SpaceMono-Regular';
+  src: url('/assets/./assets/fonts/SpaceMono-Regular.woff2') format('woff2'),
+       url('/assets/./assets/fonts/SpaceMono-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Ionicons */
+@font-face {
+  font-family: 'Ionicons';
+  src: url('/assets/./assets/fonts/Ionicons.woff2') format('woff2'),
+       url('/assets/./assets/fonts/Ionicons.ttf') format('truetype'); /* Adjust path if needed based on actual build output */
+  font-display: swap;
+}

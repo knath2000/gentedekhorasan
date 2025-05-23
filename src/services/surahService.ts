@@ -6,22 +6,24 @@ import { getBasicSurahList } from './quranMetadataService'; // Import new servic
 
 export const fetchSurahList = async (): Promise<Surah[]> => {
   try {
-    console.log('Fetching Surah list using quranMetadataService...');
+    console.log('[surahService] fetchSurahList: Attempting to get basicSurahList from quranMetadataService...');
     const basicSurahList = await getBasicSurahList();
+    console.log('[surahService] fetchSurahList: Received basicSurahList:', JSON.stringify(basicSurahList, null, 2)?.substring(0, 500) + "...");
 
-    if (!basicSurahList) {
-      console.error('Failed to fetch surah list from quranMetadataService (Edge Config or DB fallback).');
-      throw new Error('Failed to retrieve Surah list.');
+
+    if (!basicSurahList || basicSurahList.length === 0) {
+      console.error('[surahService] fetchSurahList: Failed to fetch surah list or list is empty from quranMetadataService.');
+      throw new Error('Failed to retrieve Surah list or list is empty.');
     }
 
     // Adapt SurahBasicInfo[] to Surah[]
-    return basicSurahList.map(item => ({
+    const mappedSurahs = basicSurahList.map(item => ({
       number: item.number,
       name: item.name, // This is arabic_name in quran_surahs table, maps to Surah.name
       englishName: item.ename,
       englishNameTranslation: `Chapter ${item.ename}`, // Assuming this is how it was structured
       numberOfAyahs: item.ayas,
-      revelationType: item.type === 'Meccan' || item.type === 'Medinan' ? item.type : 'Meccan', // Validate
+      revelationType: (item.type === 'Meccan' || item.type === 'Medinan') ? item.type : 'Meccan' as 'Meccan' | 'Medinan',
       // Fields from quran.ts Surah type that might not be in SurahBasicInfo directly:
       // id: item.number.toString(), // Assuming id is string representation of number
       // transliterationName: item.tname, // Add if needed and available
@@ -34,9 +36,11 @@ export const fetchSurahList = async (): Promise<Surah[]> => {
       transliterationName: item.tname,
       // Ensure all fields required by the Surah type in '../types/quran' are present
     }));
+    console.log('[surahService] fetchSurahList: Mapped Surahs count:', mappedSurahs.length);
+    return mappedSurahs;
 
   } catch (error: any) {
-    console.error('Error fetching surah list via quranMetadataService:', error.message);
+    console.error('[surahService] fetchSurahList: Error fetching surah list:', error.message, error.stack);
     throw error;
   }
 };
@@ -117,16 +121,32 @@ interface DailyVerse {
 }
 
 export const fetchRandomVerse = async (): Promise<DailyVerse> => {
+  console.log('[surahService] fetchRandomVerse: Initiated.');
   try {
-    const surahs = await fetchSurahList(); // Uses Vercel Blob for surah list
-    if (!surahs || surahs.length === 0) throw new Error('No surahs found from Vercel Blob');
+    const surahs = await fetchSurahList();
+    console.log('[surahService] fetchRandomVerse: Fetched surah list. Count:', surahs ? surahs.length : 'null/undefined');
+
+    if (!surahs || surahs.length === 0) {
+      console.error('[surahService] fetchRandomVerse: No surahs found or surah list is empty.');
+      throw new Error('No surahs available to select a random verse from.');
+    }
 
     const randomSurahInfo = surahs[Math.floor(Math.random() * surahs.length)];
+    console.log('[surahService] fetchRandomVerse: Selected randomSurahInfo:', JSON.stringify(randomSurahInfo));
+
+    if (!randomSurahInfo || typeof randomSurahInfo.number === 'undefined' || typeof randomSurahInfo.numberOfAyahs === 'undefined') {
+      console.error('[surahService] fetchRandomVerse: randomSurahInfo is invalid or missing required properties.', randomSurahInfo);
+      throw new Error('Selected random surah information is invalid.');
+    }
+
     const surahNumber = randomSurahInfo.number;
     const numberOfAyahsInSurah = randomSurahInfo.numberOfAyahs;
     const surahEnglishName = randomSurahInfo.englishName;
+    console.log(`[surahService] fetchRandomVerse: Random surah selected: ${surahNumber} (${surahEnglishName}), Ayahs: ${numberOfAyahsInSurah}`);
+
 
     const randomAyahNumber = Math.floor(Math.random() * numberOfAyahsInSurah) + 1;
+    console.log(`[surahService] fetchRandomVerse: Selected random ayah number: ${randomAyahNumber}`);
 
     // Fetch the Arabic text and its translation together
     const translatedVerse = await fetchSingleTranslatedVerse(surahNumber, randomAyahNumber, "en.yusufali");

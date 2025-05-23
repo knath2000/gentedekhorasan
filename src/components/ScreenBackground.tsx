@@ -1,21 +1,18 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, ViewProps } from 'react-native'; // Removed Platform
+import { ImageBackground, StyleSheet, ViewProps } from 'react-native';
 
-// Define the image sources
-const nativeImage = require('../../assets/images/iOSbackground.png'); // Using iOSbackground for native on other screens for now
+const nativeImage = require('../../assets/images/iOSbackground.png');
 
 interface ScreenBackgroundProps extends ViewProps {
   children: React.ReactNode;
 }
 
 export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({ children, style, ...rest }) => {
-  const backgroundSource = nativeImage;
-
   return (
     <ImageBackground
-      source={backgroundSource}
-      style={[styles.background, style]} // Allow overriding or extending styles
-      resizeMode="cover" // Ensure the image covers the background
+      source={nativeImage}
+      style={[styles.background, style]}
+      resizeMode="cover"
       {...rest}
     >
       {children}
