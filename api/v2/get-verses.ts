@@ -1,5 +1,5 @@
-import { QuranText } from '@prisma/client'; // Correct import for the model type
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { QuranText } from '../generated/prisma'; // Import from generated client path
 import { prisma } from '../lib/prisma'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
