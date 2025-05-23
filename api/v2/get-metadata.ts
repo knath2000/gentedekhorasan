@@ -1,4 +1,4 @@
-import { QuranSurah } from '@prisma/client'; // Import the type
+import { QuranSurah } from '@prisma/client'; // Correct import for the model type
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { prisma } from '../lib/prisma'
 
@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             rukus: true
           }
         })
-        return res.status(200).json(surahs.map((s: QuranSurah) => ({ // Explicitly type 's'
+        return res.status(200).json(surahs.map((s: QuranSurah) => ({ // Use the directly imported type
           number: s.number,
           name: s.arabicName,
           tname: s.transliteration,

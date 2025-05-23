@@ -1,4 +1,4 @@
-import { QuranText } from '@prisma/client'; // Import the type
+import { QuranText } from '@prisma/client'; // Correct import for the model type
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { prisma } from '../lib/prisma'
 
@@ -26,7 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     })
 
-    const response = verses.map((verse: QuranText) => ({ // Explicitly type 'verse'
+    const response = verses.map((verse: QuranText) => ({ // Use the directly imported type
       id: verse.id,
       surahId: verse.sura,
       numberInSurah: verse.aya,

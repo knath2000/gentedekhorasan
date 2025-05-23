@@ -1,6 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
+  output          = "../api/generated/prisma" // Output to api/generated/prisma
 }
 
 datasource db {

@@ -1,0 +1,50 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  output          = "../api/generated/prisma" // Output to api/generated/prisma
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEON_DATABASE_URL")
+}
+
+model EnYusufali {
+  index Int    @id
+  sura  Int
+  aya   Int
+  text  String
+
+  @@map("en_yusufali")
+}
+
+model QuranSajda {
+  sajdaId     Int     @id @default(autoincrement()) @map("sajda_id")
+  surahNumber Int     @map("surah_number")
+  ayahNumber  Int     @map("ayah_number")
+  type        String?
+
+  @@map("quran_sajdas")
+}
+
+model QuranSurah {
+  number             Int    @id
+  arabicName         String @map("arabic_name")
+  transliteration    String
+  englishName        String @map("english_name")
+  ayas               Int
+  revelationType     String @map("revelation_type")
+  chronologicalOrder Int    @map("chronological_order")
+  rukus              Int
+
+  @@map("quran_surahs")
+}
+
+model QuranText {
+  id   Int    @id @default(autoincrement())
+  sura Int
+  aya  Int
+  text String
+
+  @@map("quran_text")
+}
