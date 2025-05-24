@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2017",
+    "outDir": "dist",
+    "rootDir": "./",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": [
+    "api/**/*.ts",
+    "api/**/*.tsx",
+    "api/**/*.js",
+    "api/**/*.jsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

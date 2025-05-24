@@ -1,0 +1,30 @@
+{
+  "name": "@quran-monorepo/quran-data-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "api/v1/index.ts",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "prisma generate && vercel build",
+    "start": "vercel dev",
+    "lint": "eslint . --ext .ts,.tsx",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "studio": "prisma studio"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "@prisma/adapter-neon": "^6.8.2",
+    "@prisma/client": "^6.8.2",
+    "@vercel/edge-config": "^1.4.0",
+    "@vercel/node": "^4.0.0",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/pg": "^8.11.6",
+    "eslint": "^9.25.0",
+    "prisma": "^6.8.2",
+    "typescript": "~5.8.3"
+  }
+}
