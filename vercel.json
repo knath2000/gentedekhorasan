@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/quranexpo-web/package.json",
+      "use": "@vercel/astro"
+    }
+  ]
+}

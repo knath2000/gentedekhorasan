@@ -51,17 +51,23 @@
 -   **Estado:** ✅ **FIX IMPLEMENTADO.** Pendiente de re-deployment en Vercel para verificación.
 
 ### 3.2. `quranexpo-web` (Prioridad: ALTA - Bloqueador Secundario)
--   **Error:** Vercel no encuentra el directorio de salida (`No Output Directory named "dist" found`).
--   **Causa Raíz DEFINITIVA:** **Vercel auto-detecta TurboRepo** y ejecuta `turbo build` global en lugar del build específico de `quranexpo-web`:
-    -   Log muestra: `> Detected Turbo. Adjusting default settings...`
-    -   Ejecuta: `turbo build` con scope: `luminous-verses-mobile`, `quran-data-api`, `quran-types`
-    -   **NO incluye `@quran-monorepo/quranexpo-web` en el scope**
-    -   Ignora configuración manual del proyecto
--   **Solución DEFINITIVA:**
-    -   **Crear `.vercelignore` en `apps/quranexpo-web/`** para deshabilitar auto-detección de TurboRepo
-    -   **Cambiar Framework a 'Astro'** en Vercel Dashboard
-    -   **Output Directory: 'dist'**
--   **Estado:** ✅ **CAUSA RAÍZ CONFIRMADA.** Solución documentada en `memory-bank/quranexpo-web-vercel-turbo-solution.md`. Requiere Code mode para implementar.
+-   **Error:** Vercel sigue ejecutando `turbo build` desde la raíz del monorepo, construyendo otros proyectos.
+-   **Causa Raíz DEFINITIVA:** Vercel detecta `turbo.json` en la raíz y prioriza el build del monorepo sobre la configuración específica del proyecto en el Dashboard. `.vercelignore` local y configuraciones de Dashboard no son suficientes para anular este comportamiento global.
+-   **Solución PROPUESTA:** Usar `vercel.json` en la **raíz del monorepo** para un control explícito y granular del build:
+    ```json
+    // vercel.json (en la raíz del monorepo)
+    {
+      "version": 2,
+      "builds": [
+        {
+          "src": "apps/quranexpo-web/package.json",
+          "use": "@vercel/astro"
+        }
+      ]
+    }
+    ```
+    Esto dirige a Vercel a usar el builder de Astro específicamente para el paquete `quranexpo-web`.
+-   **Estado:** 🚨 **SOLUCIÓN CRÍTICA IDENTIFICADA.** La configuración del Dashboard y `.vercelignore` local no son suficientes. Se requiere `vercel.json` en la raíz. Documentado en [`memory-bank/vercel-json-monorepo-solution.md`](memory-bank/vercel-json-monorepo-solution.md). Requiere Code mode para crear `vercel.json`.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
