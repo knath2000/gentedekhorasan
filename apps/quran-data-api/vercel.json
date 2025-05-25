@@ -1,14 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["prisma/**", "api/tsconfig.json", "api/generated/prisma/**"]
-      }
-    }
-  ],
   "routes": [
     {
       "src": "/api/v1/get-metadata",
