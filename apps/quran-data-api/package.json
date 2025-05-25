@@ -5,12 +5,13 @@
   "main": "api/v1/index.ts",
   "scripts": {
     "dev": "vercel dev",
-    "build": "prisma generate && vercel build",
+    "build": "prisma generate --schema=./prisma/schema.prisma && vercel build",
     "start": "vercel dev",
     "lint": "eslint . --ext .ts,.tsx",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0",
