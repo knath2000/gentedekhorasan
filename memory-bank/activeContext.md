@@ -59,4 +59,36 @@
 -   **Optimización de la Integración de TurboRepo:** Explorar más a fondo las capacidades de TurboRepo para optimizar los builds y el caching entre proyectos.
 -   **Estrategia de Versionado del Monorepo:** Definir una estrategia clara para el versionado de los paquetes y aplicaciones dentro del monorepo.
 -   **CI/CD para el Monorepo:** Configurar pipelines de CI/CD que manejen los builds y despliegues de los diferentes proyectos del monorepo de manera eficiente.
+## 🚨 CRITICAL ISSUE DISCOVERED (2025-05-25 11:08 AM)
+
+### DEPLOYMENT BLOCKER: TurboRepo Package Detection Issue
+
+**Status:** CRITICAL - BLOCKS ALL VERCEL DEPLOYMENT OF `quranexpo-web`
+
+**Problem:**
+- Vercel deployment fails with: `No Output Directory named "dist" found after the Build completed`
+- TurboRepo logs show only: `@quran-monorepo/luminous-verses-mobile, @quran-monorepo/quran-data-api, @quran-monorepo/quran-types`
+- **`quranexpo-web` is NOT included in the workspace scope**
+
+**Root Cause:**
+```diff
+apps/quranexpo-web/package.json:
+- "name": "quranexpo-web",           ← INCONSISTENT FORMAT
++ "name": "@quran-monorepo/quranexpo-web",  ← REQUIRED FORMAT
+```
+
+### IMMEDIATE ACTION REQUIRED (Code Mode)
+
+1. **Fix Package Name Inconsistency:**
+   - Update `apps/quranexpo-web/package.json`
+   - Update root `package.json` script filters
+
+2. **Local Validation:**
+   - Test `pnpm run build:web`
+   - Verify TurboRepo includes `@quran-monorepo/quranexpo-web`
+
+3. **Vercel Re-deployment:**
+   - Only attempt after fixing package naming
+
+**Priority:** MÁXIMA - Este fix debe aplicarse antes de cualquier nuevo intento de deployment
 -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.

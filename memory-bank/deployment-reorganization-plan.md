@@ -214,4 +214,82 @@ flowchart LR
 1. Comenzar con corrección de luminous-verses-expo package.json
 2. Actualizar turbo.json con configuración optimizada
 3. Testing local de builds por proyecto
+## ❌ PROBLEMA CRÍTICO IDENTIFICADO EN VERCEL DEPLOYMENT
+
+**Fecha:** 2025-05-25 11:08 AM
+**Error:** `No Output Directory named "dist" found after the Build completed`
+
+### Análisis del Log de Error
+
+```
+• Packages in scope: @quran-monorepo/luminous-verses-mobile, @quran-monorepo/quran-data-api, @quran-monorepo/quran-types
+• Running build in 3 packages
+Error: No Output Directory named "dist" found after the Build completed.
+```
+
+### Root Cause Identificada
+
+**🚨 TurboRepo NO está detectando `quranexpo-web` durante el build**
+
+**Causa Principal:**
+- `apps/quranexpo-web/package.json` tiene `"name": "quranexpo-web"`
+- Los otros proyectos usan formato `@quran-monorepo/[nombre]`
+- Esta inconsistencia hace que TurboRepo no incluya `quranexpo-web` en el scope del workspace
+
+### Solución Inmediata (Requiere Modo Code)
+
+#### Fix 1: Corregir Nombre del Paquete
+**Archivo:** `apps/quranexpo-web/package.json`
+```diff
+{
+- "name": "quranexpo-web",
++ "name": "@quran-monorepo/quranexpo-web",
+  "type": "module",
+  "version": "0.0.1",
+  // ... resto igual
+}
+```
+
+#### Fix 2: Actualizar Referencias
+**Archivo:** `package.json` (raíz)
+```diff
+{
+  "scripts": {
+-   "build:web": "turbo run build --filter=quranexpo-web",
++   "build:web": "turbo run build --filter=@quran-monorepo/quranexpo-web",
+    // ... resto igual
+  }
+}
+```
+
+#### Fix 3: Verificar Configuración TurboRepo
+**Archivo:** `turbo.json`
+- Asegurar que `build:web` task esté correctamente definido
+- Verificar outputs para proyectos Astro: `["dist/**"]`
+
+### Validación Post-Fix
+
+Después de aplicar los fixes:
+
+1. **Test Local:**
+   ```bash
+   pnpm install
+   pnpm run build:web
+   ```
+
+2. **Verificar Output:**
+   - Debe existir `apps/quranexpo-web/dist/`
+   - TurboRepo debe mostrar `@quran-monorepo/quranexpo-web` en scope
+
+3. **Deployment en Vercel:**
+   - Framework: `Astro`
+   - Root Directory: `apps/quranexpo-web`
+   - Build Command: `pnpm run build`
+   - Output Directory: `dist`
+
+### Prioridad
+
+**🔥 CRÍTICO - BLOQUEA DEPLOYMENT**
+- Esta corrección debe aplicarse antes de cualquier nuevo intento de deployment en Vercel
+- Sin esta corrección, `quranexpo-web` nunca se construirá exitosamente
 4. Configuración de Vercel para quranexpo-web

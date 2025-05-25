@@ -57,4 +57,42 @@
 -   **Deployment de `apps/quranexpo-web`:** Aún no se ha configurado el proyecto en Vercel para el deployment de la aplicación web.
 -   **Integración de la Aplicación Móvil:** La aplicación `luminous-verses-mobile` aún no está completamente actualizada para consumir la nueva API desplegada.
 -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
+## 🚨 CRITICAL ISSUE IDENTIFIED (2025-05-25 11:08 AM)
+
+### Problem: TurboRepo No Detecta `quranexpo-web` en Vercel Deployment
+
+**Error Específico:**
+```
+Error: No Output Directory named "dist" found after the Build completed.
+```
+
+**Root Cause:**
+- `apps/quranexpo-web/package.json` tiene `"name": "quranexpo-web"`
+- Los otros proyectos usan formato `@quran-monorepo/[nombre]`
+- TurboRepo logs muestran solo: `@quran-monorepo/luminous-verses-mobile, @quran-monorepo/quran-data-api, @quran-monorepo/quran-types`
+- **`quranexpo-web` NO está en el scope del workspace**
+
+### Solución Requerida (Modo Code):
+
+1. **Fix Inmediato:**
+   ```diff
+   // apps/quranexpo-web/package.json
+   {
+   - "name": "quranexpo-web",
+   + "name": "@quran-monorepo/quranexpo-web",
+     // resto igual
+   }
+   ```
+
+2. **Actualizar Referencias:**
+   ```diff
+   // package.json (raíz)
+   - "build:web": "turbo run build --filter=quranexpo-web",
+   + "build:web": "turbo run build --filter=@quran-monorepo/quranexpo-web",
+   ```
+
+### Status: BLOCKER CRÍTICO
+- **Prioridad:** MÁXIMA
+- **Impact:** Deployment de `quranexpo-web` imposible hasta resolver
+- **Next Action:** Cambiar a modo Code para aplicar fix
 -   **Estrategia de Versionado:** Aún no se ha definido una estrategia clara de versionado para los paquetes y aplicaciones dentro del monorepo.
