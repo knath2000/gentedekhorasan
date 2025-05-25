@@ -1,9 +1,31 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "POSTGRES_URL",
+    "POSTGRES_PRISMA_URL",
+    "DATABASE_URL_UNPOOLED",
+    "POSTGRES_URL_NON_POOLING",
+    "PGHOST",
+    "POSTGRES_USER",
+    "STACK_SECRET_SERVER_KEY",
+    "DATABASE_URL",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_DATABASE",
+    "PGPASSWORD",
+    "PGDATABASE",
+    "PGHOST_UNPOOLED",
+    "PGUSER",
+    "POSTGRES_URL_NO_SSL",
+    "POSTGRES_HOST",
+    "EDGE_CONFIG",
+    "BLOB_READ_WRITE_TOKEN",
+    "NEON_DATABASE_URL",
+    "NODE_BUILD_TSCONFIG_PATH"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**"]
     },
     "dev": {
       "cache": false,
