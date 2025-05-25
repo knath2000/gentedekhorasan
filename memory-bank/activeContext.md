@@ -1,26 +1,26 @@
 # Active Context: Gente de Khorasan Monorepo
 
 **Version:** 1.0.0
-**Date:** 2025-05-24
+**Date:** 2025-05-25
 **Related Brief:** `memory-bank/projectbrief.md`
 **Related Progress:** `memory-bank/progress.md`
 
 ## 1. Current Focus & State
 
 -   **Focus:**
-    1.  Consolidación de la "Memory Bank" a nivel de monorepo.
+    1.  Resolución de problemas críticos de deployment en Vercel para `quran-data-api` y `quranexpo-web`.
     2.  Verificación de la integración y funcionalidad de los subproyectos dentro del monorepo.
     3.  Preparación para el desarrollo continuo de nuevas características y mejoras.
 -   **State:**
-    -   **Monorepo Structure:** Establecida con `apps/luminous-verses-mobile` (renombrado de `luminous-verses-expo`), `apps/quran-data-api`, `apps/quranexpo-web`, y `packages/quran-types`.
+    -   **Monorepo Structure:** Establecida con `apps/luminous-verses-mobile`, `apps/quran-data-api`, `apps/quranexpo-web`, y `packages/quran-types`.
     -   **`apps/quran-data-api` (API Serverless):**
-        -   **Estado:** Desplegado y funcionando correctamente en Vercel.
+        -   **Estado:** ❌ **Deployment fallando** debido a conflictos de archivos Prisma.
         -   **Funcionalidad:** Sirve datos del Corán (texto, traducciones, metadatos) desde Neon PostgreSQL y Vercel Edge Config.
-        -   **Problemas Resueltos Recientemente:** Errores de compilación de TypeScript, problemas de generación de Prisma Client, y errores de enrutamiento `404` en Vercel.
+        -   **Problemas Resueltos Recientemente:** Errores de compilación de TypeScript, problemas de generación de Prisma Client, y errores de enrutamiento `404` en Vercel (antes del nuevo error).
     -   **`apps/quranexpo-web` (Aplicación Web):**
-        -   **Estado:** El proyecto web ahora se construye localmente sin errores.
+        -   **Estado:** ❌ **Deployment fallando** debido a problemas de configuración de TurboRepo.
     -   **`apps/luminous-verses-mobile` (Aplicación Móvil):**
-        -   **Estado:** El proyecto móvil ahora se construye localmente sin errores después de corregir las dependencias de Next.js y las rutas de imágenes.
+        -   **Estado:** El proyecto móvil se construye localmente sin errores.
         -   **Dirección del Proyecto:** Nativo-only (iOS y Android).
     -   **`packages/quran-types` (Tipos Compartidos):**
         -   **Estado:** Definiciones de tipos compartidas disponibles para todos los subproyectos.
@@ -35,77 +35,59 @@
     -   **Actualización de `package.json` (raíz):** Se crearon scripts para invocar los builds específicos de TurboRepo (`build:web`, `build:api`, `build:mobile`).
     -   **Builds Locales Exitosos:** Todos los proyectos (`quran-data-api`, `quranexpo-web`, `luminous-verses-mobile`) ahora se construyen localmente sin errores.
 
-## 3. Próximos Pasos Inmediatos
+## 3. Problemas Críticos de Deployment (Activos)
 
-1.  **Configurar el Deployment de `apps/quranexpo-web` en Vercel:**
-    *   Establecer el "Framework Preset" como "Astro".
-    *   Configurar el "Root Directory" a `apps/quranexpo-web`.
-    *   Asegurar que el "Build Command" sea `pnpm run build` (o `turbo run build --filter=quranexpo-web`).
-    *   Configurar el "Output Directory" a `dist`.
-2.  **Realizar un Deployment de Prueba en Vercel para `quranexpo-web`.**
-3.  **Integrar `apps/luminous-verses-mobile` con la API desplegada:**
-    *   Verificar que la aplicación móvil pueda consumir los datos de la API correctamente.
-    *   Actualizar `src/services/apiClient.ts` en `luminous-verses-mobile` para apuntar a la URL de la API desplegada si es necesario.
+### 3.1. `quran-data-api` (Prioridad: URGENTE - Bloqueador Principal)
+-   **Error:** `Two or more files have conflicting paths or names` (conflicto entre `query_engine_bg.js` y `query_engine_bg.wasm`).
+-   **Causa Raíz:** Prisma genera archivos con el mismo nombre base pero diferentes extensiones, lo que Vercel interpreta como un conflicto.
+-   **Solución Implementada:** Se creó el archivo `apps/quran-data-api/.vercelignore` con el siguiente contenido para excluir los archivos problemáticos:
+    ```
+    # Ignore Prisma WASM and native binaries that conflict with Vercel deployment
+    api/generated/prisma/*.wasm
+    api/generated/prisma/libquery_engine-*.node
+    api/generated/prisma/*.dylib.node
+    api/generated/prisma/*.so.node
+    ```
+-   **Estado:** ✅ **FIX IMPLEMENTADO.** Pendiente de re-deployment en Vercel para verificación.
 
-## 4. Decisiones Clave Tomadas
+### 3.2. `quranexpo-web` (Prioridad: ALTA - Bloqueador Secundario)
+-   **Error:** Vercel no encuentra el directorio de salida (`No Output Directory named "dist" found`).
+-   **Causa Raíz:** Vercel auto-detecta TurboRepo y ejecuta `turbo build` ignorando la configuración personalizada en `vercel.json`. El filtro de TurboRepo no reconocía el package name completo (`@quran-monorepo/quranexpo-web`), sino que requería el nombre del directorio (`quranexpo-web`).
+-   **Solución Propuesta:**
+    -   **Configuración en Vercel Dashboard:**
+        -   **Build Command:** `turbo run build:web --filter=quranexpo-web`
+        -   **Output Directory:** `apps/quranexpo-web/dist`
+    -   **Actualización de `apps/quranexpo-web/vercel.json`:**
+        -   Cambiar `"ignoreCommand": "exit 1"` a `"ignoreCommand": "npx turbo-ignore"` para permitir que Vercel use el `buildCommand` personalizado.
+-   **Estado:** ⏳ **SOLUCIÓN IDENTIFICADA.** Pendiente de re-deployment en Vercel para verificación (después de `quran-data-api`).
 
--   **Estructura de Monorepo:** Adopción de pnpm workspaces y TurboRepo para gestionar múltiples proyectos.
--   **Aislamiento de la API:** La funcionalidad de la API se ha aislado en un proyecto separado (`apps/quran-data-api`) para modularidad y despliegue independiente.
--   **Configuración de Despliegue de Vercel para API:** Se optó por configurar el "Framework Preset" como "Other" y el "Output Directory" como `.` en el panel de Vercel para proyectos de solo API.
--   **Separación Clara de Proyectos Web y Móviles:** Se eliminaron las dependencias y la lógica de Next.js del proyecto Expo para mantenerlo puramente móvil, y se estableció `quranexpo-web` como el proyecto web dedicado.
+## 4. Dependencias de Arquitectura (Actualmente Afectadas)
+```mermaid
+graph TD
+    A[quran-data-api] -- API Calls --> B[quranexpo-web]
+    B -- Shared Types --> C[luminous-verses-mobile]
 
-## 5. Preguntas Abiertas / Consideraciones
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#f9f,stroke:#333,stroke-width:2px
 
+    linkStyle 0 stroke:red,stroke-width:2px,fill:none;
+    linkStyle 1 stroke:red,stroke-width:2px,fill:none;
+```
+-   La falla en `quran-data-api` impacta directamente a `quranexpo-web`.
+-   `luminous-verses-mobile` depende de `quran-data-api` para datos, por lo que también está afectado indirectamente.
+
+## 5. Plan de Acción Inmediato
+1.  **PRIORIDAD 1:** Re-desplegar `quran-data-api` en Vercel para verificar que el archivo `.vercelignore` resuelve el conflicto de Prisma.
+2.  **PRIORIDAD 2:** Re-desplegar `quranexpo-web` en Vercel con la configuración de `Build Command` y `ignoreCommand` actualizada.
+3.  **PRIORIDAD 3:** Verificar la funcionalidad completa de `quranexpo-web` y `luminous-verses-mobile` una vez que `quran-data-api` esté operativo.
+
+## 6. Soluciones Técnicas Listas para Pruebas
+-   **`quran-data-api`:** Archivo `apps/quran-data-api/.vercelignore` creado.
+-   **`quranexpo-web`:** Comando de build de TurboRepo y `ignoreCommand` en `vercel.json` corregidos.
+
+## 7. Próximos Pasos (Después de la Resolución de Deployment)
 -   **Optimización de la Integración de TurboRepo:** Explorar más a fondo las capacidades de TurboRepo para optimizar los builds y el caching entre proyectos.
 -   **Estrategia de Versionado del Monorepo:** Definir una estrategia clara para el versionado de los paquetes y aplicaciones dentro del monorepo.
 -   **CI/CD para el Monorepo:** Configurar pipelines de CI/CD que manejen los builds y despliegues de los diferentes proyectos del monorepo de manera eficiente.
-## 🚨 CRITICAL ISSUE RESOLVED (2025-05-25 12:12 PM)
-
-### DEPLOYMENT BLOCKER: TurboRepo Package Detection Issue
-
-**Status:** ✅ SOLUTION IDENTIFIED - READY FOR IMPLEMENTATION
-
-**Problem Confirmed from Vercel Logs:**
-- Vercel deployment fails with: `No Output Directory named "dist" found after the Build completed`
-- TurboRepo logs show only: `@quran-monorepo/luminous-verses-mobile, @quran-monorepo/quran-data-api, @quran-monorepo/quran-types`
-- **`@quran-monorepo/quranexpo-web` is NOT included in the workspace scope**
-
-**Root Cause Analysis Completed:**
-- ✅ Package name IS correct: `@quran-monorepo/quranexpo-web`
-- ✅ pnpm-workspace.yaml IS correct: includes `apps/*`
-- ✅ astro.config.mjs IS correct: `outDir: './dist'`
-- ❌ **REAL ISSUE:** Vercel ignores `vercel.json` when TurboRepo is detected
-
-### DEFINITIVE SOLUTION: turbo-ignore
-
-**Problem:** Vercel auto-detects TurboRepo and runs `turbo build` ignoring custom `vercel.json` configuration.
-
-**Solution:** Use `turbo-ignore` instead of `exit 1` in `ignoreCommand`.
-
-```json
-// apps/quranexpo-web/vercel.json (NEEDS UPDATE)
-{
-  "buildCommand": "cd ../.. && pnpm run build:web",
-  "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
-  "framework": null,
-  "nodeVersion": "18.x",
-  "ignoreCommand": "npx turbo-ignore"  // ← CHANGE FROM "exit 1"
-}
-```
-
-### IMMEDIATE ACTION REQUIRED (Code Mode)
-
-1. **Update vercel.json:**
-   - Change `"ignoreCommand": "exit 1"` to `"ignoreCommand": "npx turbo-ignore"`
-
-2. **Local Validation:**
-   - Test `pnpm run build:web` (should work)
-
-3. **Vercel Re-deployment:**
-   - Deploy and verify `turbo-ignore` allows custom `buildCommand`
-   - Monitor logs for `@quran-monorepo/quranexpo-web` inclusion
-
-**Priority:** MÁXIMA - Solución documentada en `memory-bank/quranexpo-web-vercel-deployment-solution.md`
-
--   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
+-   **Pruebas de Rendimiento:** Realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.

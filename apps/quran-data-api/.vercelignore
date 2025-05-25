@@ -1,0 +1,5 @@
+# Ignore Prisma WASM and native binaries that conflict with Vercel deployment
+api/generated/prisma/*.wasm
+api/generated/prisma/libquery_engine-*.node
+api/generated/prisma/*.dylib.node
+api/generated/prisma/*.so.node
