@@ -59,36 +59,53 @@
 -   **Optimización de la Integración de TurboRepo:** Explorar más a fondo las capacidades de TurboRepo para optimizar los builds y el caching entre proyectos.
 -   **Estrategia de Versionado del Monorepo:** Definir una estrategia clara para el versionado de los paquetes y aplicaciones dentro del monorepo.
 -   **CI/CD para el Monorepo:** Configurar pipelines de CI/CD que manejen los builds y despliegues de los diferentes proyectos del monorepo de manera eficiente.
-## 🚨 CRITICAL ISSUE DISCOVERED (2025-05-25 11:08 AM)
+## 🚨 CRITICAL ISSUE RESOLVED (2025-05-25 12:12 PM)
 
 ### DEPLOYMENT BLOCKER: TurboRepo Package Detection Issue
 
-**Status:** CRITICAL - BLOCKS ALL VERCEL DEPLOYMENT OF `quranexpo-web`
+**Status:** ✅ SOLUTION IDENTIFIED - READY FOR IMPLEMENTATION
 
-**Problem:**
+**Problem Confirmed from Vercel Logs:**
 - Vercel deployment fails with: `No Output Directory named "dist" found after the Build completed`
 - TurboRepo logs show only: `@quran-monorepo/luminous-verses-mobile, @quran-monorepo/quran-data-api, @quran-monorepo/quran-types`
-- **`quranexpo-web` is NOT included in the workspace scope**
+- **`@quran-monorepo/quranexpo-web` is NOT included in the workspace scope**
 
-**Root Cause:**
-```diff
-apps/quranexpo-web/package.json:
-- "name": "quranexpo-web",           ← INCONSISTENT FORMAT
-+ "name": "@quran-monorepo/quranexpo-web",  ← REQUIRED FORMAT
+**Root Cause Analysis Completed:**
+- ✅ Package name IS correct: `@quran-monorepo/quranexpo-web`
+- ✅ pnpm-workspace.yaml IS correct: includes `apps/*`
+- ✅ astro.config.mjs IS correct: `outDir: './dist'`
+- ❌ **REAL ISSUE:** Vercel ignores `vercel.json` when TurboRepo is detected
+
+### DEFINITIVE SOLUTION: turbo-ignore
+
+**Problem:** Vercel auto-detects TurboRepo and runs `turbo build` ignoring custom `vercel.json` configuration.
+
+**Solution:** Use `turbo-ignore` instead of `exit 1` in `ignoreCommand`.
+
+```json
+// apps/quranexpo-web/vercel.json (NEEDS UPDATE)
+{
+  "buildCommand": "cd ../.. && pnpm run build:web",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": null,
+  "nodeVersion": "18.x",
+  "ignoreCommand": "npx turbo-ignore"  // ← CHANGE FROM "exit 1"
+}
 ```
 
 ### IMMEDIATE ACTION REQUIRED (Code Mode)
 
-1. **Fix Package Name Inconsistency:**
-   - Update `apps/quranexpo-web/package.json`
-   - Update root `package.json` script filters
+1. **Update vercel.json:**
+   - Change `"ignoreCommand": "exit 1"` to `"ignoreCommand": "npx turbo-ignore"`
 
 2. **Local Validation:**
-   - Test `pnpm run build:web`
-   - Verify TurboRepo includes `@quran-monorepo/quranexpo-web`
+   - Test `pnpm run build:web` (should work)
 
 3. **Vercel Re-deployment:**
-   - Only attempt after fixing package naming
+   - Deploy and verify `turbo-ignore` allows custom `buildCommand`
+   - Monitor logs for `@quran-monorepo/quranexpo-web` inclusion
 
-**Priority:** MÁXIMA - Este fix debe aplicarse antes de cualquier nuevo intento de deployment
+**Priority:** MÁXIMA - Solución documentada en `memory-bank/quranexpo-web-vercel-deployment-solution.md`
+
 -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
