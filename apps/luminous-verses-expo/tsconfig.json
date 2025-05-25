@@ -3,8 +3,7 @@
     "target": "esnext", // Keep target as esnext for modern syntax, CommonJS is for module system
     "module": "esnext", // Changed to esnext for compatibility with moduleResolution: "bundler"
     "lib": [
-      "esnext",
-      "dom"
+      "esnext"
     ],
     "allowJs": true,
     "jsx": "preserve",
@@ -21,18 +20,13 @@
     },
     "incremental": true,
     "isolatedModules": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "plugins": []
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    ".next/types/**/*.ts"
+    "expo-env.d.ts"
   ],
   "extends": "expo/tsconfig.base"
 }

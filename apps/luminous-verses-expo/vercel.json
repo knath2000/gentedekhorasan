@@ -1,36 +1,3 @@
 {
-  "version": 2,
-  "buildCommand": "npx prisma generate --no-engine",
-  "builds": [
-    {
-      "src": "api/**/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["api/tsconfig.json", "prisma/**", "api/lib/prisma.ts", "node_modules/.prisma/**"]
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/v2/get-metadata",
-      "dest": "/api/v2/get-metadata.ts"
-    },
-    {
-      "src": "/api/v2/get-verses",
-      "dest": "/api/v2/get-verses.ts"
-    },
-    {
-      "src": "/api/v2/get-translated-verse",
-      "dest": "/api/v2/get-translated-verse.ts"
-    },
-    {
-      "src": "/api/v2/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-      },
-      "continue": true
-    }
-  ]
+  "version": 2
 }

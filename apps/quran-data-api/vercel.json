@@ -5,7 +5,7 @@
       "src": "api/**/*.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["prisma/**", "api/tsconfig.json"]
+        "includeFiles": ["prisma/**", "api/tsconfig.json", "api/generated/prisma/**"]
       }
     }
   ],

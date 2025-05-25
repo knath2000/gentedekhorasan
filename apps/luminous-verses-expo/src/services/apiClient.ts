@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Verse } from '../types/quran'; // Assuming Verse type is defined here
 
 // Ensure API_BASE_URL is set in app.json extra, e.g., "https://your-vercel-deployment.vercel.app"
-const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL || '/api/v2'; // Default to /api/v2
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL || 'YOUR_QURAN_DATA_API_VERCEL_URL/api/v1'; // Default to /api/v1
 
 if (!API_BASE_URL) {
   console.warn(
