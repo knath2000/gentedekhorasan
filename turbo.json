@@ -29,7 +29,7 @@
     },
     "build:web": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**"]
+      "outputs": ["dist/**"]
     },
     "build:api": {
       "dependsOn": ["^build"],
