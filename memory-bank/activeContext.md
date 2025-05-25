@@ -52,14 +52,16 @@
 
 ### 3.2. `quranexpo-web` (Prioridad: ALTA - Bloqueador Secundario)
 -   **Error:** Vercel no encuentra el directorio de salida (`No Output Directory named "dist" found`).
--   **Causa Raíz:** Vercel auto-detecta TurboRepo y ejecuta `turbo build` ignorando la configuración personalizada en `vercel.json`. El filtro de TurboRepo no reconocía el package name completo (`@quran-monorepo/quranexpo-web`), sino que requería el nombre del directorio (`quranexpo-web`).
--   **Solución Propuesta:**
-    -   **Configuración en Vercel Dashboard:**
-        -   **Build Command:** `turbo run build:web --filter=quranexpo-web`
-        -   **Output Directory:** `apps/quranexpo-web/dist`
-    -   **Actualización de `apps/quranexpo-web/vercel.json`:**
-        -   Cambiar `"ignoreCommand": "exit 1"` a `"ignoreCommand": "npx turbo-ignore"` para permitir que Vercel use el `buildCommand` personalizado.
--   **Estado:** ⏳ **SOLUCIÓN IDENTIFICADA.** Pendiente de re-deployment en Vercel para verificación (después de `quran-data-api`).
+-   **Causa Raíz DEFINITIVA:** **Vercel auto-detecta TurboRepo** y ejecuta `turbo build` global en lugar del build específico de `quranexpo-web`:
+    -   Log muestra: `> Detected Turbo. Adjusting default settings...`
+    -   Ejecuta: `turbo build` con scope: `luminous-verses-mobile`, `quran-data-api`, `quran-types`
+    -   **NO incluye `@quran-monorepo/quranexpo-web` en el scope**
+    -   Ignora configuración manual del proyecto
+-   **Solución DEFINITIVA:**
+    -   **Crear `.vercelignore` en `apps/quranexpo-web/`** para deshabilitar auto-detección de TurboRepo
+    -   **Cambiar Framework a 'Astro'** en Vercel Dashboard
+    -   **Output Directory: 'dist'**
+-   **Estado:** ✅ **CAUSA RAÍZ CONFIRMADA.** Solución documentada en `memory-bank/quranexpo-web-vercel-turbo-solution.md`. Requiere Code mode para implementar.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
