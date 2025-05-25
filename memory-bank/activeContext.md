@@ -78,12 +78,12 @@
     -   Output Directory: **BORRAR/DEJAR VACÍO**.
     -   Install Command: **BORRAR/DEJAR VACÍO** (ahora en `vercel.json`).
     -   "Ignored Build Step": `Automatic`.
--   **Estado:** 🔴 **FALLO CRÍTICO EXTREMO.**
-    -   Deploy de Vercel sigue en ~8ms y 404. El `buildCommand` no se ejecuta.
-    -   "Ignored Build Step" estaba en "Automatic".
-    -   Modificación a `pnpm --filter ... run build` en `vercel.json` no cambió el resultado.
-    -   ➡️ **ÚLTIMO INTENTO DE CONFIGURACIÓN `vercel.json`:** Eliminar `src` de `builds`, añadir `installCommand` explícito a `vercel.json`, y añadir `rewrites`.
-    -   Documentado en [`memory-bank/vercel-build-final-attempt-plan.md`](memory-bank/vercel-build-final-attempt-plan.md). Requiere Code mode para modificar `vercel.json`.
+-   **Estado:** 🔴 **NUEVO ERROR DE BUILD EN VERCEL.**
+    -   Error: `Build "src" is ".expo/README.md" but expected "package.json" or "build.sh"`.
+    -   Esto ocurrió después de eliminar `"src"` de la sección `builds` en `vercel.json`.
+    -   Hipótesis: Vercel intentó auto-detectar proyectos y se confundió con `luminous-verses-expo`.
+    -   ➡️ **PRÓXIMO INTENTO:** Reintroducir `"src": "apps/quranexpo-web/package.json"` en la sección `builds` de `vercel.json`.
+    -   Documentado en [`memory-bank/vercel-reintroduce-src-plan.md`](memory-bank/vercel-reintroduce-src-plan.md). Requiere Code mode para modificar `vercel.json`.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid

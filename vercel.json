@@ -3,6 +3,7 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "builds": [
     {
+      "src": "apps/quranexpo-web/package.json",
       "use": "@vercel/static-build",
       "config": {
         "buildCommand": "pnpm --filter @quran-monorepo/quranexpo-web run build",
