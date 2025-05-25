@@ -76,14 +76,13 @@
     -   Framework Preset: `Other`.
     -   Build Command: **BORRAR/DEJAR VACÍO**.
     -   Output Directory: **BORRAR/DEJAR VACÍO**.
-    -   Install Command: **BORRAR/DEJAR VACÍO** (ahora en `vercel.json`).
+    -   Install Command: `pnpm install --frozen-lockfile` (o el que se defina en `vercel.json` o `build.sh`).
     -   "Ignored Build Step": `Automatic`.
--   **Estado:** 🔴 **NUEVO ERROR DE BUILD EN VERCEL.**
-    -   Error: `Build "src" is ".expo/README.md" but expected "package.json" or "build.sh"`.
-    -   Esto ocurrió después de eliminar `"src"` de la sección `builds` en `vercel.json`.
-    -   Hipótesis: Vercel intentó auto-detectar proyectos y se confundió con `luminous-verses-expo`.
-    -   ➡️ **PRÓXIMO INTENTO:** Reintroducir `"src": "apps/quranexpo-web/package.json"` en la sección `builds` de `vercel.json`.
-    -   Documentado en [`memory-bank/vercel-reintroduce-src-plan.md`](memory-bank/vercel-reintroduce-src-plan.md). Requiere Code mode para modificar `vercel.json`.
+-   **Estado:** 🔴 **FALLO PERSISTENTE Y CRÍTICO.**
+    -   El build sigue completándose en ~7ms y resultando en 404, incluso después de múltiples ajustes a `vercel.json` (incluyendo reintroducir `"src"`).
+    -   El `buildCommand` especificado en `vercel.json` no parece ejecutarse.
+    -   ➡️ **NUEVA ESTRATEGIA:** Crear un script `apps/quranexpo-web/build.sh` dedicado que maneje la navegación de directorios, instalación y el build, y apuntar `vercel.json` a este script.
+    -   Documentado en [`memory-bank/vercel-build-script-attempt.md`](memory-bank/vercel-build-script-attempt.md). Requiere Code mode para crear `build.sh` y modificar `vercel.json`.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
