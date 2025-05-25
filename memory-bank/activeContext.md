@@ -74,17 +74,16 @@
 -   **Configuración Vercel Dashboard (con `vercel.json` en raíz):**
     -   Root Directory: Dejar **VACÍO**.
     -   Framework Preset: `Other`.
-    -   Build Command: Dejar vacío.
-    -   Output Directory: Dejar vacío.
-    -   Install Command: `pnpm install`.
--   **Estado:** 🔴 **FALLO CRÍTICO PERSISTENTE.**
-    -   Deploy de Vercel sigue completándose en ~8ms y resultando en 404.
-    -   `buildCommand` en `vercel.json` (incluso con `--force`) no parece ejecutarse.
-    -   Usuario reporta mensaje "current production deployment settings differ from the project settings" en Vercel.
-    -   ➡️ **Próximo Plan:**
-        1.  **Acción Usuario:** Verificar que "Ignored Build Step" esté DESACTIVADO en Vercel Dashboard.
-        2.  Si no resuelve, modificar `vercel.json` para usar `pnpm --filter @quran-monorepo/quranexpo-web run build` directamente.
-    -   Documentado en [`memory-bank/vercel-direct-pnpm-build-attempt.md`](memory-bank/vercel-direct-pnpm-build-attempt.md).
+    -   Build Command: **BORRAR/DEJAR VACÍO**.
+    -   Output Directory: **BORRAR/DEJAR VACÍO**.
+    -   Install Command: **BORRAR/DEJAR VACÍO** (ahora en `vercel.json`).
+    -   "Ignored Build Step": `Automatic`.
+-   **Estado:** 🔴 **FALLO CRÍTICO EXTREMO.**
+    -   Deploy de Vercel sigue en ~8ms y 404. El `buildCommand` no se ejecuta.
+    -   "Ignored Build Step" estaba en "Automatic".
+    -   Modificación a `pnpm --filter ... run build` en `vercel.json` no cambió el resultado.
+    -   ➡️ **ÚLTIMO INTENTO DE CONFIGURACIÓN `vercel.json`:** Eliminar `src` de `builds`, añadir `installCommand` explícito a `vercel.json`, y añadir `rewrites`.
+    -   Documentado en [`memory-bank/vercel-build-final-attempt-plan.md`](memory-bank/vercel-build-final-attempt-plan.md). Requiere Code mode para modificar `vercel.json`.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
