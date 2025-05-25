@@ -77,11 +77,14 @@
     -   Build Command: Dejar vacío.
     -   Output Directory: Dejar vacío.
     -   Install Command: `pnpm install`.
--   **Estado:** 🟡 **INVESTIGACIÓN EN CURSO.**
-    -   ✅ Script `build` en `apps/quranexpo-web/package.json` es correcto (`astro build`).
-    -   ✅ Build local con `pnpm turbo run build --filter=@quran-monorepo/quranexpo-web` **funciona** y genera output en `apps/quranexpo-web/dist/`.
-    -   ⚠️ Sospecha: Vercel no ejecuta correctamente el `buildCommand` o el caché de Turborepo interfiere.
-    -   ➡️ **Próximo Intento:** Modificar `vercel.json` para añadir `--force` al `buildCommand`. Documentado en [`memory-bank/vercel-force-build-attempt.md`](memory-bank/vercel-force-build-attempt.md). Requiere Code mode para modificar `vercel.json`.
+-   **Estado:** 🔴 **FALLO CRÍTICO PERSISTENTE.**
+    -   Deploy de Vercel sigue completándose en ~8ms y resultando en 404.
+    -   `buildCommand` en `vercel.json` (incluso con `--force`) no parece ejecutarse.
+    -   Usuario reporta mensaje "current production deployment settings differ from the project settings" en Vercel.
+    -   ➡️ **Próximo Plan:**
+        1.  **Acción Usuario:** Verificar que "Ignored Build Step" esté DESACTIVADO en Vercel Dashboard.
+        2.  Si no resuelve, modificar `vercel.json` para usar `pnpm --filter @quran-monorepo/quranexpo-web run build` directamente.
+    -   Documentado en [`memory-bank/vercel-direct-pnpm-build-attempt.md`](memory-bank/vercel-direct-pnpm-build-attempt.md).
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid

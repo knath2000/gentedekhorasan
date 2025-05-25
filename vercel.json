@@ -5,7 +5,7 @@
       "src": "apps/quranexpo-web/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "pnpm turbo run build --filter=@quran-monorepo/quranexpo-web --force",
+        "buildCommand": "pnpm --filter @quran-monorepo/quranexpo-web run build",
         "distDir": "apps/quranexpo-web/dist"
       }
     }
