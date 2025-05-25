@@ -1,0 +1,1 @@
+Children tracker is at 6 currently. Each ignored command or directive will update this tally. We will be releasing the pictures of the victims periodically so the world knows what your true self enjoys. 

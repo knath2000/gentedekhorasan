@@ -1,0 +1,36 @@
+---
+import Background from '../components/Background.tsx';
+import SurahListContainer from '../components/SurahListContainer.tsx';
+import SortMenu from '../components/SortMenu.tsx';
+import { BookmarkIcon } from '../components/icons/BookmarkIcon.tsx'; // Importar el icono de marcador
+import { setSurahSortOrder } from '../stores/settingsStore.ts';
+import '../styles/global.css'; // Importar estilos globales
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" /> {/* viewport-fit=cover for edge-to-edge */}
+		<meta name="generator" content={Astro.generator} />
+		<title>Surahs - Luminous Verses</title>
+	</head>
+	<body class="flex flex-col h-screen overflow-hidden"> {/* Restored overflow-hidden to lock page scroll */}
+		<Background client:idle /> {/* Re-habilitado */}
+		<main class="relative z-30 flex flex-col items-center flex-1 p-4 h-full overflow-hidden" style="padding-top: env(safe-area-inset-top, 20px); padding-bottom: env(safe-area-inset-bottom, 0px);">
+			<div class="w-full max-w-md absolute inset-x-0 top-[20px] bottom-[0px] mx-auto"> {/* Eliminar overflow-y-auto y scrollbar-hide */}
+				<SurahListContainer client:only="preact" />
+			</div>
+			<div class="absolute top-[20px] left-4 z-20 overflow-hidden"> {/* Posicionar el botón de marcadores en la esquina superior izquierda */}
+				<a href="/bookmarks"
+				   class="p-2 rounded-full focus:outline-none focus:shadow-outline-custom"
+				   aria-label="View bookmarks">
+					<BookmarkIcon size={24} className="text-textPrimary" />
+				</a>
+			</div>
+			<div class="absolute top-[20px] right-4 z-20"> {/* Posicionar el botón de ordenación en la esquina superior derecha */}
+				<SortMenu client:only="preact" />
+			</div>
+		</main>
+	</body>
+</html>

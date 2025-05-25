@@ -1,0 +1,257 @@
+/* Base styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom fonts */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Naskh Arabic';
+  src: url('/fonts/NotoNaskhArabic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Naskh Arabic';
+  src: url('/fonts/NotoNaskhArabic-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Naskh Arabic';
+  src: url('/fonts/NotoNaskhArabic-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Naskh Arabic';
+  src: url('/fonts/NotoNaskhArabic-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* Utility classes for text selection */
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Safari */
+  -khtml-user-select: none;    /* Konqueror HTML */
+  -moz-user-select: none;      /* Old versions of Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari, Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0px !important;
+  background: transparent !important; /* Optional: just make it transparent */
+}
+.scrollbar-hide::-webkit-scrollbar-thumb {
+  background: transparent !important; /* Optional: just make it transparent */
+}
+
+/* Hide scrollbar for Firefox */
+.scrollbar-hide {
+  scrollbar-width: none !important; /* Firefox */
+}
+
+/* Hide scrollbar for IE/Edge (older versions) */
+.scrollbar-hide {
+  -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+/* Custom styles for the glassmorphism effect */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.1); /* Slightly visible background */
+  backdrop-filter: blur(10px) saturate(180%); /* Blur and saturate */
+  -webkit-backdrop-filter: blur(10px) saturate(180%); /* Safari support */
+  border: 1px solid rgba(255, 255, 255, 0.125); /* Subtle border */
+}
+
+/* Custom styles for the glassmorphism effect for cards */
+.card-glassmorphism {
+  background: rgba(255, 255, 255, 0.05); /* More subtle background for cards */
+  backdrop-filter: blur(8px) saturate(150%); /* Slightly less blur/saturate for cards */
+  -webkit-backdrop-filter: blur(8px) saturate(150%); /* Safari support */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Even more subtle border for cards */
+}
+
+/* Animaciones secuenciales para la página de inicio */
+.animate-sequence-1 {
+  opacity: 0;
+  animation: fadeSlideIn 1s ease-out forwards;
+  animation-delay: 100ms;
+}
+
+.animate-sequence-2 {
+  opacity: 0;
+  animation: fadeSlideIn 1s ease-out forwards;
+  animation-delay: 400ms;
+}
+
+.animate-sequence-3 {
+  opacity: 0;
+  animation: fadeSlideIn 1s ease-out forwards;
+  animation-delay: 700ms;
+}
+
+/* Animaciones para listas con múltiples elementos */
+.animate-list-item {
+  opacity: 0;
+  animation: fadeSlideIn 0.8s ease-out forwards;
+  will-change: opacity, transform; /* Optimización para rendimiento */
+}
+
+/* Clases predefinidas para los primeros 20 elementos (suficiente para la mayoría de listas) */
+.animate-item-0 { animation-delay: 50ms; }
+.animate-item-1 { animation-delay: 100ms; }
+.animate-item-2 { animation-delay: 150ms; }
+.animate-item-3 { animation-delay: 200ms; }
+.animate-item-4 { animation-delay: 250ms; }
+.animate-item-5 { animation-delay: 300ms; }
+.animate-item-6 { animation-delay: 350ms; }
+.animate-item-7 { animation-delay: 400ms; }
+.animate-item-8 { animation-delay: 450ms; }
+.animate-item-9 { animation-delay: 500ms; }
+.animate-item-10 { animation-delay: 550ms; }
+.animate-item-11 { animation-delay: 600ms; }
+.animate-item-12 { animation-delay: 650ms; }
+.animate-item-13 { animation-delay: 700ms; }
+.animate-item-14 { animation-delay: 750ms; }
+.animate-item-15 { animation-delay: 800ms; }
+.animate-item-16 { animation-delay: 850ms; }
+.animate-item-17 { animation-delay: 900ms; }
+.animate-item-18 { animation-delay: 950ms; }
+.animate-item-19 { animation-delay: 1000ms; }
+
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animaciones para el reproductor de audio de versos */
+
+/* 1. Pulsing Glow Animation (para la tarjeta del verso activo) */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 24px 6px var(--color-desertHighlightGold), 0 0 40px 14px rgba(var(--color-desertHighlightGold-rgb), 0.5);
+    background-color: rgba(var(--color-skyPurple-rgb), 0.7); /* Un poco más opaco para el brillo */
+  }
+  50% {
+    box-shadow: 0 0 48px 16px var(--color-desertHighlightGold), 0 0 80px 32px rgba(var(--color-desertHighlightGold-rgb), 0.7);
+    background-color: rgba(var(--color-skyPurple-rgb), 0.9); /* Más opaco en el pico del brillo */
+  }
+}
+
+/* 2. Particle Burst Effect (para el inicio de la reproducción) */
+@keyframes particleBurst {
+  0%   { transform: scale(0.5) translate(-50%, -50%); opacity: 1; }
+  60%  { transform: scale(2.2) translate(-50%, -50%); opacity: 0.7; }
+  100% { transform: scale(3.5) translate(-50%, -50%); opacity: 0; }
+}
+
+/* 3. Sound Wave Animation (para la visualización continua del audio) */
+@keyframes waveAnim {
+  0%, 100% { height: 24px; }
+  40%      { height: 40px; }
+  80%      { height: 16px; }
+}
+
+/* 4. Spiritual Ring Ripple Animation (para el estado de carga) */
+@keyframes ringRipple {
+  0%   { transform: scale(0.6) translate(-50%, -50%); opacity: 0.8; }
+  70%  { transform: scale(1.25) translate(-50%, -50%); opacity: 0.2; }
+  100% { transform: scale(1.5) translate(-50%, -50%); opacity: 0; }
+}
+
+/* Nuevas animaciones para la tarjeta de verso */
+
+/* Borde de Gradiente Animado Espiritual */
+.verse-border-gradient-flow {
+  position: relative;
+  border: 2px solid transparent; /* Base para el borde */
+  border-radius: 0.75rem; /* rounded-xl */
+  background: 
+    linear-gradient(to right, var(--color-desertHighlightGold), var(--color-skyDeepBlue), var(--color-desertHighlightGold)),
+    linear-gradient(to right, rgba(var(--color-skyPurple-rgb), 0.6), rgba(var(--color-skyPurple-rgb), 0.6)); /* Fondo de la tarjeta */
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  animation: borderGradientFlow 4s linear infinite;
+}
+
+@keyframes borderGradientFlow {
+  0% { background-position: 0% 50%, 0% 0%; }
+  100% { background-position: 100% 50%, 0% 0%; }
+}
+
+/* Fondo de Gradiente Sutil para el cuerpo de la tarjeta */
+.verse-body-gradient-shift {
+  background: linear-gradient(135deg, rgba(var(--color-skyPurple-rgb), 0.6), rgba(var(--color-skyDeepBlue-rgb), 0.3));
+  animation: subtleBackgroundShift 8s ease-in-out infinite alternate;
+}
+
+@keyframes subtleBackgroundShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}

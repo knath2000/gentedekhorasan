@@ -51,38 +51,21 @@
 -   **Estado:** ✅ **FIX IMPLEMENTADO.** Pendiente de re-deployment en Vercel para verificación.
 
 ### 3.2. `quranexpo-web` (Prioridad: ALTA - Bloqueador Secundario)
--   **Error:** Deploy "exitoso" pero la página muestra 404. Logs de Vercel muestran un tiempo de build de 7ms, indicando que `astro build` no se ejecutó.
--   **Causa Raíz ACTUALIZADA:** El builder `@vercel/astro` en `vercel.json` no maneja correctamente el contexto del subproyecto en el monorepo pnpm (no instala dependencias locales ni ejecuta el build del proyecto).
--   **Solución REFINADA:** Usar `vercel.json` en la raíz del monorepo con `@vercel/static-build` y un `buildCommand` explícito que utilice Turborepo para ejecutar el build de `quranexpo-web`:
-    ```json
-    // vercel.json (en la raíz del monorepo)
-    {
-      "version": 2,
-      "builds": [
-        {
-          "src": "apps/quranexpo-web/package.json",
-          "use": "@vercel/static-build",
-          "config": {
-            "buildCommand": "pnpm turbo run build --filter=@quran-monorepo/quranexpo-web",
-            "distDir": "apps/quranexpo-web/dist"
-          }
-        }
-      ]
-    }
-    ```
-    Esto asegura que Turborepo ejecute el script `build` de `quranexpo-web` y Vercel encuentre los artefactos en la ubicación correcta.
--   **Configuración Vercel Dashboard (con `vercel.json` en raíz):**
-    -   Root Directory: Dejar **VACÍO**.
-    -   Framework Preset: `Other`.
-    -   Build Command: **BORRAR/DEJAR VACÍO**.
-    -   Output Directory: **BORRAR/DEJAR VACÍO**.
-    -   Install Command: `pnpm install --frozen-lockfile` (o el que se defina en `vercel.json` o `build.sh`).
-    -   "Ignored Build Step": `Automatic`.
--   **Estado:** 🔴 **FALLO PERSISTENTE Y CRÍTICO.**
-    -   El build sigue completándose en ~7ms y resultando en 404, incluso después de múltiples ajustes a `vercel.json` (incluyendo reintroducir `"src"`).
-    -   El `buildCommand` especificado en `vercel.json` no parece ejecutarse.
-    -   ➡️ **NUEVA ESTRATEGIA:** Crear un script `apps/quranexpo-web/build.sh` dedicado que maneje la navegación de directorios, instalación y el build, y apuntar `vercel.json` a este script.
-    -   Documentado en [`memory-bank/vercel-build-script-attempt.md`](memory-bank/vercel-build-script-attempt.md). Requiere Code mode para crear `build.sh` y modificar `vercel.json`.
+-   **Error Anterior:** Build de ~7ms y 404 debido a que `apps/quranexpo-web` era un submódulo de Git no integrado, y luego `build.sh` no se ejecutaba.
+-   **Progreso:**
+    -   `apps/quranexpo-web` ha sido integrado como un directorio regular en el monorepo.
+    -   El script `apps/quranexpo-web/build.sh` ahora **SÍ SE EJECUTA** en Vercel.
+-   **Error Actual:** El script `build.sh` falla durante `pnpm install --frozen-lockfile` con:
+    -   `WARN Ignoring not compatible lockfile at /vercel/path1/pnpm-lock.yaml`
+    -   `ERROR Headless installation requires a pnpm-lock.yaml file`
+-   **Causa Raíz Sospechada:** Inconsistencia entre el `pnpm-lock.yaml` del repositorio y la versión/configuración de pnpm en el entorno de Vercel, o un lockfile desactualizado/corrupto.
+-   **Próximos Pasos:**
+    1.  Asegurar consistencia de la versión de pnpm (local vs. Vercel) mediante `package.json` -> `packageManager`.
+    2.  Regenerar `pnpm-lock.yaml` localmente (`rm -rf node_modules && rm pnpm-lock.yaml && pnpm install`).
+    3.  Hacer commit y push de los cambios.
+    4.  Redesplegar en Vercel **SIN CACHÉ**.
+-   **Estado:** 🟡 **PROBLEMA DE PNPM LOCKFILE.** El build ahora se inicia pero falla en la instalación de dependencias.
+    -   Documentado en [`memory-bank/vercel-pnpm-lockfile-issue-plan.md`](memory-bank/vercel-pnpm-lockfile-issue-plan.md).
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
