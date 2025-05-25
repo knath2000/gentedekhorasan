@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/api/v1/get-metadata",
-      "dest": "/api/get-metadata.js",
+      "dest": "/api/v1/get-metadata.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -21,7 +21,7 @@
     },
     {
       "src": "/api/v1/get-verses",
-      "dest": "/api/get-verses.js",
+      "dest": "/api/v1/get-verses.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -30,7 +30,7 @@
     },
     {
       "src": "/api/v1/get-translated-verse",
-      "dest": "/api/get-translated-verse.js",
+      "dest": "/api/v1/get-translated-verse.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -39,7 +39,7 @@
     },
     {
       "src": "/api/v1/(.*)",
-      "dest": "/api/$1.js",
+      "dest": "/api/v1/$1.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
