@@ -72,12 +72,16 @@
     ```
     Esto asegura que Turborepo ejecute el script `build` de `quranexpo-web` y Vercel encuentre los artefactos en la ubicación correcta.
 -   **Configuración Vercel Dashboard (con `vercel.json` en raíz):**
-    -   Root Directory: Dejar **VACÍO**. (Confirmado en [`memory-bank/vercel-root-directory-clarification.md`](memory-bank/vercel-root-directory-clarification.md))
+    -   Root Directory: Dejar **VACÍO**.
     -   Framework Preset: `Other`.
     -   Build Command: Dejar vacío.
     -   Output Directory: Dejar vacío.
     -   Install Command: `pnpm install`.
--   **Estado:** ✅ **SOLUCIÓN FINAL LISTA PARA IMPLEMENTAR.** Se necesita modificar `vercel.json` existente y ajustar configuración del Dashboard. Documentado en [`memory-bank/vercel-json-static-build-solution.md`](memory-bank/vercel-json-static-build-solution.md) y [`memory-bank/vercel-root-directory-clarification.md`](memory-bank/vercel-root-directory-clarification.md). Requiere Code mode para modificar `vercel.json`.
+-   **Estado:** 🟡 **INVESTIGACIÓN EN CURSO.**
+    -   ✅ Script `build` en `apps/quranexpo-web/package.json` es correcto (`astro build`).
+    -   ✅ Build local con `pnpm turbo run build --filter=@quran-monorepo/quranexpo-web` **funciona** y genera output en `apps/quranexpo-web/dist/`.
+    -   ⚠️ Sospecha: Vercel no ejecuta correctamente el `buildCommand` o el caché de Turborepo interfiere.
+    -   ➡️ **Próximo Intento:** Modificar `vercel.json` para añadir `--force` al `buildCommand`. Documentado en [`memory-bank/vercel-force-build-attempt.md`](memory-bank/vercel-force-build-attempt.md). Requiere Code mode para modificar `vercel.json`.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
