@@ -3,7 +3,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es2017",
-    "outDir": "../dist",
+    "outDir": "./",
     "rootDir": "./",
     "esModuleInterop": true,
     "strict": true,
