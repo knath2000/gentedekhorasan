@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint"
+    "build:web": "turbo run build --filter=quranexpo-web",
+    "build:api": "turbo run build --filter=@quran-monorepo/quran-data-api",
+    "build:mobile": "turbo run build --filter=@quran-monorepo/luminous-verses-mobile",
+    "dev:web": "turbo run dev --filter=quranexpo-web",
+    "dev:api": "turbo run dev --filter=@quran-monorepo/quran-data-api",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check"
   },
   "devDependencies": {
     "turbo": "latest",

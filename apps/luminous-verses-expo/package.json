@@ -1,14 +1,15 @@
 {
-  "name": "quranexpo2",
+  "name": "@quran-monorepo/luminous-verses-mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "packageManager": "pnpm@9.1.4",
   "sideEffects": false,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "expo start",
+    "build": "expo export",
+    "build:mobile": "expo export",
     "lint": "turbo lint",
-    "start": "next start",
+    "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
@@ -64,6 +65,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/runtime": "^7.24.8",
     "@types/react": "~19.0.10",
     "dotenv": "^16.5.0",
     "eslint": "^9.25.0",

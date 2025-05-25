@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, ViewProps } from 'react-native';
 
-const nativeImage = require('../../assets/images/iOSbackground.png');
+const nativeImage = require('../../assets/images/iOSbackground.webp');
 
 interface ScreenBackgroundProps extends ViewProps {
   children: React.ReactNode;
