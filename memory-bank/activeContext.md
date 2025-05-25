@@ -51,9 +51,9 @@
 -   **Estado:** ✅ **FIX IMPLEMENTADO.** Pendiente de re-deployment en Vercel para verificación.
 
 ### 3.2. `quranexpo-web` (Prioridad: ALTA - Bloqueador Secundario)
--   **Error:** Vercel sigue ejecutando `turbo build` desde la raíz del monorepo, construyendo otros proyectos.
--   **Causa Raíz DEFINITIVA:** Vercel detecta `turbo.json` en la raíz y prioriza el build del monorepo sobre la configuración específica del proyecto en el Dashboard. `.vercelignore` local y configuraciones de Dashboard no son suficientes para anular este comportamiento global.
--   **Solución PROPUESTA:** Usar `vercel.json` en la **raíz del monorepo** para un control explícito y granular del build:
+-   **Error:** Deploy "exitoso" pero la página muestra 404. Logs de Vercel muestran un tiempo de build de 7ms, indicando que `astro build` no se ejecutó.
+-   **Causa Raíz ACTUALIZADA:** El builder `@vercel/astro` en `vercel.json` no maneja correctamente el contexto del subproyecto en el monorepo pnpm (no instala dependencias locales ni ejecuta el build del proyecto).
+-   **Solución REFINADA:** Usar `vercel.json` en la raíz del monorepo con `@vercel/static-build` y un `buildCommand` explícito que utilice Turborepo para ejecutar el build de `quranexpo-web`:
     ```json
     // vercel.json (en la raíz del monorepo)
     {
@@ -61,13 +61,23 @@
       "builds": [
         {
           "src": "apps/quranexpo-web/package.json",
-          "use": "@vercel/astro"
+          "use": "@vercel/static-build",
+          "config": {
+            "buildCommand": "pnpm turbo run build --filter=@quran-monorepo/quranexpo-web",
+            "distDir": "apps/quranexpo-web/dist"
+          }
         }
       ]
     }
     ```
-    Esto dirige a Vercel a usar el builder de Astro específicamente para el paquete `quranexpo-web`.
--   **Estado:** 🚨 **SOLUCIÓN CRÍTICA IDENTIFICADA.** La configuración del Dashboard y `.vercelignore` local no son suficientes. Se requiere `vercel.json` en la raíz. Documentado en [`memory-bank/vercel-json-monorepo-solution.md`](memory-bank/vercel-json-monorepo-solution.md). Requiere Code mode para crear `vercel.json`.
+    Esto asegura que Turborepo ejecute el script `build` de `quranexpo-web` y Vercel encuentre los artefactos en la ubicación correcta.
+-   **Configuración Vercel Dashboard (con `vercel.json` en raíz):**
+    -   Root Directory: Dejar **VACÍO**. (Confirmado en [`memory-bank/vercel-root-directory-clarification.md`](memory-bank/vercel-root-directory-clarification.md))
+    -   Framework Preset: `Other`.
+    -   Build Command: Dejar vacío.
+    -   Output Directory: Dejar vacío.
+    -   Install Command: `pnpm install`.
+-   **Estado:** ✅ **SOLUCIÓN FINAL LISTA PARA IMPLEMENTAR.** Se necesita modificar `vercel.json` existente y ajustar configuración del Dashboard. Documentado en [`memory-bank/vercel-json-static-build-solution.md`](memory-bank/vercel-json-static-build-solution.md) y [`memory-bank/vercel-root-directory-clarification.md`](memory-bank/vercel-root-directory-clarification.md). Requiere Code mode para modificar `vercel.json`.
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid

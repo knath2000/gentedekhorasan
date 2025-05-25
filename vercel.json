@@ -3,7 +3,11 @@
   "builds": [
     {
       "src": "apps/quranexpo-web/package.json",
-      "use": "@vercel/astro"
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "pnpm turbo run build --filter=@quran-monorepo/quranexpo-web",
+        "distDir": "apps/quranexpo-web/dist"
+      }
     }
   ]
 }
