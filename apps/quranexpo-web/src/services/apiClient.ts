@@ -2,6 +2,7 @@ import type { Surah, Verse } from '../types/quran';
 
 // The API base URL is hardcoded to match the quranexpo2 native app
 const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://gentedekhorasan.vercel.app/api/v1';
+console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 
 /**
  * Fetches the list of all Surahs from the API
