@@ -12,7 +12,7 @@ echo "Listando contenido del directorio actual (raíz monorepo):"
 ls -la
 
 echo "Ejecutando install command desde la raíz del monorepo..."
-pnpm install --frozen-lockfile
+pnpm install
 
 echo "Ejecutando build de Astro para quranexpo-web usando pnpm --filter..."
 pnpm --filter @quran-monorepo/quranexpo-web run build
