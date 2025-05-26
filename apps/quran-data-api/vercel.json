@@ -1,8 +1,20 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "api/v1/**/*.ts",
+      "use": "@vercel/node@2.x",
+      "config": {
+        "includeFiles": [
+          "prisma/schema.prisma",
+          "api/generated/prisma/**"
+        ]
+      }
+    }
+  ],
   "functions": {
     "api/v1/**/*.ts": {
-      "runtime": "@vercel/edge@2.0.0"
+      "runtime": "edge"
     }
   },
   "routes": [
