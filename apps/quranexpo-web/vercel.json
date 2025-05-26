@@ -1,8 +1,6 @@
 {
-  "buildCommand": "cd ../.. && pnpm run build:web",
-  "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "./build.sh",
+  "outputDirectory": "apps/quranexpo-web/dist",
   "framework": null,
-  "nodeVersion": "18.x",
-  "ignoreCommand": "npx turbo-ignore"
+  "nodeVersion": "20.x"
 }
