@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/v1/**/*.ts": {
-      "runtime": "@vercel/edge"
+      "runtime": "@vercel/edge@2.0.0"
     }
   },
   "routes": [
