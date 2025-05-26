@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vercel dev",
-    "build": "prisma generate --schema=./prisma/schema.prisma",
-    "build:functions": "tsc",
+    "build": "pnpm run build:functions && prisma generate --schema=./prisma/schema.prisma",
+    "build:functions": "tsc -p api/tsconfig.json",
     "start": "vercel dev",
     "lint": "eslint . --ext .ts,.tsx",
     "generate": "prisma generate",

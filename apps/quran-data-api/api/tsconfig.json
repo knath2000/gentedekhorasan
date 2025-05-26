@@ -2,8 +2,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es2017",
-    "outDir": "./",
+    "target": "es2020",
+    "outDir": "dist",
     "rootDir": "./",
     "esModuleInterop": true,
     "strict": true,
@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": false
   },
   "include": [
     "**/*.ts"

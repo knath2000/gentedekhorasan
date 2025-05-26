@@ -1,9 +1,10 @@
 {
   "version": 2,
+  "outputDirectory": "dist",
   "routes": [
     {
       "src": "/api/v1/get-metadata",
-      "dest": "v1/get-metadata.js",
+      "dest": "dist/api/v1/get-metadata.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -12,7 +13,7 @@
     },
     {
       "src": "/api/v1/get-verses",
-      "dest": "v1/get-verses.js",
+      "dest": "dist/v1/get-verses.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -21,7 +22,7 @@
     },
     {
       "src": "/api/v1/get-translated-verse",
-      "dest": "v1/get-translated-verse.js",
+      "dest": "dist/v1/get-translated-verse.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -30,7 +31,7 @@
     },
     {
       "src": "/api/v1/(.*)",
-      "dest": "v1/$1.js",
+      "dest": "dist/v1/$1.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -39,7 +40,7 @@
     },
     {
       "src": "/test/v1/ping",
-      "dest": "test/ping.js",
+      "dest": "dist/test/ping.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -48,16 +49,16 @@
     }
   ],
   "functions": {
-    "api/v1/get-metadata.ts": {
+    "dist/api/v1/get-metadata.js": {
       "runtime": "nodejs@20.x"
     },
-    "api/v1/get-verses.ts": {
+    "dist/api/v1/get-verses.js": {
       "runtime": "nodejs@20.x"
     },
-    "api/v1/get-translated-verse.ts": {
+    "dist/api/v1/get-translated-verse.js": {
       "runtime": "nodejs@20.x"
     },
-    "api/test/ping.ts": {
+    "dist/api/test/ping.js": {
       "runtime": "nodejs@20.x"
     }
   }
