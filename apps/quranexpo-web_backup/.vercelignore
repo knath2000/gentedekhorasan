@@ -1,4 +1,0 @@
-# Prevent Vercel from auto-detecting TurboRepo
-turbo.json
-package-lock.json
-pnpm-lock.yaml

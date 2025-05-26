@@ -1,14 +1,15 @@
 # Active Context: Gente de Khorasan Monorepo
 
-**Version:** 1.0.0
-**Date:** 2025-05-25
+**Version:** 1.0.1
+**Date:** 2025-05-26
 **Related Brief:** `memory-bank/projectbrief.md`
 **Related Progress:** `memory-bank/progress.md`
+**Implementation Guide:** `memory-bank/deployment-fixes-implementation-guide.md`
 
 ## 1. Current Focus & State
 
 -   **Focus:**
-    1.  Resolución de problemas críticos de deployment en Vercel para `quran-data-api` y `quranexpo-web`.
+    1.  **IMMEDIATE:** Ejecutar fixes de deployment para `quran-data-api` y `quranexpo-web` siguiendo la guía en `deployment-fixes-implementation-guide.md`.
     2.  Verificación de la integración y funcionalidad de los subproyectos dentro del monorepo.
     3.  Preparación para el desarrollo continuo de nuevas características y mejoras.
 -   **State:**
@@ -55,17 +56,17 @@
 -   **Progreso:**
     -   `apps/quranexpo-web` ha sido integrado como un directorio regular en el monorepo.
     -   El script `apps/quranexpo-web/build.sh` ahora **SÍ SE EJECUTA** en Vercel.
--   **Error Actual:** El script `build.sh` falla durante `pnpm install --frozen-lockfile` con:
-    -   `WARN Ignoring not compatible lockfile at /vercel/path1/pnpm-lock.yaml`
+-   **Error Actual (Persistente):** El script `build.sh` falla durante `pnpm install --frozen-lockfile` con:
+    -   `WARN Ignoring not compatible lockfile at /vercel/path0/pnpm-lock.yaml` (el path puede variar path0/path1)
     -   `ERROR Headless installation requires a pnpm-lock.yaml file`
--   **Causa Raíz Sospechada:** Inconsistencia entre el `pnpm-lock.yaml` del repositorio y la versión/configuración de pnpm en el entorno de Vercel, o un lockfile desactualizado/corrupto.
--   **Próximos Pasos:**
-    1.  Asegurar consistencia de la versión de pnpm (local vs. Vercel) mediante `package.json` -> `packageManager`.
-    2.  Regenerar `pnpm-lock.yaml` localmente (`rm -rf node_modules && rm pnpm-lock.yaml && pnpm install`).
-    3.  Hacer commit y push de los cambios.
-    4.  Redesplegar en Vercel **SIN CACHÉ**.
--   **Estado:** 🟡 **PROBLEMA DE PNPM LOCKFILE.** El build ahora se inicia pero falla en la instalación de dependencias.
-    -   Documentado en [`memory-bank/vercel-pnpm-lockfile-issue-plan.md`](memory-bank/vercel-pnpm-lockfile-issue-plan.md).
+    Esto ocurre incluso después de alinear versiones de Node/pnpm, regenerar lockfile y desplegar sin caché.
+-   **Causa Raíz Sospechada:** Problema persistente con la interpretación/compatibilidad del `pnpm-lock.yaml` en el entorno de Vercel que no se resuelve con los pasos estándar. Podría estar relacionado con el caché interno de Vercel a pesar de "desplegar sin caché", o una interacción sutil con la forma en que Vercel maneja los workspaces de pnpm.
+-   **Próximos Pasos al Reanudar (Pausado por el usuario):**
+    1.  **Intento A:** Modificar `build.sh` para usar `pnpm install` (sin `--frozen-lockfile`).
+    2.  **Intento B (si A falla):** Modificar `build.sh` para forzar la versión de pnpm con Corepack.
+    3.  **Consideración:** Investigar la discrepancia en el número de workspaces (Vercel detecta 6, nosotros contamos 4-5). Mover/ignorar `apps/quranexpo-web_backup/`.
+-   **Estado:** ⏸️ **PAUSADO POR EL USUARIO.** El problema principal es el fallo de `pnpm install --frozen-lockfile` en Vercel debido a un lockfile "no compatible".
+    -   Plan de reanudación documentado en [`memory-bank/vercel-pnpm-lockfile-resumption-plan.md`](memory-bank/vercel-pnpm-lockfile-resumption-plan.md).
 
 ## 4. Dependencias de Arquitectura (Actualmente Afectadas)
 ```mermaid
@@ -83,10 +84,14 @@ graph TD
 -   La falla en `quran-data-api` impacta directamente a `quranexpo-web`.
 -   `luminous-verses-mobile` depende de `quran-data-api` para datos, por lo que también está afectado indirectamente.
 
-## 5. Plan de Acción Inmediato
+## 5. Plan de Acción Inmediato (2025-05-26)
 1.  **PRIORIDAD 1:** Re-desplegar `quran-data-api` en Vercel para verificar que el archivo `.vercelignore` resuelve el conflicto de Prisma.
-2.  **PRIORIDAD 2:** Re-desplegar `quranexpo-web` en Vercel con la configuración de `Build Command` y `ignoreCommand` actualizada.
-3.  **PRIORIDAD 3:** Verificar la funcionalidad completa de `quranexpo-web` y `luminous-verses-mobile` una vez que `quran-data-api` esté operativo.
+    - Archivo `.vercelignore` ya creado y listo
+    - Acción: Redeploy en Vercel Dashboard
+2.  **PRIORIDAD 2:** Implementar Option A para `quranexpo-web` - modificar `build.sh` para remover `--frozen-lockfile`.
+    - Ver instrucciones detalladas en `deployment-fixes-implementation-guide.md`
+    - Si falla, proceder con Option B (Corepack)
+3.  **PRIORIDAD 3:** Verificar la funcionalidad completa de `quranexpo-web` y `luminous-verses-mobile` una vez que ambos deployments estén operativos.
 
 ## 6. Soluciones Técnicas Listas para Pruebas
 -   **`quran-data-api`:** Archivo `apps/quran-data-api/.vercelignore` creado.

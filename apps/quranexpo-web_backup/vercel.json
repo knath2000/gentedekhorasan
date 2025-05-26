@@ -1,8 +1,0 @@
-{
-  "buildCommand": "cd ../.. && pnpm run build:web",
-  "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
-  "framework": null,
-  "nodeVersion": "18.x",
-  "ignoreCommand": "npx turbo-ignore"
-}

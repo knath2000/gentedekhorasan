@@ -26,8 +26,8 @@
 ## 2. What's Left to Build / Fix (High-Level for Monorepo)
 
 -   **Deployment de `apps/quranexpo-web` en Vercel:**
-    -   Configurar el proyecto de Vercel para `quranexpo-web` (Framework, Root Directory, Build Command, Output Directory).
-    -   Realizar un deployment de prueba en Vercel.
+    -   **BLOQUEADO:** Resolver el error `Ignoring not compatible lockfile at /vercel/path0/pnpm-lock.yaml` y `Headless installation requires a pnpm-lock.yaml file` que ocurre durante la ejecución de `pnpm install --frozen-lockfile` en el script `build.sh` en Vercel.
+    -   El script `build.sh` se está ejecutando, pero la instalación de dependencias falla.
 -   **Integración Completa de `apps/luminous-verses-mobile` con la API:**
     -   Actualizar la aplicación móvil para consumir la API desplegada.
     -   Asegurar que todas las funcionalidades de la aplicación móvil (lectura, audio, navegación) funcionen correctamente con los datos de la API.
@@ -54,45 +54,10 @@
 
 ## 4. Known Issues / Blockers / Considerations (Current)
 
--   **Deployment de `apps/quranexpo-web`:** Aún no se ha configurado el proyecto en Vercel para el deployment de la aplicación web.
+-   **Deployment de `apps/quranexpo-web`:** **BLOQUEADOR CRÍTICO.** El deployment en Vercel falla consistentemente debido a un problema con `pnpm-lock.yaml` que impide la instalación de dependencias (`pnpm install --frozen-lockfile` dentro de `build.sh`).
+    -   Mensajes de error clave: `WARN Ignoring not compatible lockfile` y `ERROR Headless installation requires a pnpm-lock.yaml file`.
+    -   Esto ocurre a pesar de alinear versiones de Node/pnpm, regenerar lockfile y desplegar sin caché.
+    -   El script `build.sh` *sí* se ejecuta, lo cual es un progreso.
 -   **Integración de la Aplicación Móvil:** La aplicación `luminous-verses-mobile` aún no está completamente actualizada para consumir la nueva API desplegada.
 -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
-## 🚨 CRITICAL ISSUE IDENTIFIED (2025-05-25 11:08 AM)
-
-### Problem: TurboRepo No Detecta `quranexpo-web` en Vercel Deployment
-
-**Error Específico:**
-```
-Error: No Output Directory named "dist" found after the Build completed.
-```
-
-**Root Cause:**
-- `apps/quranexpo-web/package.json` tiene `"name": "quranexpo-web"`
-- Los otros proyectos usan formato `@quran-monorepo/[nombre]`
-- TurboRepo logs muestran solo: `@quran-monorepo/luminous-verses-mobile, @quran-monorepo/quran-data-api, @quran-monorepo/quran-types`
-- **`quranexpo-web` NO está en el scope del workspace**
-
-### Solución Requerida (Modo Code):
-
-1. **Fix Inmediato:**
-   ```diff
-   // apps/quranexpo-web/package.json
-   {
-   - "name": "quranexpo-web",
-   + "name": "@quran-monorepo/quranexpo-web",
-     // resto igual
-   }
-   ```
-
-2. **Actualizar Referencias:**
-   ```diff
-   // package.json (raíz)
-   - "build:web": "turbo run build --filter=quranexpo-web",
-   + "build:web": "turbo run build --filter=@quran-monorepo/quranexpo-web",
-   ```
-
-### Status: BLOCKER CRÍTICO
-- **Prioridad:** MÁXIMA
-- **Impact:** Deployment de `quranexpo-web` imposible hasta resolver
-- **Next Action:** Cambiar a modo Code para aplicar fix
 -   **Estrategia de Versionado:** Aún no se ha definido una estrategia clara de versionado para los paquetes y aplicaciones dentro del monorepo.

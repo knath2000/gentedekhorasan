@@ -42,3 +42,8 @@
 - La utilidad de verificar los procesos en ejecución antes de intentar iniciarlos.
 - La preferencia de `history.back()` sobre rutas fijas para la navegación de retroceso.
 - **La implementación de lógica de renderizado condicional basada en el estado de audio y el número de versos para optimizar la visibilidad de los controles de UI.**
+
+## Estado del Deployment en Vercel (Problema a Nivel Monorepo)
+- **BLOQUEADO:** Actualmente, el deployment de `quranexpo-web` en Vercel está bloqueado debido a un problema persistente con `pnpm-lock.yaml` que impide la instalación de dependencias durante el proceso de build en Vercel.
+- Este problema se está diagnosticando y tratando a nivel de la configuración del monorepo y el script de build `apps/quranexpo-web/build.sh`.
+- Para detalles actualizados sobre este problema de deployment, consultar el archivo `memory-bank/activeContext.md` en la raíz del monorepo y el plan de reanudación en `memory-bank/vercel-pnpm-lockfile-resumption-plan.md`.
