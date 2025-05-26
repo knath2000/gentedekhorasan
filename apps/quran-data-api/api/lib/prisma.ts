@@ -1,4 +1,5 @@
 import { PrismaNeon } from '@prisma/adapter-neon';
+import 'websocket-polyfill'; // Añadir polyfill para Edge Functions
 import { PrismaClient } from '../generated/prisma';
 
 const adapter = new PrismaNeon({ 
