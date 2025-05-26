@@ -2,7 +2,6 @@
   "name": "@quran-monorepo/quran-data-api",
   "version": "1.0.0",
   "private": true,
-  "main": "api/v1/index.ts",
   "scripts": {
     "dev": "vercel dev",
     "build": "prisma generate --schema=./prisma/schema.prisma",

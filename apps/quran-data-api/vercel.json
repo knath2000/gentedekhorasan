@@ -46,5 +46,19 @@
         "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
       }
     }
-  ]
+  ],
+  "functions": {
+    "api/v1/get-metadata.ts": {
+      "runtime": "node"
+    },
+    "api/v1/get-verses.ts": {
+      "runtime": "node"
+    },
+    "api/v1/get-translated-verse.ts": {
+      "runtime": "node"
+    },
+    "api/test/ping.ts": {
+      "runtime": "node"
+    }
+  }
 }
