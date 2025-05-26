@@ -22,4 +22,8 @@ npx pnpm@9.1.4 install --frozen-lockfile
 echo "Ejecutando build de Astro con pnpm@9.1.4..."
 npx pnpm@9.1.4 --filter @quran-monorepo/quranexpo-web run build
 
+# Copiar dist a la raíz como Vercel espera
+echo "Copiando dist a la raíz para Vercel..."
+cp -r apps/quranexpo-web/dist ./dist
+
 echo ">>> build.sh COMPLETADO <<<"
