@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vercel dev",
     "build": "prisma generate --schema=./prisma/schema.prisma",
+    "build:functions": "tsc",
     "start": "vercel dev",
     "lint": "eslint . --ext .ts,.tsx",
     "generate": "prisma generate",
