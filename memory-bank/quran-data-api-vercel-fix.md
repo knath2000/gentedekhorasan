@@ -29,7 +29,7 @@ Error: No Output Directory named "public" found
 **Framework Preset:** Other
 **Root Directory:** `apps/quran-data-api`
 **Build Command:** (leave EMPTY - no build needed for serverless)
-**Output Directory:** (leave EMPTY - no output for APIs)
+**Output Directory:** `.` ← CRITICAL: Use current directory (this worked before)
 **Install Command:** `pnpm install`
 **Development Command:** (leave EMPTY)
 

@@ -44,6 +44,15 @@
 - **La implementación de lógica de renderizado condicional basada en el estado de audio y el número de versos para optimizar la visibilidad de los controles de UI.**
 
 ## Estado del Deployment en Vercel (Problema a Nivel Monorepo)
-- **BLOQUEADO:** Actualmente, el deployment de `quranexpo-web` en Vercel está bloqueado debido a un problema persistente con `pnpm-lock.yaml` que impide la instalación de dependencias durante el proceso de build en Vercel.
-- Este problema se está diagnosticando y tratando a nivel de la configuración del monorepo y el script de build `apps/quranexpo-web/build.sh`.
-- Para detalles actualizados sobre este problema de deployment, consultar el archivo `memory-bank/activeContext.md` en la raíz del monorepo y el plan de reanudación en `memory-bank/vercel-pnpm-lockfile-resumption-plan.md`.
+- **RESUELTO:** El deployment de `quranexpo-web` en Vercel ahora funciona correctamente.
+- **Problemas Resueltos:**
+    - **`prisma: command not found`:** Resuelto aislando el proyecto `quranexpo-web` en Vercel Dashboard.
+    - **`Found invalid Node.js Version: "18.x"`:** Resuelto actualizando la versión de Node.js a 22.x en Vercel Dashboard.
+    - **`ERR_INVALID_THIS` / `ERR_PNPM_META_FETCH_FAIL`:** Resuelto cambiando el gestor de paquetes de `pnpm` a `npm` para `quranexpo-web` en Vercel.
+- **Configuración Final:**
+    - **Root Directory:** `apps/quranexpo-web`
+    - **Build Command:** `npm run build`
+    - **Output Directory:** `dist`
+    - **Install Command:** `npm install`
+    - **Node.js Version:** `22.x`
+- Para detalles actualizados sobre este problema de deployment, consultar el archivo `memory-bank/vercel-manual-overrides-configuration.md` en la raíz del monorepo y `memory-bank/pnpm-registry-error-fix.md`.

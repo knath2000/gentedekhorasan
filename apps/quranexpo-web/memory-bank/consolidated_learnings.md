@@ -31,6 +31,19 @@
 - Encapsular el código SVG de los iconos en componentes de Preact (o el framework UI que se esté usando) permite una fácil reutilización, tipado y estilización dinámica (ej. cambiar color o relleno basado en props como `filled`).
 - *Beneficios:* Reduce la duplicación de código, mejora la mantenibilidad y facilita la coherencia visual.
 
+## Estrategias de Deployment en Vercel para Monorepos
+**Patrón: Aislamiento de Proyectos en Vercel Dashboard**
+- Para monorepos, configurar `Root Directory` en Vercel Dashboard para apuntar directamente al subproyecto (ej. `apps/quranexpo-web`).
+- *Razón:* Evita que Vercel intente construir todo el monorepo, previene conflictos de `postinstall` hooks de otros proyectos (ej. `prisma: command not found`), y aísla la instalación de dependencias.
+
+**Patrón: Gestión de Versiones de Node.js en Vercel**
+- Asegurar que la versión de Node.js configurada en Vercel Dashboard (`Project Settings -> General -> Node.js Version`) coincida con los requisitos del proyecto (ej. `22.x`).
+- *Razón:* Evita errores de `Found invalid Node.js Version`.
+
+**Patrón: Elección del Gestor de Paquetes para Deployment**
+- Si `pnpm` presenta problemas de compatibilidad con la versión de Node.js en Vercel (ej. `ERR_INVALID_THIS` con Node.js 22.x y pnpm 6.x), considerar cambiar a `npm` para el `Install Command` y `Build Command` del proyecto en Vercel Dashboard.
+- *Razón:* `npm` puede ofrecer mayor estabilidad y compatibilidad en ciertos entornos de Vercel, especialmente cuando hay conflictos de `engine` o `lockfile` con `pnpm`.
+
 ## Depuración y Estrategias de `apply_diff`
 **Depuración: Estrategias para manejar errores de `apply_diff` (reescritura completa del archivo)**
 - Cuando `apply_diff` falla repetidamente o introduce errores de sintaxis debido a problemas de contexto o cambios estructurales complejos, una estrategia robusta es reescribir el archivo completo utilizando `write_to_file`.

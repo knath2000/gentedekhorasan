@@ -13,6 +13,20 @@
 ## Qué queda por construir
 - Ninguno. La funcionalidad de marcadores está actualizada.
 
+## Estado del Deployment en Vercel
+- **✅ quranexpo-web:** Desplegado exitosamente en Vercel.
+    - **Problemas Resueltos:**
+        - Conflicto de Prisma (`prisma: command not found`) durante `pnpm install` en el monorepo.
+        - Versión de Node.js (`18.x` vs `22.x`).
+        - Errores de registro de pnpm (`ERR_INVALID_THIS`, `ERR_PNPM_META_FETCH_FAIL`).
+    - **Solución Final:**
+        - **Root Directory:** `apps/quranexpo-web`
+        - **Build Command:** `npm run build`
+        - **Output Directory:** `dist`
+        - **Install Command:** `npm install`
+        - **Node.js Version:** `22.x`
+    - **Razón:** El aislamiento del proyecto en Vercel y el cambio de `pnpm` a `npm` para `quranexpo-web` resolvieron los problemas de compatibilidad y los conflictos del monorepo.
+
 ## Estado actual
 - La funcionalidad de marcadores ha sido actualizada:
     - Se ha añadido el botón de marcadores a la página de suras (`src/pages/surahs.astro`).

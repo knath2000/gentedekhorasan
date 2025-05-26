@@ -34,44 +34,39 @@
     -   Inicialización y actualización de los archivos `projectbrief.md`, `productContext.md`, `activeContext.md`, `systemPatterns.md`, `techContext.md`, y `deployment-reorganization-plan.md`.
 
 ## 2. What's Left to Build / Fix (High-Level for Monorepo)
-
--   **Deployment de `apps/quranexpo-web` en Vercel:**
-    -   **BLOQUEADO:** Resolver el error `Ignoring not compatible lockfile at /vercel/path0/pnpm-lock.yaml` y `Headless installation requires a pnpm-lock.yaml file` que ocurre durante la ejecución de `pnpm install --frozen-lockfile` en el script `build.sh` en Vercel.
-    -   El script `build.sh` se está ejecutando, pero la instalación de dependencias falla.
--   **Integración Completa de `apps/luminous-verses-mobile` con la API:**
-    -   Actualizar la aplicación móvil para consumir la API desplegada.
-    -   Asegurar que todas las funcionalidades de la aplicación móvil (lectura, audio, navegación) funcionen correctamente con los datos de la API.
--   **Testing Exhaustivo del Monorepo:**
-    -   Realizar pruebas de extremo a extremo para validar la interacción entre la aplicación web/móvil y la API.
-    -   Pruebas de rendimiento y estabilidad.
--   **Optimización de TurboRepo:**
-    -   Explorar y aplicar configuraciones avanzadas de TurboRepo para maximizar el caching y la eficiencia de los builds.
--   **CI/CD para el Monorepo:**
-    -   Configurar pipelines de integración continua y despliegue continuo para automatizar el flujo de trabajo del monorepo.
--   **Documentación Adicional:**
-    -   Crear documentación detallada para la API (endpoints, modelos de datos).
-    -   Documentación de la aplicación móvil (características, UX).
-
-## 3. Current Status (as of 2025-05-26)
-
--   **Overall:** Progreso significativo en deployments. `quran-data-api` ahora desplegado exitosamente. `quranexpo-web` tiene las correcciones de SSR implementadas.
--   **Resolved Issues:**
-    -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
-    -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
-    -   Configuración de scripts de TurboRepo en el `package.json` raíz.
-    -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación y corrección de importación.
-    -   **Error SSR en Settings Toggle (`__H`):** Resuelto con la implementación de `ClientOnlySettingsToggle`.
--   **Current Task Group:** Preparación para el deployment de `quranexpo-web` en Vercel.
--   **Next Major Focus:** Configuración de Vercel para `quranexpo-web` y su deployment.
-
-## 4. Known Issues / Blockers / Considerations (Current)
-
--   **Deployment de `apps/quranexpo-web`:** **BLOQUEADOR CRÍTICO - NUEVA FASE DEL ERROR.**
-    -   **Progreso:** Option A (remover `--frozen-lockfile`) fue implementado exitosamente.
-    -   **Nuevo Error:** Corepack no está activando correctamente pnpm@9.1.4 en Vercel.
-    -   **Descubrimiento:** Vercel tiene pnpm@6.35.1 pre-instalado y Corepack no lo está sobrescribiendo.
-    -   **Causa raíz:** El lockfile tiene `lockfileVersion: '9.0'` pero Vercel usa pnpm 6.x.
-    -   **Próximo paso:** Implementar Option D (usar npx) o Option E (regenerar lockfile con pnpm 6.x).
--   **Integración de la Aplicación Móvil:** La aplicación `luminous-verses-mobile` aún no está completamente actualizada para consumir la nueva API desplegada.
--   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
--   **Estrategia de Versionado:** Aún no se ha definido una estrategia clara de versionado para los paquetes y aplicaciones dentro del monorepo.
+ 
+ -   **Integración Completa de `apps/luminous-verses-mobile` con la API:**
+     -   Actualizar la aplicación móvil para consumir la API desplegada.
+     -   Asegurar que todas las funcionalidades de la aplicación móvil (lectura, audio, navegación) funcionen correctamente con los datos de la API.
+ -   **Testing Exhaustivo del Monorepo:**
+     -   Realizar pruebas de extremo a extremo para validar la interacción entre la aplicación web/móvil y la API.
+     -   Pruebas de rendimiento y estabilidad.
+ -   **Optimización de TurboRepo:**
+     -   Explorar y aplicar configuraciones avanzadas de TurboRepo para maximizar el caching y la eficiencia de los builds.
+ -   **CI/CD para el Monorepo:**
+     -   Configurar pipelines de integración continua y despliegue continuo para automatizar el flujo de trabajo del monorepo.
+ -   **Documentación Adicional:**
+     -   Crear documentación detallada para la API (endpoints, modelos de datos).
+     -   Documentación de la aplicación móvil (características, UX).
+ 
+ ## 3. Current Status (as of 2025-05-26)
+ 
+ -   **Overall:** Progreso significativo en deployments. `quran-data-api` ahora desplegado exitosamente. `quranexpo-web` tiene las correcciones de SSR implementadas y **ha sido desplegado exitosamente**.
+ -   **Resolved Issues:**
+     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
+     -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
+     -   Configuración de scripts de TurboRepo en el `package.json` raíz.
+     -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación y corrección de importación.
+     -   **Error SSR en Settings Toggle (`__H`):** Resuelto con la implementación de `ClientOnlySettingsToggle`.
+     -   **Deployment de `apps/quranexpo-web`:** **RESUELTO.**
+         -   `prisma: command not found` durante `pnpm install`.
+         -   `Found invalid Node.js Version: "18.x"`.
+         -   `ERR_INVALID_THIS` / `ERR_PNPM_META_FETCH_FAIL` durante `pnpm install`.
+ -   **Current Task Group:** Integración y testing de las aplicaciones desplegadas.
+ -   **Next Major Focus:** Integración de `apps/luminous-verses-mobile` con la API desplegada.
+ 
+ ## 4. Known Issues / Blockers / Considerations (Current)
+ 
+ -   **Integración de la Aplicación Móvil:** La aplicación `luminous-verses-mobile` aún no está completamente actualizada para consumir la nueva API desplegada.
+ -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
+ -   **Estrategia de Versionado:** Aún no se ha definido una estrategia clara de versionado para los paquetes y aplicaciones dentro del monorepo.

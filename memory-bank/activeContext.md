@@ -11,6 +11,12 @@ The primary focus is on resolving deployment issues for the `apps/quranexpo-web`
 ## 2. Recent Changes & Updates
 
 -   **`apps/quran-data-api` Deployment:** Successfully deployed to Vercel. Prisma conflicts resolved by adding `.vercelignore`.
+-   **`apps/quranexpo-web` Deployment:**
+    -   **RESUELTO (2025-05-26):** El despliegue de `quranexpo-web` en Vercel ahora es exitoso.
+    -   **Soluciones Clave:**
+        -   Aislamiento del proyecto en Vercel Dashboard (`Root Directory: apps/quranexpo-web`).
+        -   Actualización de la versión de Node.js a `22.x`.
+        -   Cambio del gestor de paquetes de `pnpm` a `npm` para la instalación y el build.
 -   **`apps/quranexpo-web` SSR Audio Player Fix:**
     -   Initial fix implemented using `useIsClient` hook and `ClientOnlyReaderContainer`.
     -   **REVISIÓN (2025-05-26):** La solución de SSR para el audio player ha sido simplificada. Se eliminó el hook `useIsClient` y la verificación de entorno (`typeof window !== 'undefined'`) se realiza directamente dentro de `ClientOnlyReaderContainer.tsx`. Esto evita la ejecución de hooks de Preact durante el SSR, que era la causa raíz del error `Cannot read properties of undefined (reading '__H')`.
