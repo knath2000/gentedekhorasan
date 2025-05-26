@@ -9,13 +9,18 @@
 
 **Project Name:** `quran-data-api`
 
-#### Build & Development Settings
+#### Build & Development Settings ⚠️ CORRECTED
 - **Framework Preset:** Other
-- **Root Directory:** `apps/quran-data-api`
-- **Build Command:** (leave empty - uses serverless functions)
-- **Output Directory:** (leave empty - API functions)
+- **Root Directory:** `apps/quran-data-api` ← CRITICAL: isolate from monorepo
+- **Build Command:** (leave EMPTY - no build needed for serverless)
+- **Output Directory:** (leave EMPTY - APIs don't generate output dirs)
 - **Install Command:** `pnpm install`
-- **Development Command:** (leave empty)
+- **Development Command:** (leave EMPTY)
+
+⚠️ **CRITICAL FIX:**
+- Setting Root Directory to `apps/quran-data-api` prevents TurboRepo autodetection
+- EMPTY Build/Output commands prevent "No Output Directory named 'public' found" error
+- Serverless functions are deployed from `/api/` folder automatically
 
 #### Node.js Version
 - **Node.js Version:** `18.x`
@@ -130,9 +135,12 @@ PNPM_VERSION=9.1.4
 
 #### Environment Variables
 ```
-# API Configuration
-PUBLIC_API_BASE_URL=https://quran-data-api.vercel.app
-PUBLIC_API_VERSION=v1
+# API Configuration (Currently hardcoded in apiClient.ts)
+# Current API URL: https://gentedekhorasan.vercel.app/api/v1
+# Note: API_BASE_URL is hardcoded in apps/quranexpo-web/src/services/apiClient.ts line 4
+# If you want to make it configurable via environment variables, uncomment below:
+# PUBLIC_API_BASE_URL=https://gentedekhorasan.vercel.app/api/v1
+# PUBLIC_API_VERSION=v1
 
 # Vercel Edge Config (if needed)
 EDGE_CONFIG=https://edge-config.vercel.com/[token]
