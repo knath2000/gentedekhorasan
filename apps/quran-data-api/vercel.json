@@ -49,16 +49,16 @@
   ],
   "functions": {
     "api/v1/get-metadata.ts": {
-      "runtime": "node"
+      "runtime": "nodejs@20.x"
     },
     "api/v1/get-verses.ts": {
-      "runtime": "node"
+      "runtime": "nodejs@20.x"
     },
     "api/v1/get-translated-verse.ts": {
-      "runtime": "node"
+      "runtime": "nodejs@20.x"
     },
     "api/test/ping.ts": {
-      "runtime": "node"
+      "runtime": "nodejs@20.x"
     }
   }
 }
