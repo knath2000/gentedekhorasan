@@ -1,9 +1,14 @@
 {
   "version": 2,
+  "functions": {
+    "api/v1/**/*.ts": {
+      "runtime": "@vercel/edge"
+    }
+  },
   "routes": [
     {
       "src": "/api/v1/get-metadata",
-      "dest": "v1/get-metadata.js",
+      "dest": "/api/v1/get-metadata",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -12,7 +17,7 @@
     },
     {
       "src": "/api/v1/get-verses",
-      "dest": "v1/get-verses.js",
+      "dest": "/api/v1/get-verses",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -21,7 +26,7 @@
     },
     {
       "src": "/api/v1/get-translated-verse",
-      "dest": "v1/get-translated-verse.js",
+      "dest": "/api/v1/get-translated-verse",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -30,7 +35,7 @@
     },
     {
       "src": "/api/v1/(.*)",
-      "dest": "v1/$1.js",
+      "dest": "/api/v1/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
