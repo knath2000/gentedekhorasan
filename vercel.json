@@ -1,3 +1,64 @@
 {
-  "version": 2
+  "version": 2,
+  "functions": {
+    "apps/quran-data-api/dist/api/v1/get-metadata.js": {
+      "runtime": "nodejs@20.x"
+    },
+    "apps/quran-data-api/dist/api/v1/get-verses.js": {
+      "runtime": "nodejs@20.x"
+    },
+    "apps/quran-data-api/dist/api/v1/get-translated-verse.js": {
+      "runtime": "nodejs@20.x"
+    },
+    "apps/quran-data-api/dist/api/test/ping.js": {
+      "runtime": "nodejs@20.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/v1/get-metadata",
+      "dest": "apps/quran-data-api/dist/v1/get-metadata.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    },
+    {
+      "src": "/api/v1/get-verses",
+      "dest": "apps/quran-data-api/dist/v1/get-verses.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    },
+    {
+      "src": "/api/v1/get-translated-verse",
+      "dest": "apps/quran-data-api/dist/v1/get-translated-verse.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    },
+    {
+      "src": "/api/v1/(.*)",
+      "dest": "apps/quran-data-api/dist/v1/$1.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    },
+    {
+      "src": "/test/v1/ping",
+      "dest": "apps/quran-data-api/dist/test/ping.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    }
+  ]
 }
