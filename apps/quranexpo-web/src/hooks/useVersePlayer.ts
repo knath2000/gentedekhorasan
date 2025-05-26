@@ -3,7 +3,6 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'preact/hoo
 import { audioActive, autoplayEnabled, setAudioActive } from '../stores/settingsStore';
 import type { Verse } from '../types/quran';
 import { getVerseAudioUrl } from '../utils/audioUtils';
-import { useIsClient } from './useIsClient'; // Importar el nuevo hook
 
 interface AudioState {
   status: 'idle' | 'loading' | 'playing' | 'paused' | 'error';
@@ -133,7 +132,7 @@ class AudioPool {
 }
 
 export const useVersePlayer = (verses?: Verse[]) => {
-  const isClient = useIsClient();
+  const isClient = typeof window !== 'undefined';
   const audioPoolRef = useRef<AudioPool | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -155,7 +154,8 @@ export const useVersePlayer = (verses?: Verse[]) => {
   const $autoplayEnabled = useStore(autoplayEnabled);
 
   // Integrar el preloader (también debe ser SSR-safe)
-  useVersePreloader(verses, currentVerseIndex, isClient);
+  // Integrar el preloader (también debe ser SSR-safe)
+  // useVersePreloader(verses, currentVerseIndex, isClient); // Deshabilitado temporalmente
 
   const playVerseRef = useRef<(surahId: number, verseNumber: number) => void>();
   const stopAndUnloadCompletelyRef = useRef<() => void>(() => {});
@@ -493,6 +493,9 @@ export const useVersePlayer = (verses?: Verse[]) => {
 };
 
 // Hook para precargar el siguiente verso
+// Hook para precargar el siguiente verso
+// Deshabilitado temporalmente para simplificar el debugging de SSR
+/*
 const useVersePreloader = (verses: Verse[] | undefined, currentVerseIndex: number | null, isClient: boolean) => {
   const preloadCache = useRef(new Map<string, HTMLAudioElement>());
 
@@ -514,6 +517,7 @@ const useVersePreloader = (verses: Verse[] | undefined, currentVerseIndex: numbe
 
   return preloadCache.current;
 };
+*/
 
 // Hook para transiciones suaves de audio (crossfade)
 const useCrossfadeTransition = (isClient: boolean) => {

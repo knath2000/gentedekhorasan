@@ -24,6 +24,7 @@
         -   Actualización de `reader/[surahId].astro` para usar el nuevo wrapper.
         -   Verificación de `usePagination` como SSR-safe.
         -   **REVISIÓN (2025-05-26):** Simplificación de la solución SSR en `ClientOnlyReaderContainer.tsx` para usar `typeof window !== 'undefined'` directamente, eliminando la dependencia del hook `useIsClient` y el archivo `useIsClient.ts`.
+        -   **CORRECCIÓN (2025-05-26):** Se eliminó la importación de `useIsClient` de `apps/quranexpo-web/src/hooks/useVersePlayer.ts` y se reemplazó la declaración de `isClient` con `typeof window !== 'undefined'`. El hook `useVersePreloader` ha sido deshabilitado temporalmente en `useVersePlayer.ts` para simplificar el debugging.
 -   **`apps/luminous-verses-mobile` (Aplicación Móvil):**
     -   **Build Local Exitoso:** El proyecto móvil ahora se construye localmente sin errores después de corregir las dependencias de Next.js y las rutas de imágenes.
 -   **`packages/quran-types` (Shared Types):**
@@ -57,7 +58,7 @@
     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
     -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
     -   Configuración de scripts de TurboRepo en el `package.json` raíz.
-    -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación.
+    -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación y corrección de importación.
 -   **Current Task Group:** Preparación para el deployment de `quranexpo-web` en Vercel.
 -   **Next Major Focus:** Configuración de Vercel para `quranexpo-web` y su deployment.
 
