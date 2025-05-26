@@ -1,14 +1,9 @@
 {
   "version": 2,
-  "functions": {
-    "api/v1/**/*.ts": {
-      "runtime": "edge"
-    }
-  },
   "routes": [
     {
       "src": "/api/v1/get-metadata",
-      "dest": "/api/v1/get-metadata",
+      "dest": "v1/get-metadata.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -17,7 +12,7 @@
     },
     {
       "src": "/api/v1/get-verses",
-      "dest": "/api/v1/get-verses",
+      "dest": "v1/get-verses.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -26,7 +21,7 @@
     },
     {
       "src": "/api/v1/get-translated-verse",
-      "dest": "/api/v1/get-translated-verse",
+      "dest": "v1/get-translated-verse.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -35,7 +30,7 @@
     },
     {
       "src": "/api/v1/(.*)",
-      "dest": "/api/v1/$1",
+      "dest": "v1/$1.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",

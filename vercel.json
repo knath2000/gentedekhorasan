@@ -1,3 +1,11 @@
 {
-  "version": 2
+  "version": 2,
+  "functions": {
+    "apps/quran-data-api/api/v1/**/*.ts": {
+      "runtime": "edge"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/v1/(.*)", "destination": "/apps/quran-data-api/api/v1/$1" }
+  ]
 }
