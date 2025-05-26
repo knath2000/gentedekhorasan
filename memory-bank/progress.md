@@ -25,6 +25,7 @@
         -   Verificación de `usePagination` como SSR-safe.
         -   **REVISIÓN (2025-05-26):** Simplificación de la solución SSR en `ClientOnlyReaderContainer.tsx` para usar `typeof window !== 'undefined'` directamente, eliminando la dependencia del hook `useIsClient` y el archivo `useIsClient.ts`.
         -   **CORRECCIÓN (2025-05-26):** Se eliminó la importación de `useIsClient` de `apps/quranexpo-web/src/hooks/useVersePlayer.ts` y se reemplazó la declaración de `isClient` con `typeof window !== 'undefined'`. El hook `useVersePreloader` ha sido deshabilitado temporalmente en `useVersePlayer.ts` para simplificar el debugging.
+    -   **✅ FIX EXITOSO (2025-05-26):** Se corrigió el error de SSR en `SettingsToggle`. Se creó `ClientOnlySettingsToggle.tsx` para envolver `SettingsToggle` y asegurar que se renderice solo en el cliente. Se actualizó `apps/quranexpo-web/src/components/SettingsPanel.tsx` para usar `ClientOnlySettingsToggle`.
 -   **`apps/luminous-verses-mobile` (Aplicación Móvil):**
     -   **Build Local Exitoso:** El proyecto móvil ahora se construye localmente sin errores después de corregir las dependencias de Next.js y las rutas de imágenes.
 -   **`packages/quran-types` (Shared Types):**
@@ -59,6 +60,7 @@
     -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
     -   Configuración de scripts de TurboRepo en el `package.json` raíz.
     -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación y corrección de importación.
+    -   **Error SSR en Settings Toggle (`__H`):** Resuelto con la implementación de `ClientOnlySettingsToggle`.
 -   **Current Task Group:** Preparación para el deployment de `quranexpo-web` en Vercel.
 -   **Next Major Focus:** Configuración de Vercel para `quranexpo-web` y su deployment.
 
