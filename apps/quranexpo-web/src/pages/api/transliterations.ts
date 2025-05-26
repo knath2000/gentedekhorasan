@@ -1,5 +1,5 @@
-import type { APIRoute } from 'astro';
 import { get } from '@vercel/edge-config';
+import type { APIRoute } from 'astro';
 
 export const config = {
   runtime: 'edge',
@@ -39,6 +39,13 @@ export const GET: APIRoute = async ({ request }) => {
       }
     });
   } catch (error: any) {
+    if (error.message.includes('No connection string provided')) {
+      console.warn('Edge Config not available during build:', error.message);
+      // Return empty object during build to prevent build failure
+      return new Response(JSON.stringify({}), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
     console.error('Error fetching transliterations from Edge Config:', error);
     return new Response(JSON.stringify({ message: 'Internal Server Error', error: error.message }), {
       status: 500,

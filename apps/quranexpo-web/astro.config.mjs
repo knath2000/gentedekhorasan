@@ -21,6 +21,15 @@ export default defineConfig({
     ssr: {
       // Evitar conflictos de hidratación
       noExternal: ['@tanstack/react-virtual']
-    }
+    },
+    resolve: {
+      alias: {
+        // Alias React to Preact for compatibility
+        'react': 'preact/compat',
+        'react-dom/test-utils': 'preact/test-utils',
+        'react-dom': 'preact/compat',
+        'react/jsx-runtime': 'preact/jsx-runtime',
+      },
+    },
   }
 });
