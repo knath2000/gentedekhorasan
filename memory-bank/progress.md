@@ -1,7 +1,7 @@
 # Progress: Gente de Khorasan Monorepo
 
-**Version:** 1.0.0
-**Date:** 2025-05-24
+**Version:** 1.0.1
+**Date:** 2025-05-26
 **Related Brief:** `memory-bank/projectbrief.md`
 **Active Context:** `memory-bank/activeContext.md`
 
@@ -14,6 +14,7 @@
     -   **Despliegue Exitoso en Vercel:** La API está desplegada y funcionando correctamente, sirviendo datos del Corán.
     -   **Resolución de Errores de Despliegue:** Se resolvieron los problemas de compilación de TypeScript, generación de Prisma Client, y errores de enrutamiento `404` en Vercel.
     -   **Integración con Neon DB y Vercel Edge Config:** La API se conecta y recupera datos de ambas fuentes.
+    -   **✅ FIX EXITOSO (2025-05-26):** El archivo `.vercelignore` resolvió completamente los conflictos de archivos Prisma. Deployment exitoso confirmado.
 -   **`apps/quranexpo-web` (Aplicación Web):**
     -   **Build Local Exitoso:** El proyecto web ahora se construye localmente sin errores.
 -   **`apps/luminous-verses-mobile` (Aplicación Móvil):**
@@ -42,9 +43,9 @@
     -   Crear documentación detallada para la API (endpoints, modelos de datos).
     -   Documentación de la aplicación móvil (características, UX).
 
-## 3. Current Status (as of 2025-05-25)
+## 3. Current Status (as of 2025-05-26)
 
--   **Overall:** La Etapa 1: Fixes Críticos del plan de reorganización del monorepo ha sido completada. Todos los proyectos se construyen localmente sin errores. La "Memory Bank" a nivel raíz ha sido actualizada.
+-   **Overall:** Progreso significativo en deployments. `quran-data-api` ahora desplegado exitosamente. `quranexpo-web` requiere Option B (Corepack) para resolver nuevos errores de HTTP.
 -   **Resolved Issues:**
     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
     -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
@@ -54,10 +55,12 @@
 
 ## 4. Known Issues / Blockers / Considerations (Current)
 
--   **Deployment de `apps/quranexpo-web`:** **BLOQUEADOR CRÍTICO.** El deployment en Vercel falla consistentemente debido a un problema con `pnpm-lock.yaml` que impide la instalación de dependencias (`pnpm install --frozen-lockfile` dentro de `build.sh`).
-    -   Mensajes de error clave: `WARN Ignoring not compatible lockfile` y `ERROR Headless installation requires a pnpm-lock.yaml file`.
-    -   Esto ocurre a pesar de alinear versiones de Node/pnpm, regenerar lockfile y desplegar sin caché.
-    -   El script `build.sh` *sí* se ejecuta, lo cual es un progreso.
+-   **Deployment de `apps/quranexpo-web`:** **BLOQUEADOR CRÍTICO - NUEVA FASE DEL ERROR.**
+    -   **Progreso:** Option A (remover `--frozen-lockfile`) fue implementado exitosamente.
+    -   **Nuevo Error:** HTTP request failures al intentar descargar paquetes de npm registry.
+    -   **Error específico:** `ERR_PNPM_META_FETCH_FAIL` con mensaje `Value of "this" must be of type URLSearchParams`.
+    -   **Causa raíz:** Incompatibilidad entre pnpm@10.x (usado para generar lockfile) y pnpm@9.1.4 (especificado en el proyecto).
+    -   **Próximo paso:** Implementar Option B con Corepack para forzar pnpm@9.1.4.
 -   **Integración de la Aplicación Móvil:** La aplicación `luminous-verses-mobile` aún no está completamente actualizada para consumir la nueva API desplegada.
 -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
 -   **Estrategia de Versionado:** Aún no se ha definido una estrategia clara de versionado para los paquetes y aplicaciones dentro del monorepo.
