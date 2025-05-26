@@ -1,6 +1,0 @@
-{
-  "buildCommand": "./build.sh",
-  "outputDirectory": "apps/quranexpo-web/dist",
-  "framework": null,
-  "nodeVersion": "20.x"
-}
