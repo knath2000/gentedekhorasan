@@ -1,4 +1,3 @@
-import { useIsClient } from '../hooks/useIsClient';
 import ReaderContainer from './ReaderContainer';
 
 interface ClientOnlyReaderContainerProps {
@@ -6,7 +5,7 @@ interface ClientOnlyReaderContainerProps {
 }
 
 const ClientOnlyReaderContainer = ({ surahId }: ClientOnlyReaderContainerProps) => {
-  const isClient = useIsClient();
+  const isClient = typeof window !== 'undefined';
 
   if (!isClient) {
     // Render skeleton/loading durante SSR

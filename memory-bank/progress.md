@@ -18,11 +18,12 @@
 -   **`apps/quranexpo-web` (Aplicación Web):**
     -   **Build Local Exitoso:** El proyecto web ahora se construye localmente sin errores.
     -   **✅ FIX EXITOSO (2025-05-26):** Implementadas las correcciones de SSR para el audio player, resolviendo el error `Cannot read properties of undefined (reading '__H')` durante la generación de rutas estáticas. Esto incluye:
-        -   Creación de `useIsClient.ts` para detección de entorno.
+        -   Creación de `useIsClient.ts` para detección de entorno (posteriormente eliminado).
         -   Modificación de `AudioPool` y `useVersePlayer` para ser SSR-safe.
         -   Creación de `ClientOnlyReaderContainer.tsx` para renderizado condicional.
         -   Actualización de `reader/[surahId].astro` para usar el nuevo wrapper.
         -   Verificación de `usePagination` como SSR-safe.
+        -   **REVISIÓN (2025-05-26):** Simplificación de la solución SSR en `ClientOnlyReaderContainer.tsx` para usar `typeof window !== 'undefined'` directamente, eliminando la dependencia del hook `useIsClient` y el archivo `useIsClient.ts`.
 -   **`apps/luminous-verses-mobile` (Aplicación Móvil):**
     -   **Build Local Exitoso:** El proyecto móvil ahora se construye localmente sin errores después de corregir las dependencias de Next.js y las rutas de imágenes.
 -   **`packages/quran-types` (Shared Types):**
@@ -56,7 +57,7 @@
     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
     -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
     -   Configuración de scripts de TurboRepo en el `package.json` raíz.
-    -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration.
+    -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación.
 -   **Current Task Group:** Preparación para el deployment de `quranexpo-web` en Vercel.
 -   **Next Major Focus:** Configuración de Vercel para `quranexpo-web` y su deployment.
 
