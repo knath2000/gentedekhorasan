@@ -57,10 +57,10 @@
 
 -   **Deployment de `apps/quranexpo-web`:** **BLOQUEADOR CRÍTICO - NUEVA FASE DEL ERROR.**
     -   **Progreso:** Option A (remover `--frozen-lockfile`) fue implementado exitosamente.
-    -   **Nuevo Error:** HTTP request failures al intentar descargar paquetes de npm registry.
-    -   **Error específico:** `ERR_PNPM_META_FETCH_FAIL` con mensaje `Value of "this" must be of type URLSearchParams`.
-    -   **Causa raíz:** Incompatibilidad entre pnpm@10.x (usado para generar lockfile) y pnpm@9.1.4 (especificado en el proyecto).
-    -   **Próximo paso:** Implementar Option B con Corepack para forzar pnpm@9.1.4.
+    -   **Nuevo Error:** Corepack no está activando correctamente pnpm@9.1.4 en Vercel.
+    -   **Descubrimiento:** Vercel tiene pnpm@6.35.1 pre-instalado y Corepack no lo está sobrescribiendo.
+    -   **Causa raíz:** El lockfile tiene `lockfileVersion: '9.0'` pero Vercel usa pnpm 6.x.
+    -   **Próximo paso:** Implementar Option D (usar npx) o Option E (regenerar lockfile con pnpm 6.x).
 -   **Integración de la Aplicación Móvil:** La aplicación `luminous-verses-mobile` aún no está completamente actualizada para consumir la nueva API desplegada.
 -   **Pruebas de Rendimiento:** Necesidad de realizar pruebas de rendimiento exhaustivas en la API y las aplicaciones.
 -   **Estrategia de Versionado:** Aún no se ha definido una estrategia clara de versionado para los paquetes y aplicaciones dentro del monorepo.

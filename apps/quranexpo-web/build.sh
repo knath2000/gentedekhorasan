@@ -1,34 +1,25 @@
 #!/bin/bash
-set -e # Salir inmediatamente si un comando falla
+set -e
 
-PNPM_VERSION="9.1.4"
-
-echo ">>> INICIANDO build.sh para quranexpo-web (con Corepack) <<<"
-echo "Asegurando pnpm version $PNPM_VERSION con Corepack..."
-corepack enable
-corepack prepare pnpm@$PNPM_VERSION --activate
-echo "Versión de pnpm activa: $(pnpm --version)"
+echo ">>> INICIANDO build.sh para quranexpo-web (usando npx) <<<"
 
 # Navegar a la raíz del monorepo
-echo "Cambiando al directorio raíz del monorepo: $(cd ../.. && pwd)"
+echo "Cambiando al directorio raíz del monorepo..."
 cd ../..
 
 echo "Directorio actual: $(pwd)"
-echo "Listando contenido del directorio actual (raíz monorepo):"
-ls -la
-
 echo "Verificando lockfile..."
 if [ -f "pnpm-lock.yaml" ]; then
     echo "pnpm-lock.yaml encontrado"
-    head -n 10 pnpm-lock.yaml
 else
-    echo "WARNING: pnpm-lock.yaml no encontrado!"
+    echo "ERROR: pnpm-lock.yaml no encontrado!"
+    exit 1
 fi
 
-echo "Ejecutando install command desde la raíz del monorepo..."
-pnpm install --frozen-lockfile
+echo "Ejecutando install con pnpm@9.1.4 via npx..."
+npx pnpm@9.1.4 install --frozen-lockfile
 
-echo "Ejecutando build de Astro para quranexpo-web usando pnpm --filter..."
-pnpm --filter @quran-monorepo/quranexpo-web run build
+echo "Ejecutando build de Astro con pnpm@9.1.4..."
+npx pnpm@9.1.4 --filter @quran-monorepo/quranexpo-web run build
 
-echo ">>> build.sh para quranexpo-web COMPLETADO <<<"
+echo ">>> build.sh COMPLETADO <<<"
