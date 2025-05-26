@@ -1,7 +1,7 @@
 ---
-import Background from '../../components/Background.tsx';
-import ReaderContainer from '../../components/ReaderContainer.tsx';
 import BackButton from '../../components/BackButton.tsx'; // Importar BackButton
+import Background from '../../components/Background.tsx';
+import ClientOnlyReaderContainer from '../../components/ClientOnlyReaderContainer.tsx';
 import '../../styles/global.css';
 
 // This function is required for all dynamic routes in Astro when using static site generation (SSG)
@@ -53,7 +53,7 @@ let pageTitle = "Quran Reader";
 			     </div>
 			 {isValidSurahId ? (
 					<div class="h-full">
-						<ReaderContainer client:visible surahId={numericSurahId} />
+						<ClientOnlyReaderContainer surahId={numericSurahId} client:load />
 					</div>
 				) : (
 					<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-4 opacity-0 animate-fade-in animation-delay-[100ms]">

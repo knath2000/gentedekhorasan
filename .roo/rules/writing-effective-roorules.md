@@ -117,6 +117,11 @@ When writing rules intended to directly steer Roo's AI behavior, certain convent
 * **Specify Tool Usage:**
     * If Roo needs to use a specific tool (e.g., `attempt_completion`, `replace_in_file`, `use_mcp_tool`), explicitly state it and provide any necessary parameters or context for that tool.
 
+* **Precisión en `apply_diff`:**
+    * Cuando uses `apply_diff`, asegúrate de que el bloque `SEARCH` sea **exacto y lo más específico posible** para el contenido que deseas reemplazar. Incluye la indentación y los saltos de línea.
+    * **Evita bloques `SEARCH` demasiado amplios** que puedan coincidir con código ya modificado o que contengan importaciones/declaraciones que no deben duplicarse.
+    * Si no estás seguro del contenido exacto, usa `read_file` primero para obtener el contenido preciso.
+
 ## 6. Content Best Practices
 
 * **Start Broad, Then Narrow:** Begin with a general overview or objective, then delve into specifics.

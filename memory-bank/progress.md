@@ -1,11 +1,11 @@
 # Progress: Gente de Khorasan Monorepo
 
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Date:** 2025-05-26
 **Related Brief:** `memory-bank/projectbrief.md`
 **Active Context:** `memory-bank/activeContext.md`
 
-## 1. What Works / Completed (as of 2025-05-24)
+## 1. What Works / Completed (as of 2025-05-26)
 
 -   **Monorepo Setup:**
     -   Inicialización del monorepo con pnpm workspaces y TurboRepo.
@@ -17,6 +17,12 @@
     -   **✅ FIX EXITOSO (2025-05-26):** El archivo `.vercelignore` resolvió completamente los conflictos de archivos Prisma. Deployment exitoso confirmado.
 -   **`apps/quranexpo-web` (Aplicación Web):**
     -   **Build Local Exitoso:** El proyecto web ahora se construye localmente sin errores.
+    -   **✅ FIX EXITOSO (2025-05-26):** Implementadas las correcciones de SSR para el audio player, resolviendo el error `Cannot read properties of undefined (reading '__H')` durante la generación de rutas estáticas. Esto incluye:
+        -   Creación de `useIsClient.ts` para detección de entorno.
+        -   Modificación de `AudioPool` y `useVersePlayer` para ser SSR-safe.
+        -   Creación de `ClientOnlyReaderContainer.tsx` para renderizado condicional.
+        -   Actualización de `reader/[surahId].astro` para usar el nuevo wrapper.
+        -   Verificación de `usePagination` como SSR-safe.
 -   **`apps/luminous-verses-mobile` (Aplicación Móvil):**
     -   **Build Local Exitoso:** El proyecto móvil ahora se construye localmente sin errores después de corregir las dependencias de Next.js y las rutas de imágenes.
 -   **`packages/quran-types` (Shared Types):**
@@ -45,11 +51,12 @@
 
 ## 3. Current Status (as of 2025-05-26)
 
--   **Overall:** Progreso significativo en deployments. `quran-data-api` ahora desplegado exitosamente. `quranexpo-web` requiere Option B (Corepack) para resolver nuevos errores de HTTP.
+-   **Overall:** Progreso significativo en deployments. `quran-data-api` ahora desplegado exitosamente. `quranexpo-web` tiene las correcciones de SSR implementadas.
 -   **Resolved Issues:**
     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
     -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
     -   Configuración de scripts de TurboRepo en el `package.json` raíz.
+    -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration.
 -   **Current Task Group:** Preparación para el deployment de `quranexpo-web` en Vercel.
 -   **Next Major Focus:** Configuración de Vercel para `quranexpo-web` y su deployment.
 

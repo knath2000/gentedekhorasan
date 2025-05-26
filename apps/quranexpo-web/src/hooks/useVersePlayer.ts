@@ -1,8 +1,9 @@
-import { useRef, useState, useEffect, useCallback, useReducer } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
-import { getVerseAudioUrl } from '../utils/audioUtils';
-import { autoplayEnabled, setAudioActive, audioActive } from '../stores/settingsStore';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'preact/hooks';
+import { audioActive, autoplayEnabled, setAudioActive } from '../stores/settingsStore';
 import type { Verse } from '../types/quran';
+import { getVerseAudioUrl } from '../utils/audioUtils';
+import { useIsClient } from './useIsClient'; // Importar el nuevo hook
 
 interface AudioState {
   status: 'idle' | 'loading' | 'playing' | 'paused' | 'error';
@@ -57,48 +58,56 @@ const audioReducer = (state: AudioState, action: AudioAction): AudioState => {
   }
 };
 
-
-
 class AudioPool {
   private pool: HTMLAudioElement[] = [];
   private activeAudio: HTMLAudioElement | null = null;
-  private audioIdCounter = 0; // Contador interno para IDs
+  private audioIdCounter = 0;
+  private isClient: boolean;
 
-  getAudioInstance(): HTMLAudioElement {
+  constructor() {
+    this.isClient = typeof window !== 'undefined';
+  }
+
+  getAudioInstance(): HTMLAudioElement | null {
+    if (!this.isClient) {
+      console.warn("[AudioPool] Attempted to get audio instance on server. Returning null.");
+      return null;
+    }
     if (this.pool.length > 0) {
       const audio = this.pool.pop()!;
       console.log(`[AudioPool] Reutilizando instancia de audio. Pool size: ${this.pool.length}`);
       return audio;
     }
     const audio = new Audio();
-    audio.id = `audio-${++this.audioIdCounter}`; // Asignar un ID único
+    audio.id = `audio-${++this.audioIdCounter}`;
     console.log(`[AudioPool] Creando nueva instancia de audio: ${audio.id}. Pool size: ${this.pool.length}`);
     return audio;
   }
 
-  releaseAudioInstance(audio: HTMLAudioElement) {
-    if (audio) {
-      console.log(`[AudioPool] Liberando instancia de audio: ${audio.id}.`);
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.src = '';
-      audio.load();
-      audio.currentTime = 0;
-      if (this.pool.length < 5) { // Limitar el tamaño del pool para no acumular demasiadas instancias
-        this.pool.push(audio);
-      } else {
-        console.log(`[AudioPool] Pool lleno, descartando instancia: ${audio.id}.`);
-      }
+  releaseAudioInstance(audio: HTMLAudioElement | null) {
+    if (!this.isClient || !audio) return;
+
+    console.log(`[AudioPool] Liberando instancia de audio: ${audio.id}.`);
+    audio.pause();
+    audio.removeAttribute('src');
+    audio.src = '';
+    audio.load();
+    audio.currentTime = 0;
+    if (this.pool.length < 5) {
+      this.pool.push(audio);
+    } else {
+      console.log(`[AudioPool] Pool lleno, descartando instancia: ${audio.id}.`);
     }
   }
 
   stopAllAndReleaseActive() {
+    if (!this.isClient) return;
+
     console.log(`[AudioPool] stopAllAndReleaseActive: Limpiando ${this.pool.length} instancias en pool y activa.`);
     if (this.activeAudio) {
       this.releaseAudioInstance(this.activeAudio);
       this.activeAudio = null;
     }
-    // Limpiar el pool también
     this.pool.forEach(audio => {
       audio.pause();
       audio.removeAttribute('src');
@@ -106,10 +115,11 @@ class AudioPool {
       audio.load();
       audio.currentTime = 0;
     });
-    this.pool = []; // Vaciar el pool
+    this.pool = [];
   }
 
-  setActiveAudio(audio: HTMLAudioElement) {
+  setActiveAudio(audio: HTMLAudioElement | null) {
+    if (!this.isClient) return;
     if (this.activeAudio && this.activeAudio !== audio) {
       this.releaseAudioInstance(this.activeAudio);
     }
@@ -117,13 +127,22 @@ class AudioPool {
   }
 
   getActiveAudio(): HTMLAudioElement | null {
+    if (!this.isClient) return null;
     return this.activeAudio;
   }
 }
 
 export const useVersePlayer = (verses?: Verse[]) => {
-  const audioPoolRef = useRef(new AudioPool()); // Instancia del pool de audio
-  const audioRef = useRef<HTMLAudioElement | null>(null); // Referencia al audio activo del pool
+  const isClient = useIsClient();
+  const audioPoolRef = useRef<AudioPool | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Inicializar AudioPool solo en el cliente
+  useEffect(() => {
+    if (isClient && !audioPoolRef.current) {
+      audioPoolRef.current = new AudioPool();
+    }
+  }, [isClient]);
 
   const [state, dispatch] = useReducer(audioReducer, {
     status: 'idle',
@@ -135,35 +154,39 @@ export const useVersePlayer = (verses?: Verse[]) => {
   const [currentVerseIndex, setCurrentVerseIndex] = useState<number | null>(null);
   const $autoplayEnabled = useStore(autoplayEnabled);
 
-  // Integrar el preloader
-  useVersePreloader(verses, currentVerseIndex);
+  // Integrar el preloader (también debe ser SSR-safe)
+  useVersePreloader(verses, currentVerseIndex, isClient);
 
   const playVerseRef = useRef<(surahId: number, verseNumber: number) => void>();
   const stopAndUnloadCompletelyRef = useRef<() => void>(() => {});
   const skipToNextVerseRef = useRef<() => void>();
 
   const cleanupAudio = useCallback(() => {
-    if (audioRef.current) {
-      console.log(`[AUDIO STOP][Audio#${audioRef.current.id}] cleanupAudio: Pausando y descargando audio.`);
-      audioPoolRef.current.releaseAudioInstance(audioRef.current);
-      audioRef.current = null;
-    }
-  }, []);
+    if (!isClient || !audioRef.current) return;
+    console.log(`[AUDIO STOP][Audio#${audioRef.current.id}] cleanupAudio: Pausando y descargando audio.`);
+    audioPoolRef.current?.releaseAudioInstance(audioRef.current);
+    audioRef.current = null;
+  }, [isClient]);
 
   stopAndUnloadCompletelyRef.current = useCallback(() => {
+    if (!isClient) return;
     console.log('[AUDIO STOP] stopAndUnloadCompletely called. Iniciando proceso de detención y descarga completa.');
-    audioPoolRef.current.stopAllAndReleaseActive();
-    audioRef.current = null; // Asegurarse de que la referencia local también se anule
+    audioPoolRef.current?.stopAllAndReleaseActive();
+    audioRef.current = null;
     
     dispatch({ type: 'RESET' });
     setCurrentVerseIndex(null);
     setAudioActive(false);
     console.log('[AUDIO STOP] stopAndUnloadCompletely finalizado. Estado de audio reseteado.');
-  }, []);
+  }, [isClient]);
 
-  const { fadeOut, fadeIn } = useCrossfadeTransition();
+  const { fadeOut, fadeIn } = useCrossfadeTransition(isClient);
 
   playVerseRef.current = useCallback(async (surahId: number, verseNumber: number) => {
+    if (!isClient || !audioPoolRef.current) {
+      console.warn("[Audio] Attempted to play verse on server or before AudioPool initialized.");
+      return;
+    }
     console.log(`[Audio] playVerse: Iniciando reproducción para ${surahId}-${verseNumber}.`);
     const verseKey = `${surahId}-${verseNumber}`;
     setAudioActive(true);
@@ -183,6 +206,11 @@ export const useVersePlayer = (verses?: Verse[]) => {
     }
 
     const audio = audioPoolRef.current.getAudioInstance();
+    if (!audio) { // Si no se pudo obtener la instancia de audio (ej. en SSR)
+      console.warn("[Audio] No se pudo obtener instancia de audio. Abortando reproducción.");
+      dispatch({ type: 'ERROR', message: 'Audio not available' });
+      return;
+    }
     audioPoolRef.current.setActiveAudio(audio);
     audioRef.current = audio;
 
@@ -201,11 +229,12 @@ export const useVersePlayer = (verses?: Verse[]) => {
       dispatch({ type: 'ERROR', message: 'Failed to play audio' });
       cleanupAudio();
     }
-  }, [state.currentVerseKey, state.status, state.error, cleanupAudio, verses, fadeOut, fadeIn]);
+  }, [state.currentVerseKey, state.status, state.error, cleanupAudio, verses, fadeOut, fadeIn, isClient]);
 
   // Define skipToNextVerse
   skipToNextVerseRef.current = useCallback(() => {
-    console.log(`[Audio#${audioRef.current?.id}] skipToNextVerse called`); // Debug log
+    if (!isClient) return;
+    console.log(`[Audio#${audioRef.current?.id}] skipToNextVerse called`);
     if (verses && currentVerseIndex !== null) {
       const nextIndex = currentVerseIndex + 1;
       if (nextIndex < verses.length) {
@@ -215,15 +244,15 @@ export const useVersePlayer = (verses?: Verse[]) => {
         stopAndUnloadCompletelyRef.current?.();
       }
     }
-  }, [verses, currentVerseIndex]);
+  }, [verses, currentVerseIndex, isClient]);
 
   // Nuevo hook para gestionar los event listeners
-  const useAudioEventManager = (audioElement: HTMLAudioElement | null, dispatch: React.Dispatch<AudioAction>) => {
+  const useAudioEventManager = (audioElement: HTMLAudioElement | null, dispatch: React.Dispatch<AudioAction>, isClient: boolean) => {
     useEffect(() => {
-      if (!audioElement) return;
+      if (!isClient || !audioElement) return;
 
       const audio = audioElement;
-      const id = audio.id; // Capturar el ID aquí
+      const id = audio.id;
 
       const handleLoadedMetadata = () => {
         console.log(`[Audio#${id}] Event: loadedmetadata. Duración: ${audio.duration}. Estado de red: ${audio.networkState}. Listo para reproducir: ${audio.readyState >= 2}.`);
@@ -286,7 +315,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
         console.log(`[Audio#${id}] Event: ended. Audio finalizado, comprobando estado de autoplay.`);
         dispatch({ type: 'ENDED' });
 
-        console.log(`[Audio#${id}] Autoplay habilitado (desde hook):`, $autoplayEnabled); // Añadir log del valor del hook
+        console.log(`[Audio#${id}] Autoplay habilitado (desde hook):`, $autoplayEnabled);
         console.log(`[Audio#${id}] Versos disponibles:`, !!verses, verses?.length);
         console.log(`[Audio#${id}] Índice de verso actual (desde el estado):`, currentVerseIndex);
 
@@ -345,45 +374,42 @@ export const useVersePlayer = (verses?: Verse[]) => {
         audio.removeEventListener('loadstart', handleLoadStart);
         audio.removeEventListener('progress', handleProgress);
       };
-    }, [audioElement, dispatch, currentVerseIndex, verses, playVerseRef, stopAndUnloadCompletelyRef, autoplayEnabled]);
+    }, [audioElement, dispatch, currentVerseIndex, verses, playVerseRef, stopAndUnloadCompletelyRef, $autoplayEnabled, isClient]);
   };
 
-  useAudioEventManager(audioRef.current, dispatch);
+  useAudioEventManager(audioRef.current, dispatch, isClient);
 
   // Pause currently playing audio
   const pauseVerse = useCallback(() => {
-    if (audioRef.current && !audioRef.current.paused) {
-      console.log(`[Audio#${audioRef.current.id}] pauseVerse: Pausando.`);
-      audioRef.current.pause();
-      dispatch({ type: 'PAUSE' });
-    }
-  }, []);
+    if (!isClient || !audioRef.current || audioRef.current.paused) return;
+    console.log(`[Audio#${audioRef.current.id}] pauseVerse: Pausando.`);
+    audioRef.current.pause();
+    dispatch({ type: 'PAUSE' });
+  }, [isClient]);
 
   // Resume playback of the current verse
   const resumeVerse = useCallback(() => {
     const audio = audioRef.current;
-    if (audio && audio.paused) {
-      console.log(`[Audio#${audio.id}] resumeVerse: Reanudando.`);
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-        }).catch(error => {
-          console.error(`[Audio#${audio.id}] Error al reanudar audio:`, error);
-          dispatch({ type: 'ERROR', message: 'Failed to resume audio' });
-        });
-      }
-      dispatch({ type: 'PLAYING' });
+    if (!isClient || !audio || !audio.paused) return;
+    console.log(`[Audio#${audio.id}] resumeVerse: Reanudando.`);
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+      }).catch(error => {
+        console.error(`[Audio#${audio.id}] Error al reanudar audio:`, error);
+        dispatch({ type: 'ERROR', message: 'Failed to resume audio' });
+      });
     }
-  }, []);
+    dispatch({ type: 'PLAYING' });
+  }, [isClient]);
 
   // Seek to a specific time in the audio
   const seek = useCallback((time: number) => {
-    if (audioRef.current) {
-      console.log(`[Audio#${audioRef.current.id}] seek: Buscando a ${time} segundos.`);
-      audioRef.current.currentTime = time;
-      dispatch({ type: 'SEEK', time: time });
-    }
-  }, []);
+    if (!isClient || !audioRef.current) return;
+    console.log(`[Audio#${audioRef.current.id}] seek: Buscando a ${time} segundos.`);
+    audioRef.current.currentTime = time;
+    dispatch({ type: 'SEEK', time: time });
+  }, [isClient]);
 
   // Formatea segundos a MM:SS
   const formatTime = useCallback((seconds: number): string => {
@@ -402,6 +428,10 @@ export const useVersePlayer = (verses?: Verse[]) => {
 
   // Toggle playback for a verse or current audio
   const togglePlayPause = useCallback(() => {
+    if (!isClient) {
+      console.warn("[togglePlayPause] Attempted to toggle play/pause on server.");
+      return;
+    }
     console.log('[togglePlayPause] Estado actual:', {
       status: state.status,
       currentVerseKey: state.currentVerseKey,
@@ -426,7 +456,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
     } else {
       console.log('[togglePlayPause] No hay condiciones para reproducir audio');
     }
-  }, [state.status, state.currentVerseKey, pauseVerse, resumeVerse, playVerseRef]);
+  }, [state.status, state.currentVerseKey, pauseVerse, resumeVerse, playVerseRef, isClient]);
 
   // Add function to set current verse index
   const setVerseIndex = useCallback((index: number) => {
@@ -435,17 +465,16 @@ export const useVersePlayer = (verses?: Verse[]) => {
 
   // Efecto para asegurar que audioActive se desactive si no hay audio reproduciéndose o cargándose
   useEffect(() => {
-    // Si no hay un verso activo o no se está reproduciendo/cargando, y audioActive está en true, desactívalo.
-    // Esto cubre casos donde el audio se detiene por otras razones (ej. usuario cierra la pestaña, error, etc.)
+    if (!isClient) return;
     if (!$autoplayEnabled && state.status === 'idle' && !state.currentVerseKey && audioActive.get()) {
       console.log('[useVersePlayer] No hay audio activo o cargando, forzando setAudioActive(false).');
       setAudioActive(false);
     }
-  }, [state.status, state.currentVerseKey, $autoplayEnabled]);
+  }, [state.status, state.currentVerseKey, $autoplayEnabled, isClient]);
 
   // Export the functions using their ref.current values
   return {
-    status: state.status, // Exponer el estado de status directamente
+    status: state.status,
     error: state.error,
     duration: state.duration,
     currentTime: state.currentTime,
@@ -464,10 +493,11 @@ export const useVersePlayer = (verses?: Verse[]) => {
 };
 
 // Hook para precargar el siguiente verso
-const useVersePreloader = (verses: Verse[] | undefined, currentVerseIndex: number | null) => {
+const useVersePreloader = (verses: Verse[] | undefined, currentVerseIndex: number | null, isClient: boolean) => {
   const preloadCache = useRef(new Map<string, HTMLAudioElement>());
 
   useEffect(() => {
+    if (!isClient) return;
     if (verses && currentVerseIndex !== null && currentVerseIndex < verses.length - 1) {
       const nextVerse = verses[currentVerseIndex + 1];
       const nextUrl = getVerseAudioUrl(nextVerse.surahId, nextVerse.numberInSurah);
@@ -475,42 +505,42 @@ const useVersePreloader = (verses: Verse[] | undefined, currentVerseIndex: numbe
       if (!preloadCache.current.has(nextUrl)) {
         console.log(`[Preloader] Precargando: ${nextUrl}`);
         const preloadAudio = new Audio();
-        preloadAudio.preload = 'auto'; // O 'metadata' si solo necesitas metadatos
+        preloadAudio.preload = 'auto';
         preloadAudio.src = nextUrl;
         preloadCache.current.set(nextUrl, preloadAudio);
       }
     }
-  }, [verses, currentVerseIndex]);
+  }, [verses, currentVerseIndex, isClient]);
 
   return preloadCache.current;
 };
 
 // Hook para transiciones suaves de audio (crossfade)
-const useCrossfadeTransition = () => {
+const useCrossfadeTransition = (isClient: boolean) => {
   const fadeOut = useCallback((audio: HTMLAudioElement, duration = 200) => {
     return new Promise<void>((resolve) => {
-      if (!audio || audio.paused) {
+      if (!isClient || !audio || audio.paused) {
         resolve();
         return;
       }
       const startVolume = audio.volume;
-      const fadeStep = startVolume / (duration / 50); // Actualizar cada 50ms
+      const fadeStep = startVolume / (duration / 50);
 
       const fadeInterval = setInterval(() => {
         audio.volume = Math.max(0, audio.volume - fadeStep);
         if (audio.volume <= 0) {
           clearInterval(fadeInterval);
           audio.pause();
-          audio.volume = startVolume; // Restaurar volumen para la próxima vez
+          audio.volume = startVolume;
           resolve();
         }
       }, 50);
     });
-  }, []);
+  }, [isClient]);
 
   const fadeIn = useCallback((audio: HTMLAudioElement, duration = 200) => {
     return new Promise<void>((resolve) => {
-      if (!audio) {
+      if (!isClient || !audio) {
         resolve();
         return;
       }
@@ -518,7 +548,7 @@ const useCrossfadeTransition = () => {
       audio.volume = 0;
       audio.play();
 
-      const fadeStep = targetVolume / (duration / 50); // Actualizar cada 50ms
+      const fadeStep = targetVolume / (duration / 50);
 
       const fadeInterval = setInterval(() => {
         audio.volume = Math.min(targetVolume, audio.volume + fadeStep);
@@ -528,7 +558,7 @@ const useCrossfadeTransition = () => {
         }
       }, 50);
     });
-  }, []);
+  }, [isClient]);
 
   return { fadeOut, fadeIn };
 };
