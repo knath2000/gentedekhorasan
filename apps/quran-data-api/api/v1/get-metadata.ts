@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { QuranSurah } from '../generated/prisma'; // Import from generated client path
+import { QuranSurah } from '../../prisma/generated/client'; // Import from generated client path
 import { prisma } from '../lib/prisma';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -28,7 +28,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ayas: true,
             revelationType: true,
             chronologicalOrder: true,
-            rukus: true
+            rukus: true,
+            startIndex: true
           }
         })
         return res.status(200).json(surahs.map((s: QuranSurah) => ({ // Use the directly imported type

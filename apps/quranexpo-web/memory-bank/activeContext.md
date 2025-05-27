@@ -23,11 +23,15 @@
 - **Se modificó `src/components/BottomControlPanel.tsx` para reordenar los controles de audio y paginación.**
 - **Se modificó `src/components/ReaderContainer.tsx` y `src/components/BottomControlPanel.tsx` para implementar la lógica de visibilidad de los controles de audio para suras cortas.**
 - Se actualizó `src/services/apiClient.ts` para usar la API de `quran-api-data` desplegada en Vercel (`https://gentedekhorasan.vercel.app/api/v1`).
-- **Se resolvió el problema de despliegue de la API (`quran-data-api`) en Vercel, incluyendo errores de runtime y 404, moviendo la configuración de `functions` y `routes` al `vercel.json` de la raíz del monorepo y asegurando la compilación de TypeScript a JavaScript en un directorio `dist`.**
+- **🚨 PROBLEMA CRÍTICO ACTUAL:** Migración de base de datos de Neon a Turso bloqueada por error persistente de TypeScript en `quran-data-api`. Error `Property 'startIndex' is missing` causado por duplicación del cliente de Prisma en dos ubicaciones.
 
 ## Próximos pasos
-- La tarea actual ha sido completada. No hay pasos pendientes inmediatos relacionados con la depuración de animaciones o la verificación de navegación.
-- Verificar visualmente el nuevo posicionamiento y estilo del `BottomControlPanel` en el navegador y confirmar que los controles de audio están por encima de los de paginación, y que la visibilidad para suras cortas funciona como se espera.
+**URGENTE - Resolver duplicación de cliente Prisma:**
+1. **Detener procesos activos** (incluyendo `vercel dev`)
+2. **Eliminar forzadamente** `apps/quran-data-api/api/generated/` (ubicación duplicada)
+3. **Limpiar cache de TypeScript** y regenerar cliente
+4. **Verificar build local exitoso** antes de desplegar
+5. **Cambiar al modo Code** para ejecutar plan de eliminación forzada
 
 ## Decisiones y consideraciones activas
 - La eliminación de la barra de navegación inferior ha simplificado la interfaz y resuelto problemas de renderizado.

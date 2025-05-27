@@ -32,4 +32,31 @@ Improvements_Identified_For_Consolidation:
 - Orden de ejecución de `prisma generate` y `tsc` en scripts de build.
 - **Nuevo patrón:** Uso de `postinstall` para `prisma generate` en Vercel.
 - **Nuevo patrón:** Configuración de `paths` en `tsconfig.json` para tipos de Prisma en monorepos.
+Nuevo Error Crítico - Vercel Deploy 27/05/2025:
+- **Error persistente en Vercel:** `Property 'startIndex' is missing in type` continúa apareciendo a pesar de que Prisma se genera correctamente en el log de Vercel.
+- **Diagnóstico de Perplexity:** El problema es un desajuste entre los tipos generados por Prisma y la resolución de tipos de TypeScript en Vercel.
+- **Causa raíz identificada:** El output path `../api/generated/prisma` no es estándar y puede causar problemas de resolución de rutas en entornos de despliegue.
+- **Evidencia del log:** Prisma se genera exitosamente `✔ Generated Prisma Client (v6.8.2) to ./api/generated/prisma` pero TypeScript sigue usando tipos obsoletos.
+
+Estado de Implementación Actual (27/05/2025 10:26):
+1. ✅ Cambiar output de Prisma a ruta estándar: `./generated/client` - COMPLETADO
+2. ✅ Actualizar imports en `get-metadata.ts` y `prisma.ts` - COMPLETADO
+3. ✅ Actualizar paths en `tsconfig.json` - COMPLETADO
+4. ❌ Build local sigue fallando con `Cannot find module '../prisma/generated/client'`
+
+Problema Identificado:
+- **DUPLICACIÓN:** Prisma genera cliente en AMBAS ubicaciones (antigua: `api/generated/prisma/` y nueva: `prisma/generated/client/`)
+- **CONFLICTO:** TypeScript no puede resolver el módulo correcto debido a la duplicación
+- **CAUSA:** El schema.prisma cambió el output pero la ubicación antigua no se limpió completamente
+
+Solución Requerida (modo Code):
+1. Eliminar completamente la carpeta `apps/quran-data-api/api/generated/`
+2. Verificar que schema.prisma tenga `output = "./generated/client"`
+3. Regenerar cliente solo en nueva ubicación
+4. Verificar build local antes de Vercel
+
+Improvements_Identified_For_Consolidation:
+- **CRÍTICO:** Limpiar ubicaciones antiguas de Prisma antes de cambiar rutas de output
+- **Patrón de debugging:** Verificar duplicación de clientes Prisma en múltiples ubicaciones
+- **Monorepo:** En monorepos, siempre limpiar directorios generados antes de cambiar configuración de Prisma
 ---

@@ -150,7 +150,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/kalyannath/quranexpo2/apps/quran-data-api/api/generated/prisma",
+      "value": "/Users/kalyannath/quranexpo2/apps/quran-data-api/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -180,7 +180,7 @@ const config = {
   "relativeEnvPaths": {
     "rootEnvPath": null
   },
-  "relativePath": "../../../prisma",
+  "relativePath": "../..",
   "clientVersion": "6.8.2",
   "engineVersion": "2060c79ba17c6bb9f5823312b6f6b7f4a845738e",
   "datasourceNames": [
@@ -196,8 +196,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../api/generated/prisma\" // Output to api/generated/prisma\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n",
-  "inlineSchemaHash": "9c387869ab696e71c1d6892c5373bcd388b245d2894f4a1a17e6352df746c317",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"./generated/client\" // Cambiar de \"../api/generated/prisma\"\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n",
+  "inlineSchemaHash": "767431548ce414cb010bfcfd1359b3987e9556efc84ed30a021d66a90e8eab48",
   "copyEngine": true
 }
 config.dirname = '/'

@@ -9,7 +9,11 @@
 - **El `BottomControlPanel.tsx` ha sido modificado para estar fijo en la parte inferior central de la página, tiene un fondo blanco plateado cromado, y los controles de audio se muestran por encima de los controles de paginación.**
 - **Se ha resuelto el problema de la visibilidad de los controles de audio para suras con 7 o menos versos: el `BottomControlPanel` ahora se muestra solo durante la reproducción de audio para estas suras, mostrando únicamente los controles de audio y ocultando los botones de navegación.**
 - `src/services/apiClient.ts` está configurado para usar la API de `quran-api-data` desplegada en Vercel (`https://gentedekhorasan.vercel.app/api/v1`).
-- **El despliegue de la API (`quran-data-api`) en Vercel ahora es exitoso y las funciones de la API son accesibles. Esto incluye la resolución de errores de runtime y 404, moviendo la configuración de `functions` y `routes` al `vercel.json` de la raíz del monorepo y asegurando la compilación de TypeScript a JavaScript en un directorio `dist`.**
+- **🚨 PROBLEMA CRÍTICO EN quran-data-api:** Error persistente de TypeScript `Property 'startIndex' is missing` debido a duplicación del cliente de Prisma en dos ubicaciones:
+    - ❌ `apps/quran-data-api/api/generated/prisma/` (ubicación antigua - PERSISTE)
+    - ✅ `apps/quran-data-api/prisma/generated/client/` (ubicación nueva - correcta)
+- **Causa Raíz:** La carpeta `api/generated/` no se elimina completamente a pesar de múltiples intentos con `rm -rf`, causando conflicto de tipos en TypeScript.
+- **Estado Actual:** Build local falla, despliegue en Vercel bloqueado.
 
 ## Qué queda por construir
 - Ninguno. La funcionalidad de marcadores está actualizada.

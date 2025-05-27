@@ -1,5 +1,5 @@
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '../../prisma/generated/client';
 // No necesitamos createClient de @libsql/client si pasamos la URL directamente al adaptador
 
 const globalForPrisma = globalThis as unknown as {

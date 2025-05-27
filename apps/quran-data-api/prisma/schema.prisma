@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  output          = "../api/generated/prisma" // Output to api/generated/prisma
+  output          = "./generated/client"  // Cambiar de "../api/generated/prisma"
   binaryTargets   = ["native", "rhel-openssl-3.0.x", "darwin-arm64"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development
 }
 
