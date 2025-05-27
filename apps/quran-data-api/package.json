@@ -4,14 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "vercel dev",
-    "build": "pnpm run build:functions && prisma generate --schema=./prisma/schema.prisma",
-    "build:functions": "tsc -p api/tsconfig.json",
+    "build": "pnpm run build:functions",
+    "build:functions": "tsc -p api/tsconfig.json && prisma generate --schema=./prisma/schema.prisma",
     "start": "vercel dev",
     "lint": "eslint . --ext .ts,.tsx",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
-    "studio": "prisma studio",
-    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@libsql/client": "^0.15.7",
