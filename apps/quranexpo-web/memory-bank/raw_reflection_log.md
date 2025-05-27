@@ -154,3 +154,27 @@ Improvements_Identified_For_Consolidation:
 - Patrón: Proceso robusto de importación de datos a Turso (DROP TABLE antes de importar).
 - Estrategias de depuración para errores de `prisma generate` con proveedores de base de datos (cuando la versión es compatible).
 ---
+
+---
+Date: 2025-05-27
+TaskRef: "Depuración de error de tipo 'startIndex' en despliegue Vercel"
+
+Learnings:
+- Problema persistente de TypeScript en Vercel: El error `Property 'startIndex' is missing` en `api/v1/get-metadata.ts` persiste en el despliegue de Vercel a pesar de:
+    - Código en `get-metadata.ts` que incluye `startIndex`.
+    - `schema.prisma` correcto con `startIndex`.
+    - Regeneración exitosa del cliente Prisma localmente.
+    - Despliegues sin caché en Vercel.
+- Causa probable del problema de `startIndex` en Vercel: Esto indica un problema de caché de Vercel o de resolución de tipos más profundo que impide que los cambios de tipo se reconozcan durante el build.
+- Ajustes en `package.json` para el pipeline de build: Se modificó el script `build:functions` en `apps/quran-data-api/package.json` para incluir `prisma generate` antes de `tsc`, y se eliminó el script `postinstall`.
+
+Difficulties:
+- La tenacidad del error de tipo `startIndex` en Vercel, sugiriendo un problema no directamente resoluble con modificaciones de código.
+
+Successes:
+- Se logró identificar que el problema es del entorno de Vercel y no del código local.
+
+Improvements_Identified_For_Consolidation:
+- Estrategias de depuración para problemas de tipos persistentes en entornos CI/CD (Vercel).
+- Manejo de la generación del cliente Prisma en scripts de build de monorepos.
+---

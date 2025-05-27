@@ -96,3 +96,14 @@
 - *Posibles causas:* Problemas con la carga del `@prisma/adapter-libsql` por el motor de validación de Prisma (especialmente la versión WASM), incompatibilidades sutiles con el entorno de Node.js/sistema operativo, o un bug en Prisma/adaptador.
 - *Estrategias de depuración agotadas:* Limpieza de caché de pnpm, reinstalación de dependencias, deshabilitación de `postinstall` hook, y ejecución manual de `prisma generate` de varias maneras.
 - *Recomendación:* En estos casos, se recomienda buscar soporte en los canales oficiales de Prisma/Turso o considerar una versión anterior de Prisma si se sabe que funciona en el entorno específico.
+
+## Estrategias de Deployment en Vercel para Monorepos
+<!-- Existing content from this section will go here -->
+
+**Depuración: Errores de Tipos persistentes en Entornos CI/CD (Vercel)**
+- Si un error de TypeScript sobre propiedades faltantes en tipos generados (ej. `PrismaClient` o sus modelos) persiste en despliegues de Vercel a pesar de correcciones de código, regeneraciones locales de Prisma y despliegues sin caché:
+    - *Causa probable:* Problemas de caché de Vercel profundos, o dificultades en la resolución de tipos de TypeScript en el entorno de build de Vercel que impiden que los tipos generados se actualicen o reconozcan correctamente.
+    - *Estrategias a considerar (si las soluciones de código se han agotado):*
+        - **Asegurar la generación de Prisma antes de la compilación:** Incluir `prisma generate` en el script de build que TypeScript usa para compilar las funciones (ej. `tsc -p api/tsconfig.json && prisma generate --schema=./prisma/schema.prisma`).
+        - **Buscar ayuda externa:** Es probable que el problema requiera soporte directo de Vercel o de la comunidad de Prisma, o una investigación más profunda de incompatibilidades de entorno.
+- *Aprendizaje específico:* El error `Property 'startIndex' is missing` en `get-metadata.ts` a pesar de estar presente en el código y el esquema `schema.prisma` es un ejemplo de este tipo de problema.
