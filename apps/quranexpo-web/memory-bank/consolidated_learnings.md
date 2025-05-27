@@ -105,7 +105,7 @@
 - Si un error de TypeScript sobre propiedades faltantes en tipos generados (ej. `PrismaClient` o sus modelos) persiste en despliegues de Vercel a pesar de correcciones de código, regeneraciones locales de Prisma y despliegues sin caché:
     - *Causa probable:* Problemas de caché de Vercel profundos, o dificultades en la resolución de tipos de TypeScript en el entorno de build de Vercel que impiden que los tipos generados se actualicen o reconozcan correctamente.
     - *Estrategias a considerar (si las soluciones de código se han agotado):*
-        - **Asegurar la generación de Prisma antes de la compilación:** Incluir `prisma generate` en el script de build que TypeScript usa para compilar las funciones (ej. `tsc -p api/tsconfig.json && prisma generate --schema=./prisma/schema.prisma`).
+        - **Asegurar la generación de Prisma antes de la compilación:** Incluir `prisma generate` en el script de build que TypeScript usa para compilar las funciones (ej. `prisma generate --schema=./prisma/schema.prisma && tsc -p api/tsconfig.json`). Es crucial que `prisma generate` se ejecute *antes* de `tsc`.
         - **Mover dependencias de Prisma a `dependencies`:** Asegurarse de que `prisma` y `@prisma/client` estén en `dependencies` en lugar de `devDependencies` en `package.json` para entornos de producción como Vercel.
         - **Buscar ayuda externa:** Es probable que el problema requiera soporte directo de Vercel o de la comunidad de Prisma, o una investigación más profunda de incompatibilidades de entorno.
 - *Aprendizaje específico:* El error `Property 'startIndex' is missing` en `get-metadata.ts` a pesar de estar presente en el código y el esquema `schema.prisma` es un ejemplo de este tipo de problema.
