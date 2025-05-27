@@ -96,6 +96,7 @@
 - *Posibles causas:* Problemas con la carga del `@prisma/adapter-libsql` por el motor de validación de Prisma (especialmente la versión WASM), incompatibilidades sutiles con el entorno de Node.js/sistema operativo, o un bug en Prisma/adaptador.
 - *Estrategias de depuración agotadas:* Limpieza de caché de pnpm, reinstalación de dependencias, deshabilitación de `postinstall` hook, y ejecución manual de `prisma generate` de varias maneras.
 - *Recomendación:* En estos casos, se recomienda buscar soporte en los canales oficiales de Prisma/Turso o considerar una versión anterior de Prisma si se sabe que funciona en el entorno específico.
+- *Aprendizaje específico:* Se confirmó que el error "Datasource provider not known: "libsql"" de Prisma se resuelve configurando `provider = "sqlite"` en `schema.prisma` y utilizando `@prisma/adapter-libsql` para la conexión en tiempo de ejecución. La instanciación de `PrismaLibSQL` requiere un objeto de configuración `{ url: LIBSQL_URL, authToken: LIBSQL_AUTH_TOKEN }` directamente.
 
 ## Estrategias de Deployment en Vercel para Monorepos
 <!-- Existing content from this section will go here -->
@@ -105,5 +106,11 @@
     - *Causa probable:* Problemas de caché de Vercel profundos, o dificultades en la resolución de tipos de TypeScript en el entorno de build de Vercel que impiden que los tipos generados se actualicen o reconozcan correctamente.
     - *Estrategias a considerar (si las soluciones de código se han agotado):*
         - **Asegurar la generación de Prisma antes de la compilación:** Incluir `prisma generate` en el script de build que TypeScript usa para compilar las funciones (ej. `tsc -p api/tsconfig.json && prisma generate --schema=./prisma/schema.prisma`).
+        - **Mover dependencias de Prisma a `dependencies`:** Asegurarse de que `prisma` y `@prisma/client` estén en `dependencies` en lugar de `devDependencies` en `package.json` para entornos de producción como Vercel.
         - **Buscar ayuda externa:** Es probable que el problema requiera soporte directo de Vercel o de la comunidad de Prisma, o una investigación más profunda de incompatibilidades de entorno.
 - *Aprendizaje específico:* El error `Property 'startIndex' is missing` en `get-metadata.ts` a pesar de estar presente en el código y el esquema `schema.prisma` es un ejemplo de este tipo de problema.
+
+## Proceso de Trabajo y Depuración
+**Patrón: Verificación del contenido del archivo antes de `apply_diff`**
+- Siempre leer el contenido más reciente de un archivo antes de intentar aplicar un `diff` para evitar errores de coincidencia debido a cambios inesperados en el archivo.
+- *Razón:* Asegura que el bloque `SEARCH` del `diff` coincida exactamente con el contenido actual del archivo, previniendo fallos en la aplicación de los cambios.

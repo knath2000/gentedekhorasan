@@ -1,180 +1,24 @@
 ---
-Date: 2025-05-24
-TaskRef: "Cambiar el título de la tarjeta de sura a transliteración inglesa"
-
-Learnings:
-- La modificación de la visualización de datos en un componente requiere verificar la interfaz de datos (`Surah` en `quran.ts`) para asegurar que el campo deseado (`transliterationName`) esté disponible.
-- La actualización de la documentación del banco de memoria es crucial para reflejar los cambios en la UI y la experiencia del usuario.
-
-:start_line:9
--------
-Difficulties:
-- Se encontró que la API `get-metadata?type=surah-list` no devuelve el campo `tname` (nombre transliterado), lo que causó que la transliteración no se mostrara. Se resolvió añadiendo un fallback a `item.ename` en `apiClient.ts`.
-
-Successes:
-- Se modificó con éxito `src/components/SurahCard.tsx` para mostrar el nombre de la sura en transliteración inglesa como título y el nombre en inglés simple como subtítulo.
-- Los archivos relevantes del banco de memoria se actualizaron para reflejar este cambio.
-
-:start_line:16
--------
-Improvements_Identified_For_Consolidation:
-- Proceso: Verificar siempre la interfaz de datos y la respuesta real de la API antes de asumir la disponibilidad de un campo.
-- API: Manejo de campos de API faltantes con fallbacks.
----
-Date: 2025-05-26
-TaskRef: "Deployment de quranexpo-web - Problema: prisma: command not found"
-
-Learnings:
-- Vercel ejecuta `pnpm install` desde la raíz del monorepo, lo que activa el postinstall hook de `quran-data-api`.
-- `NODE_ENV=production` hace que pnpm salte las `devDependencies`, donde se encuentra `prisma`.
-- La solución es aislar el proyecto `quranexpo-web` en Vercel Dashboard.
-
-Difficulties:
-- El error `sh: line 1: prisma: command not found` ocurrió durante el `pnpm install` para `quranexpo-web` debido a la ejecución del postinstall de `quran-data-api` en un entorno de producción sin `prisma` instalado.
-
-Successes:
-- Se identificó la causa raíz del problema.
-- Se propuso y aplicó la solución de aislamiento de proyecto en Vercel Dashboard.
-
-Improvements_Identified_For_Consolidation:
-- Patrón: Aislamiento de proyectos en Vercel para evitar conflictos de `postinstall` hooks en monorepos.
----
-Date: 2025-05-26
-TaskRef: "Deployment de quranexpo-web - Problema: Node.js Version 18.x"
-
-Learnings:
-- Vercel detecta Node.js 18.x por defecto o por una configuración previa, pero el proyecto requiere 22.x.
-- La versión de Node.js debe ser explícitamente configurada en Vercel Dashboard.
-
-Difficulties:
-- El error `Error: Found invalid Node.js Version: "18.x". Please set Node.js Version to 22.x` bloqueó el despliegue.
-
-Successes:
-- Se identificó la necesidad de actualizar la versión de Node.js.
-- Se actualizó la configuración en Vercel Dashboard a 22.x.
-
-Improvements_Identified_For_Consolidation:
-- Patrón: Configuración explícita de la versión de Node.js en Vercel para evitar incompatibilidades.
----
-Date: 2025-05-26
-TaskRef: "Deployment de quranexpo-web - Problema: pnpm Registry ERR_INVALID_THIS"
-
-Learnings:
-- Incompatibilidad entre Node.js 22.x y pnpm 6.35.1 (versión preinstalada en Vercel).
-- El `package.json` raíz tenía una restricción de `engines` (`">=20.0.0 <21.0.0"`) que causaba advertencias.
-- Los errores `ERR_INVALID_THIS` y `ERR_PNPM_META_FETCH_FAIL` indican problemas de contexto en las solicitudes HTTP de pnpm.
-- `npm` es más compatible y estable en este escenario.
-
-Difficulties:
-- Múltiples errores de fetch del registro npm que bloqueaban la instalación de dependencias.
-- La advertencia de `Unsupported engine` indicaba un problema de compatibilidad subyacente.
-
-Successes:
-- Se diagnosticó la incompatibilidad de pnpm/Node.js.
-- Se decidió cambiar el gestor de paquetes de `pnpm` a `npm` para `quranexpo-web` en Vercel.
-- El despliegue final fue exitoso con `npm`.
-
-Improvements_Identified_For_Consolidation:
-- Patrón: Considerar `npm` como alternativa a `pnpm` en Vercel si surgen problemas de compatibilidad de versión o errores de registro.
-- Patrón: Revisar `engines` en `package.json` raíz para evitar conflictos de versión de Node.js.
----
-Date: 2025-05-24
-TaskRef: "Error de despliegue en Vercel: 'pipeline' vs 'tasks' en Turborepo"
-
-Learnings:
-- Turborepo en versiones recientes requiere el campo `"tasks"` en lugar de `"pipeline"` en `turbo.json` para definir las configuraciones de las tareas de build.
-- El error de Vercel `Found 'pipeline' field instead of 'tasks'` indica una incompatibilidad de sintaxis con la versión de Turborepo utilizada en el entorno de build de Vercel.
-
-Difficulties:
-- El despliegue inicial en Vercel falló debido a un error de configuración de Turborepo, lo que impidió que el comando `npm run build` se ejecutara correctamente.
-
-Successes:
-- Se identificó y corrigió la sintaxis de `turbo.json` cambiando `"pipeline"` a `"tasks"`.
-
-Improvements_Identified_For_Consolidation:
-- Patrón: Sintaxis de configuración de Turborepo (`tasks` vs `pipeline`).
----
-Date: 2025-05-26
-TaskRef: "Depuración de despliegue de funciones de API en monorepo Vercel"
-
-Learnings:
-- El error `Function Runtimes must have a valid version` en Vercel para funciones de Node.js en un monorepo no siempre significa que el `runtime` en `vercel.json` esté mal. A menudo, significa que Vercel no está leyendo la configuración de `functions` del `vercel.json` anidado en un subdirectorio.
-- Para que las Vercel Functions en un subdirectorio de un monorepo (`apps/quran-data-api/api/`) sean desplegadas correctamente, la configuración de `functions` y `routes` debe estar en el `vercel.json` de la **raíz del monorepo**.
-- Es crucial que el `tsconfig.json` de la API (`apps/quran-data-api/api/tsconfig.json`) esté configurado para emitir archivos JavaScript (`"noEmit": false`) y que el `outDir` apunte a un directorio de salida (ej. `"dist"`).
-- El script `build` en el `package.json` de la aplicación de la API (`apps/quran-data-api/package.json`) debe ejecutar explícitamente la compilación de TypeScript (`tsc -p api/tsconfig.json`).
-- Las rutas en la sección `functions` y `routes` del `vercel.json` de la raíz deben apuntar a los archivos JavaScript compilados dentro del directorio `dist` del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
-- El `vercel.json` anidado en el subdirectorio de la API (`apps/quran-data-api/vercel.json`) debe ser mínimo, conteniendo solo `{"version": 2}`.
-- La advertencia de Turborepo `WARNING no output files found for task @quran-monorepo/quran-data-api#build` es un fuerte indicador de que el script de build no está produciendo los artefactos esperados para el despliegue de funciones.
-
-Difficulties:
-- Persistencia del error `Function Runtimes must have a valid version` a pesar de las correcciones iniciales en el `vercel.json` anidado, lo que llevó a la hipótesis de que el archivo no estaba siendo reconocido.
-- La depuración de problemas de despliegue en monorepos de Vercel es compleja debido a la interacción entre Vercel CLI, Turborepo y las configuraciones de proyectos anidados.
-
-Successes:
-- Se logró resolver el problema de despliegue de las funciones de la API (`quran-data-api`), permitiendo que la aplicación web (`quranexpo-web`) cargue los datos correctamente.
-- Se confirmó que el endpoint de prueba (`/test/v1/ping`) ahora funciona.
-- Se documentó una solución integral para futuros problemas similares en `memory-bank/propuesta-roo-rule-vercel-monorepo-debugging.md`.
-
-Improvements_Identified_For_Consolidation:
-- Patrón de configuración de Vercel Functions en monorepos.
-- Estrategias de depuración para errores de despliegue en Vercel.
----
-
----
-Date: 2025-05-27
+Date: 2025_05_27
 TaskRef: "Migración de base de datos de Neon a Turso e integración con quran-data-api"
 
 Learnings:
-- Dificultades con la instalación del CLI de Turso: `npm install -g turso-cli` y `npm install -g @libsql/cli` fallaron con `E404`. `curl -sSfL https://install.turso.tech/ | bash` falló con `Could not resolve host`. Esto sugiere problemas de red o de registro de paquetes en el entorno del usuario.
-- Problemas con la importación de datos a Turso:
-    - La importación inicial de `quran_data_dump.sql` resultó en tablas vacías.
-    - La importación directa de `quran_data.sql` falló con "table already exists" porque el script intenta crear tablas que ya existen.
-    - La solución fue ejecutar `DROP TABLE IF EXISTS` para todas las tablas (`en_yusufali`, `quran_sajdas`, `quran_surahs`, `quran_text`) antes de importar `quran_data.sql`.
-    - La importación final de `quran_data.sql` después de eliminar las tablas fue exitosa, confirmada por `SELECT COUNT(*)`.
-- Problemas persistentes con `prisma generate` y `Datasource provider not known: "libsql"`:
-    - Este error ocurrió consistentemente a pesar de:
-        - Versión de Prisma (`6.8.2`) compatible con `libsql`.
-        - `schema.prisma` configurado para `libsql`.
-        - `DATABASE_URL` en `.env.local`.
-        - Limpieza de caché de pnpm y reinstalación.
-        - Deshabilitación del `postinstall` hook.
-        - Intentos de ejecución de `prisma generate` de varias maneras (pnpm exec, script Node.js, npx directo).
-    - La depuración de Prisma (`DEBUG=prisma:*`) indicó que el error ocurre en el `getConfig Wasm` del motor de Prisma.
-    - Esto sugiere un problema más profundo con la forma en que Prisma carga o reconoce el adaptador `libsql` en este entorno específico, posiblemente un bug o una incompatibilidad no documentada.
+- Se confirmó que el error "Datasource provider not known: "libsql"" de Prisma se resuelve configurando `provider = "sqlite"` en `schema.prisma` y utilizando `@prisma/adapter-libsql` para la conexión en tiempo de ejecución.
+- La instanciación de `PrismaLibSQL` requiere un objeto de configuración `{ url: LIBSQL_URL, authToken: LIBSQL_AUTH_TOKEN }` directamente, no una instancia de cliente de `@libsql/client`.
+- Mover `prisma` y `@prisma/client` de `devDependencies` a `dependencies` en `package.json` es una solución recomendada para problemas de despliegue en entornos como Vercel, especialmente en monorepos.
+- La importancia de leer el archivo más reciente antes de aplicar `diffs` para evitar errores de coincidencia.
 
 Difficulties:
-- La persistencia del error `Datasource provider not known: "libsql"` a pesar de múltiples intentos de solución, lo que indica un problema más allá de la configuración básica.
-- La necesidad de vaciar/eliminar tablas manualmente en Turso antes de una importación completa de un archivo SQL que incluye sentencias `CREATE TABLE`.
+- Error de modo al intentar editar `package.json` en modo `architect`. Se corrigió cambiando a modo `code`.
+- El `apply_diff` inicial falló debido a que el contenido del `package.json` había cambiado, requiriendo una relectura del archivo.
 
 Successes:
-- Se logró importar exitosamente los datos de `quran_data.sql` a la base de datos de Turso después de eliminar las tablas existentes.
-- Se confirmó que la base de datos de Turso ahora contiene los datos esperados.
+- Se logró resolver el error de Prisma "Datasource provider not known: "libsql"" localmente.
+- Se actualizó correctamente el `package.json` moviendo las dependencias de Prisma.
+- `pnpm install` se ejecutó con éxito después de la modificación del `package.json`.
 
 Improvements_Identified_For_Consolidation:
-- Patrón: Proceso robusto de importación de datos a Turso (DROP TABLE antes de importar).
-- Estrategias de depuración para errores de `prisma generate` con proveedores de base de datos (cuando la versión es compatible).
----
-
----
-Date: 2025-05-27
-TaskRef: "Depuración de error de tipo 'startIndex' en despliegue Vercel"
-
-Learnings:
-- Problema persistente de TypeScript en Vercel: El error `Property 'startIndex' is missing` en `api/v1/get-metadata.ts` persiste en el despliegue de Vercel a pesar de:
-    - Código en `get-metadata.ts` que incluye `startIndex`.
-    - `schema.prisma` correcto con `startIndex`.
-    - Regeneración exitosa del cliente Prisma localmente.
-    - Despliegues sin caché en Vercel.
-- Causa probable del problema de `startIndex` en Vercel: Esto indica un problema de caché de Vercel o de resolución de tipos más profundo que impide que los cambios de tipo se reconozcan durante el build.
-- Ajustes en `package.json` para el pipeline de build: Se modificó el script `build:functions` en `apps/quran-data-api/package.json` para incluir `prisma generate` antes de `tsc`, y se eliminó el script `postinstall`.
-
-Difficulties:
-- La tenacidad del error de tipo `startIndex` en Vercel, sugiriendo un problema no directamente resoluble con modificaciones de código.
-
-Successes:
-- Se logró identificar que el problema es del entorno de Vercel y no del código local.
-
-Improvements_Identified_For_Consolidation:
-- Estrategias de depuración para problemas de tipos persistentes en entornos CI/CD (Vercel).
-- Manejo de la generación del cliente Prisma en scripts de build de monorepos.
+- Patrón general: Configuración de Prisma con `libsql` (usar `sqlite` como `provider` y adaptador en código).
+- Despliegue en Vercel: Dependencias de Prisma en `dependencies` para monorepos.
+- Proceso de trabajo: Siempre verificar el contenido del archivo antes de `apply_diff`.
 ---
