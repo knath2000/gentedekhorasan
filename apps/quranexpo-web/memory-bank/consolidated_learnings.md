@@ -44,6 +44,13 @@
 - Si `pnpm` presenta problemas de compatibilidad con la versión de Node.js en Vercel (ej. `ERR_INVALID_THIS` con Node.js 22.x y pnpm 6.x), considerar cambiar a `npm` para el `Install Command` y `Build Command` del proyecto en Vercel Dashboard.
 - *Razón:* `npm` puede ofrecer mayor estabilidad y compatibilidad en ciertos entornos de Vercel, especialmente cuando hay conflictos de `engine` o `lockfile` con `pnpm`.
 
+**Patrón: Configuración de Vercel Functions en Monorepos**
+- Para que las funciones de API en un subdirectorio de un monorepo (`apps/quran-data-api/api/`) sean desplegadas correctamente, es crucial:
+    -   Configurar `tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión (`"noEmit": false`).
+    -   Asegurarse de que el script `build` del `package.json` de la aplicación de la API ejecute esta compilación (`tsc -p api/tsconfig.json`).
+    -   Mover la configuración de `functions` y `routes` al `vercel.json` de la **raíz del monorepo**, apuntando a los archivos JavaScript compilados en el directorio `dist` dentro del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
+    -   El `vercel.json` anidado en el subdirectorio de la API (`apps/quran-data-api/vercel.json`) debe ser mínimo (solo `{"version": 2}`).
+
 ## Depuración y Estrategias de `apply_diff`
 **Depuración: Estrategias para manejar errores de `apply_diff` (reescritura completa del archivo)**
 - Cuando `apply_diff` falla repetidamente o introduce errores de sintaxis debido a problemas de contexto o cambios estructurales complejos, una estrategia robusta es reescribir el archivo completo utilizando `write_to_file`.
@@ -77,3 +84,15 @@
 - Para mejorar la experiencia del usuario y la coherencia con las expectativas de los usuarios de habla inglesa, el título de la tarjeta de sura en la página de suras ahora muestra el nombre de la sura en transliteración inglesa (`surah.transliterationName`).
 - *Consideraciones:* El subtítulo permanece en inglés simple (`surah.englishName`) para proporcionar contexto adicional.
 - *Aprendizaje específico:* La API `get-metadata?type=surah-list` no devuelve el campo `tname` (nombre transliterado). Se implementó un fallback a `item.ename` en `apiClient.ts` para asegurar que siempre haya un valor para `transliterationName`.
+
+## Migración de Base de Datos a Turso
+**Proceso: Importación de datos a Turso desde un archivo SQL**
+- Al importar datos a una base de datos Turso desde un archivo SQL que incluye sentencias `CREATE TABLE` (como un dump de SQLite), es crucial eliminar las tablas existentes previamente.
+- *Comando:* `turso db shell <nombre_de_la_base_de_datos> "DROP TABLE IF EXISTS tabla1; DROP TABLE IF EXISTS tabla2;"` antes de `turso db shell <nombre_de_la_base_de_datos> < archivo.sql`.
+- *Razón:* Evita el error "table already exists" y asegura una importación limpia.
+
+**Depuración: Problemas de `prisma generate` con `Datasource provider not known: "libsql"`**
+- Si el error `Datasource provider not known: "libsql"` persiste a pesar de tener la versión de Prisma compatible (`>=5.10.0`), el `schema.prisma` configurado correctamente, y `DATABASE_URL` en `.env.local`, el problema puede ser más profundo.
+- *Posibles causas:* Problemas con la carga del `@prisma/adapter-libsql` por el motor de validación de Prisma (especialmente la versión WASM), incompatibilidades sutiles con el entorno de Node.js/sistema operativo, o un bug en Prisma/adaptador.
+- *Estrategias de depuración agotadas:* Limpieza de caché de pnpm, reinstalación de dependencias, deshabilitación de `postinstall` hook, y ejecución manual de `prisma generate` de varias maneras.
+- *Recomendación:* En estos casos, se recomienda buscar soporte en los canales oficiales de Prisma/Turso o considerar una versión anterior de Prisma si se sabe que funciona en el entorno específico.

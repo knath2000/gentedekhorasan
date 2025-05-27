@@ -114,9 +114,6 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -142,7 +139,8 @@ exports.Prisma.QuranSurahScalarFieldEnum = {
   ayas: 'ayas',
   revelationType: 'revelationType',
   chronologicalOrder: 'chronologicalOrder',
-  rukus: 'rukus'
+  rukus: 'rukus',
+  startIndex: 'startIndex'
 };
 
 exports.Prisma.QuranTextScalarFieldEnum = {
@@ -155,11 +153,6 @@ exports.Prisma.QuranTextScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {

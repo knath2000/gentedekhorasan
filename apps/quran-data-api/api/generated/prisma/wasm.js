@@ -86,9 +86,6 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -114,7 +111,8 @@ exports.Prisma.QuranSurahScalarFieldEnum = {
   ayas: 'ayas',
   revelationType: 'revelationType',
   chronologicalOrder: 'chronologicalOrder',
-  rukus: 'rukus'
+  rukus: 'rukus',
+  startIndex: 'startIndex'
 };
 
 exports.Prisma.QuranTextScalarFieldEnum = {
@@ -127,11 +125,6 @@ exports.Prisma.QuranTextScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -172,6 +165,10 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "rhel-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "darwin-arm64"
       }
     ],
     "previewFeatures": [
@@ -189,23 +186,23 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "postgresql",
+  "activeProvider": "sqlite",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "NEON_DATABASE_URL",
+        "fromEnvVar": "DATABASE_URL",
         "value": null
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../api/generated/prisma\" // Output to api/generated/prisma\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\"] // Add rhel-openssl-3.0.x for Vercel\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"NEON_DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n",
-  "inlineSchemaHash": "99f7814a7e8361757bc8581b0796e38bc7ef5db2a839af7d67845c1b8b03e39a",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../api/generated/prisma\" // Output to api/generated/prisma\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n",
+  "inlineSchemaHash": "9c387869ab696e71c1d6892c5373bcd388b245d2894f4a1a17e6352df746c317",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"EnYusufali\":{\"fields\":[{\"name\":\"index\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"en_yusufali\"},\"QuranSajda\":{\"fields\":[{\"name\":\"sajdaId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"sajda_id\"},{\"name\":\"surahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"surah_number\"},{\"name\":\"ayahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"ayah_number\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_sajdas\"},\"QuranSurah\":{\"fields\":[{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"arabicName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"arabic_name\"},{\"name\":\"transliteration\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"englishName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"english_name\"},{\"name\":\"ayas\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"revelationType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"revelation_type\"},{\"name\":\"chronologicalOrder\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"chronological_order\"},{\"name\":\"rukus\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":\"quran_surahs\"},\"QuranText\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_text\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"EnYusufali\":{\"fields\":[{\"name\":\"index\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"en_yusufali\"},\"QuranSajda\":{\"fields\":[{\"name\":\"sajdaId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"sajda_id\"},{\"name\":\"surahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"surah_number\"},{\"name\":\"ayahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"ayah_number\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_sajdas\"},\"QuranSurah\":{\"fields\":[{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"arabicName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"arabic_name\"},{\"name\":\"transliteration\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"englishName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"english_name\"},{\"name\":\"ayas\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"revelationType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"revelation_type\"},{\"name\":\"chronologicalOrder\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"chronological_order\"},{\"name\":\"rukus\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startIndex\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"start_index\"}],\"dbName\":\"quran_surahs\"},\"QuranText\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_text\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
@@ -219,7 +216,7 @@ config.compilerWasm = undefined
 
 config.injectableEdgeEnv = () => ({
   parsed: {
-    NEON_DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['NEON_DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.NEON_DATABASE_URL || undefined
+    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
   }
 })
 

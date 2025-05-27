@@ -23,6 +23,7 @@
 - **Se modificó `src/components/BottomControlPanel.tsx` para reordenar los controles de audio y paginación.**
 - **Se modificó `src/components/ReaderContainer.tsx` y `src/components/BottomControlPanel.tsx` para implementar la lógica de visibilidad de los controles de audio para suras cortas.**
 - Se actualizó `src/services/apiClient.ts` para usar la API de `quran-api-data` desplegada en Vercel (`https://gentedekhorasan.vercel.app/api/v1`).
+- **Se resolvió el problema de despliegue de la API (`quran-data-api`) en Vercel, incluyendo errores de runtime y 404, moviendo la configuración de `functions` y `routes` al `vercel.json` de la raíz del monorepo y asegurando la compilación de TypeScript a JavaScript en un directorio `dist`.**
 
 ## Próximos pasos
 - La tarea actual ha sido completada. No hay pasos pendientes inmediatos relacionados con la depuración de animaciones o la verificación de navegación.
@@ -42,17 +43,8 @@
 - La utilidad de verificar los procesos en ejecución antes de intentar iniciarlos.
 - La preferencia de `history.back()` sobre rutas fijas para la navegación de retroceso.
 - **La implementación de lógica de renderizado condicional basada en el estado de audio y el número de versos para optimizar la visibilidad de los controles de UI.**
-
-## Estado del Deployment en Vercel (Problema a Nivel Monorepo)
-- **RESUELTO:** El deployment de `quranexpo-web` en Vercel ahora funciona correctamente.
-- **Problemas Resueltos:**
-    - **`prisma: command not found`:** Resuelto aislando el proyecto `quranexpo-web` en Vercel Dashboard.
-    - **`Found invalid Node.js Version: "18.x"`:** Resuelto actualizando la versión de Node.js a 22.x en Vercel Dashboard.
-    - **`ERR_INVALID_THIS` / `ERR_PNPM_META_FETCH_FAIL`:** Resuelto cambiando el gestor de paquetes de `pnpm` a `npm` para `quranexpo-web` en Vercel.
-- **Configuración Final:**
-    - **Root Directory:** `apps/quranexpo-web`
-    - **Build Command:** `npm run build`
-    - **Output Directory:** `dist`
-    - **Install Command:** `npm install`
-    - **Node.js Version:** `22.x`
-- Para detalles actualizados sobre este problema de deployment, consultar el archivo `memory-bank/vercel-manual-overrides-configuration.md` en la raíz del monorepo y `memory-bank/pnpm-registry-error-fix.md`.
+- **Vercel Monorepo Functions Deployment:** Se aprendió que para desplegar funciones de API en un subdirectorio de un monorepo en Vercel, es necesario:
+    -   Configurar `tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión (`"noEmit": false`).
+    -   Asegurarse de que el script `build` del `package.json` de la aplicación de la API ejecute esta compilación (`tsc -p api/tsconfig.json`).
+    -   Mover la configuración de `functions` y `routes` al `vercel.json` de la **raíz del monorepo**, apuntando a los archivos JavaScript compilados en el directorio `dist` dentro del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
+    -   El `vercel.json` anidado en el subdirectorio de la API debe ser mínimo (solo `{"version": 2}`).

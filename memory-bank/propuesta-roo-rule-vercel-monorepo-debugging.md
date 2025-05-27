@@ -1,14 +1,14 @@
 ---
-description: Sugerencia de contenido para una nueva .roo/rule enfocada en el debugging de deployments de monorepos pnpm en Vercel.
+description: Guía y lista de verificación para diagnosticar y resolver problemas comunes de deployment de monorepos pnpm en Vercel, incluyendo la configuración de Vercel Functions.
 author: Roo Architect AI
-version: 1.0
-tags: ["vercel", "pnpm", "monorepo", "deployment", "debugging", "roorules-suggestion"]
-globs: ["vercel.json", "pnpm-lock.yaml", "turbo.json", "apps/**/build.sh"]
+version: 1.1
+tags: ["vercel", "pnpm", "monorepo", "deployment", "debugging", "roorules-suggestion", "vercel-functions"]
+globs: ["vercel.json", "pnpm-lock.yaml", "turbo.json", "apps/**/build.sh", "apps/**/vercel.json", "apps/**/package.json", "apps/**/tsconfig.json"]
 ---
 
 # Propuesta de Nueva `.roo/rule`: `vercel-monorepo-pnpm-debugging.md`
 
-**Objetivo:** Proporcionar una guía y lista de verificación para diagnosticar y resolver problemas comunes de deployment de monorepos pnpm en Vercel, basada en la experiencia reciente.
+**Objetivo:** Proporcionar una guía y lista de verificación para diagnosticar y resolver problemas comunes de deployment de monorepos pnpm en Vercel, incluyendo la configuración de Vercel Functions.
 
 ## 1. Verificación Inicial del Build en Vercel
 
@@ -91,7 +91,7 @@ globs: ["vercel.json", "pnpm-lock.yaml", "turbo.json", "apps/**/build.sh"]
              echo "Versión de pnpm activa: $(pnpm --version)"
              pnpm install --frozen-lockfile # Reintentar con frozen lockfile
              ```
-     8.  **(Solución Final Comprobada): Usar `npm` en lugar de `pnpm` para el proyecto afectado.**
+     8.  **(Solución Final Comprobada para `quranexpo-web`): Usar `npm` en lugar de `pnpm` para el proyecto afectado.**
          *   Si los problemas de compatibilidad de pnpm/Node.js persisten, configurar el proyecto en Vercel Dashboard para usar `npm` para la instalación y el build.
          *   **Install Command:** `npm install`
          *   **Build Command:** `npm run build`
@@ -108,36 +108,99 @@ globs: ["vercel.json", "pnpm-lock.yaml", "turbo.json", "apps/**/build.sh"]
          *   Si el aislamiento no es suficiente o no es aplicable, mover `prisma` del `devDependencies` a `dependencies` en el `package.json` del proyecto que tiene el `postinstall` hook. Esto forzará su instalación en producción.
          *   *Advertencia:* Esto aumenta el tamaño del bundle y no es ideal para proyectos de API puros.
  
- ## 4. Configuración de `vercel.json` para Monorepos
+ ## 4. Configuración de Vercel Functions en Monorepos (Solución Comprobada para `quran-data-api`)
  
- *   **Recomendación General para un Proyecto Astro (`quranexpo-web`) en Monorepo:**
-     ```json
-     {
-       "version": 2,
-       // Opcional: installCommand global si build.sh no lo maneja o para setup inicial
-       "installCommand": "pnpm install --frozen-lockfile",
-       "builds": [
-         {
-           // Apuntar "src" al script de build del proyecto específico
-           "src": "apps/quranexpo-web/build.sh",
-           "use": "@vercel/static-build", // Usar para apps que generan output estático
-           "config": {
-             // "buildCommand" no es necesario aquí si "src" es un script ejecutable
-             // distDir es relativo a la raíz del monorepo
-             "distDir": "apps/quranexpo-web/dist"
-           }
-         }
-         // ... otras configuraciones de build para otros apps si es necesario ...
-       ],
-       "rewrites": [
-         // Ejemplo para una Single Page Application (SPA) o un sitio Astro
-         { "source": "/(.*)", "destination": "/apps/quranexpo-web/dist/$1" }
-         // Podría ser más específico si /apps/quranexpo-web/dist/index.html es el entrypoint:
-         // { "source": "/(.*)", "destination": "/apps/quranexpo-web/dist/index.html" }
-         // O si Astro maneja el enrutamiento en el servidor de preview (menos común para static-build)
-       ]
-     }
-     ```
+ *   **Síntoma Común:** Funciones de API en un subdirectorio de monorepo no se despliegan o enrutan correctamente (errores 404, errores de runtime como `Function Runtimes must have a valid version`).
+ *   **Diagnóstico:** Vercel no está detectando o compilando correctamente los archivos TypeScript de las funciones, o no está reconociendo la configuración de `functions` en el `vercel.json` anidado.
+ *   **Pasos de Solución:**
+     1.  **Configurar `tsconfig.json` de la API (`apps/quran-data-api/api/tsconfig.json`):**
+         *   Asegurar que `compilerOptions` incluya:
+             ```json
+             "target": "es2020",
+             "outDir": "dist", // Compila a un directorio 'dist' dentro de la carpeta 'api'
+             "noEmit": false   // Permitir la emisión de archivos JavaScript
+             ```
+     2.  **Modificar `package.json` de la API (`apps/quran-data-api/package.json`):**
+         *   Añadir un script para compilar las funciones y asegurar que el script `build` principal lo ejecute:
+             ```json
+             "scripts": {
+               "build:functions": "tsc -p api/tsconfig.json",
+               "build": "pnpm run build:functions && prisma generate --schema=./prisma/schema.prisma",
+               // ... otros scripts ...
+             },
+             ```
+     3.  **Mover la configuración de `functions` y `routes` al `vercel.json` de la RAÍZ del monorepo (`/vercel.json`):**
+         *   Este es el paso CRÍTICO para que Vercel reconozca las funciones en un monorepo.
+         *   El `vercel.json` de la raíz debe contener las secciones `functions` y `routes` que apunten a los archivos compilados en el directorio `dist` de la aplicación de la API.
+         *   Ejemplo de `/vercel.json`:
+             ```json
+             {
+               "version": 2,
+               "functions": {
+                 "apps/quran-data-api/dist/api/v1/get-metadata.js": {
+                   "runtime": "nodejs@20.x"
+                 },
+                 "apps/quran-data-api/dist/api/v1/get-verses.js": {
+                   "runtime": "nodejs@20.x"
+                 },
+                 "apps/quran-data-api/dist/api/v1/get-translated-verse.js": {
+                   "runtime": "nodejs@20.x"
+                 },
+                 "apps/quran-data-api/dist/api/test/ping.js": {
+                   "runtime": "nodejs@20.x"
+                 }
+               },
+               "routes": [
+                 {
+                   "src": "/api/v1/get-metadata",
+                   "dest": "apps/quran-data-api/dist/api/v1/get-metadata.js",
+                   "headers": {
+                     "Access-Control-Allow-Origin": "*",
+                     "Access-Control-Allow-Methods": "GET,OPTIONS",
+                     "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+                   }
+                 },
+                 {
+                   "src": "/api/v1/get-verses",
+                   "dest": "apps/quran-data-api/dist/api/v1/get-verses.js",
+                   "headers": {
+                     "Access-Control-Allow-Origin": "*",
+                     "Access-Control-Allow-Methods": "GET,OPTIONS",
+                     "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+                   }
+                 },
+                 {
+                   "src": "/api/v1/get-translated-verse",
+                   "dest": "apps/quran-data-api/dist/api/v1/get-translated-verse.js",
+                   "headers": {
+                     "Access-Control-Allow-Origin": "*",
+                     "Access-Control-Allow-Methods": "GET,OPTIONS",
+                     "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+                   }
+                 },
+                 {
+                   "src": "/api/v1/(.*)",
+                   "dest": "apps/quran-data-api/dist/api/v1/$1.js",
+                   "headers": {
+                     "Access-Control-Allow-Origin": "*",
+                     "Access-Control-Allow-Methods": "GET,OPTIONS",
+                     "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+                   }
+                 },
+                 {
+                   "src": "/test/v1/ping",
+                   "dest": "apps/quran-data-api/dist/test/ping.js",
+                   "headers": {
+                     "Access-Control-Allow-Origin": "*",
+                     "Access-Control-Allow-Methods": "GET,OPTIONS",
+                     "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+                   }
+                 }
+               ]
+             }
+             ```
+     4.  **Dejar el `vercel.json` anidado de la API vacío (`apps/quran-data-api/vercel.json`):**
+         *   Solo debe contener: `{"version": 2}`.
  
  ## 5. Último Recurso
  *   Si después de todos estos pasos el problema persiste, recopilar todos los logs, configuraciones de `vercel.json`, `build.sh`, `package.json`, `pnpm-lock.yaml`, y contactar al **Soporte de Vercel**. Puede haber un problema específico de la plataforma o una configuración no documentada necesaria.

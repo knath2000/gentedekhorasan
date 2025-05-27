@@ -2009,7 +2009,6 @@ export namespace Prisma {
      * The data used to create many EnYusufalis.
      */
     data: EnYusufaliCreateManyInput | EnYusufaliCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -2028,7 +2027,6 @@ export namespace Prisma {
      * The data used to create many EnYusufalis.
      */
     data: EnYusufaliCreateManyInput | EnYusufaliCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -3033,7 +3031,6 @@ export namespace Prisma {
      * The data used to create many QuranSajdas.
      */
     data: QuranSajdaCreateManyInput | QuranSajdaCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -3052,7 +3049,6 @@ export namespace Prisma {
      * The data used to create many QuranSajdas.
      */
     data: QuranSajdaCreateManyInput | QuranSajdaCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -3211,6 +3207,7 @@ export namespace Prisma {
     ayas: number | null
     chronologicalOrder: number | null
     rukus: number | null
+    startIndex: number | null
   }
 
   export type QuranSurahSumAggregateOutputType = {
@@ -3218,6 +3215,7 @@ export namespace Prisma {
     ayas: number | null
     chronologicalOrder: number | null
     rukus: number | null
+    startIndex: number | null
   }
 
   export type QuranSurahMinAggregateOutputType = {
@@ -3229,6 +3227,7 @@ export namespace Prisma {
     revelationType: string | null
     chronologicalOrder: number | null
     rukus: number | null
+    startIndex: number | null
   }
 
   export type QuranSurahMaxAggregateOutputType = {
@@ -3240,6 +3239,7 @@ export namespace Prisma {
     revelationType: string | null
     chronologicalOrder: number | null
     rukus: number | null
+    startIndex: number | null
   }
 
   export type QuranSurahCountAggregateOutputType = {
@@ -3251,6 +3251,7 @@ export namespace Prisma {
     revelationType: number
     chronologicalOrder: number
     rukus: number
+    startIndex: number
     _all: number
   }
 
@@ -3260,6 +3261,7 @@ export namespace Prisma {
     ayas?: true
     chronologicalOrder?: true
     rukus?: true
+    startIndex?: true
   }
 
   export type QuranSurahSumAggregateInputType = {
@@ -3267,6 +3269,7 @@ export namespace Prisma {
     ayas?: true
     chronologicalOrder?: true
     rukus?: true
+    startIndex?: true
   }
 
   export type QuranSurahMinAggregateInputType = {
@@ -3278,6 +3281,7 @@ export namespace Prisma {
     revelationType?: true
     chronologicalOrder?: true
     rukus?: true
+    startIndex?: true
   }
 
   export type QuranSurahMaxAggregateInputType = {
@@ -3289,6 +3293,7 @@ export namespace Prisma {
     revelationType?: true
     chronologicalOrder?: true
     rukus?: true
+    startIndex?: true
   }
 
   export type QuranSurahCountAggregateInputType = {
@@ -3300,6 +3305,7 @@ export namespace Prisma {
     revelationType?: true
     chronologicalOrder?: true
     rukus?: true
+    startIndex?: true
     _all?: true
   }
 
@@ -3398,6 +3404,7 @@ export namespace Prisma {
     revelationType: string
     chronologicalOrder: number
     rukus: number
+    startIndex: number | null
     _count: QuranSurahCountAggregateOutputType | null
     _avg: QuranSurahAvgAggregateOutputType | null
     _sum: QuranSurahSumAggregateOutputType | null
@@ -3428,6 +3435,7 @@ export namespace Prisma {
     revelationType?: boolean
     chronologicalOrder?: boolean
     rukus?: boolean
+    startIndex?: boolean
   }, ExtArgs["result"]["quranSurah"]>
 
   export type QuranSurahSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3439,6 +3447,7 @@ export namespace Prisma {
     revelationType?: boolean
     chronologicalOrder?: boolean
     rukus?: boolean
+    startIndex?: boolean
   }, ExtArgs["result"]["quranSurah"]>
 
   export type QuranSurahSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3450,6 +3459,7 @@ export namespace Prisma {
     revelationType?: boolean
     chronologicalOrder?: boolean
     rukus?: boolean
+    startIndex?: boolean
   }, ExtArgs["result"]["quranSurah"]>
 
   export type QuranSurahSelectScalar = {
@@ -3461,9 +3471,10 @@ export namespace Prisma {
     revelationType?: boolean
     chronologicalOrder?: boolean
     rukus?: boolean
+    startIndex?: boolean
   }
 
-  export type QuranSurahOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"number" | "arabicName" | "transliteration" | "englishName" | "ayas" | "revelationType" | "chronologicalOrder" | "rukus", ExtArgs["result"]["quranSurah"]>
+  export type QuranSurahOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"number" | "arabicName" | "transliteration" | "englishName" | "ayas" | "revelationType" | "chronologicalOrder" | "rukus" | "startIndex", ExtArgs["result"]["quranSurah"]>
 
   export type $QuranSurahPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "QuranSurah"
@@ -3477,6 +3488,7 @@ export namespace Prisma {
       revelationType: string
       chronologicalOrder: number
       rukus: number
+      startIndex: number | null
     }, ExtArgs["result"]["quranSurah"]>
     composites: {}
   }
@@ -3908,6 +3920,7 @@ export namespace Prisma {
     readonly revelationType: FieldRef<"QuranSurah", 'String'>
     readonly chronologicalOrder: FieldRef<"QuranSurah", 'Int'>
     readonly rukus: FieldRef<"QuranSurah", 'Int'>
+    readonly startIndex: FieldRef<"QuranSurah", 'Int'>
   }
     
 
@@ -4113,7 +4126,6 @@ export namespace Prisma {
      * The data used to create many QuranSurahs.
      */
     data: QuranSurahCreateManyInput | QuranSurahCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -4132,7 +4144,6 @@ export namespace Prisma {
      * The data used to create many QuranSurahs.
      */
     data: QuranSurahCreateManyInput | QuranSurahCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -5137,7 +5148,6 @@ export namespace Prisma {
      * The data used to create many QuranTexts.
      */
     data: QuranTextCreateManyInput | QuranTextCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -5156,7 +5166,6 @@ export namespace Prisma {
      * The data used to create many QuranTexts.
      */
     data: QuranTextCreateManyInput | QuranTextCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -5303,9 +5312,6 @@ export namespace Prisma {
    */
 
   export const TransactionIsolationLevel: {
-    ReadUncommitted: 'ReadUncommitted',
-    ReadCommitted: 'ReadCommitted',
-    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -5340,7 +5346,8 @@ export namespace Prisma {
     ayas: 'ayas',
     revelationType: 'revelationType',
     chronologicalOrder: 'chronologicalOrder',
-    rukus: 'rukus'
+    rukus: 'rukus',
+    startIndex: 'startIndex'
   };
 
   export type QuranSurahScalarFieldEnum = (typeof QuranSurahScalarFieldEnum)[keyof typeof QuranSurahScalarFieldEnum]
@@ -5364,14 +5371,6 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const QueryMode: {
-    default: 'default',
-    insensitive: 'insensitive'
-  };
-
-  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
   export const NullsOrder: {
     first: 'first',
     last: 'last'
@@ -5393,13 +5392,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
@@ -5407,23 +5399,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'String[]'
-   */
-  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -5540,6 +5518,7 @@ export namespace Prisma {
     revelationType?: StringFilter<"QuranSurah"> | string
     chronologicalOrder?: IntFilter<"QuranSurah"> | number
     rukus?: IntFilter<"QuranSurah"> | number
+    startIndex?: IntNullableFilter<"QuranSurah"> | number | null
   }
 
   export type QuranSurahOrderByWithRelationInput = {
@@ -5551,6 +5530,7 @@ export namespace Prisma {
     revelationType?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrderInput | SortOrder
   }
 
   export type QuranSurahWhereUniqueInput = Prisma.AtLeast<{
@@ -5565,6 +5545,7 @@ export namespace Prisma {
     revelationType?: StringFilter<"QuranSurah"> | string
     chronologicalOrder?: IntFilter<"QuranSurah"> | number
     rukus?: IntFilter<"QuranSurah"> | number
+    startIndex?: IntNullableFilter<"QuranSurah"> | number | null
   }, "number">
 
   export type QuranSurahOrderByWithAggregationInput = {
@@ -5576,6 +5557,7 @@ export namespace Prisma {
     revelationType?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrderInput | SortOrder
     _count?: QuranSurahCountOrderByAggregateInput
     _avg?: QuranSurahAvgOrderByAggregateInput
     _max?: QuranSurahMaxOrderByAggregateInput
@@ -5595,6 +5577,7 @@ export namespace Prisma {
     revelationType?: StringWithAggregatesFilter<"QuranSurah"> | string
     chronologicalOrder?: IntWithAggregatesFilter<"QuranSurah"> | number
     rukus?: IntWithAggregatesFilter<"QuranSurah"> | number
+    startIndex?: IntNullableWithAggregatesFilter<"QuranSurah"> | number | null
   }
 
   export type QuranTextWhereInput = {
@@ -5750,6 +5733,7 @@ export namespace Prisma {
     revelationType: string
     chronologicalOrder: number
     rukus: number
+    startIndex?: number | null
   }
 
   export type QuranSurahUncheckedCreateInput = {
@@ -5761,6 +5745,7 @@ export namespace Prisma {
     revelationType: string
     chronologicalOrder: number
     rukus: number
+    startIndex?: number | null
   }
 
   export type QuranSurahUpdateInput = {
@@ -5772,6 +5757,7 @@ export namespace Prisma {
     revelationType?: StringFieldUpdateOperationsInput | string
     chronologicalOrder?: IntFieldUpdateOperationsInput | number
     rukus?: IntFieldUpdateOperationsInput | number
+    startIndex?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type QuranSurahUncheckedUpdateInput = {
@@ -5783,6 +5769,7 @@ export namespace Prisma {
     revelationType?: StringFieldUpdateOperationsInput | string
     chronologicalOrder?: IntFieldUpdateOperationsInput | number
     rukus?: IntFieldUpdateOperationsInput | number
+    startIndex?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type QuranSurahCreateManyInput = {
@@ -5794,6 +5781,7 @@ export namespace Prisma {
     revelationType: string
     chronologicalOrder: number
     rukus: number
+    startIndex?: number | null
   }
 
   export type QuranSurahUpdateManyMutationInput = {
@@ -5805,6 +5793,7 @@ export namespace Prisma {
     revelationType?: StringFieldUpdateOperationsInput | string
     chronologicalOrder?: IntFieldUpdateOperationsInput | number
     rukus?: IntFieldUpdateOperationsInput | number
+    startIndex?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type QuranSurahUncheckedUpdateManyInput = {
@@ -5816,6 +5805,7 @@ export namespace Prisma {
     revelationType?: StringFieldUpdateOperationsInput | string
     chronologicalOrder?: IntFieldUpdateOperationsInput | number
     rukus?: IntFieldUpdateOperationsInput | number
+    startIndex?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type QuranTextCreateInput = {
@@ -5866,8 +5856,8 @@ export namespace Prisma {
 
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -5877,8 +5867,8 @@ export namespace Prisma {
 
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -5886,7 +5876,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
@@ -5925,8 +5914,8 @@ export namespace Prisma {
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -5941,8 +5930,8 @@ export namespace Prisma {
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -5950,7 +5939,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -5959,8 +5947,8 @@ export namespace Prisma {
 
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -5968,7 +5956,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
@@ -6012,8 +5999,8 @@ export namespace Prisma {
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -6021,11 +6008,21 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type QuranSurahCountOrderByAggregateInput = {
@@ -6037,6 +6034,7 @@ export namespace Prisma {
     revelationType?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrder
   }
 
   export type QuranSurahAvgOrderByAggregateInput = {
@@ -6044,6 +6042,7 @@ export namespace Prisma {
     ayas?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrder
   }
 
   export type QuranSurahMaxOrderByAggregateInput = {
@@ -6055,6 +6054,7 @@ export namespace Prisma {
     revelationType?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrder
   }
 
   export type QuranSurahMinOrderByAggregateInput = {
@@ -6066,6 +6066,7 @@ export namespace Prisma {
     revelationType?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrder
   }
 
   export type QuranSurahSumOrderByAggregateInput = {
@@ -6073,6 +6074,23 @@ export namespace Prisma {
     ayas?: SortOrder
     chronologicalOrder?: SortOrder
     rukus?: SortOrder
+    startIndex?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type QuranTextCountOrderByAggregateInput = {
@@ -6124,10 +6142,18 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -6137,8 +6163,8 @@ export namespace Prisma {
 
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -6151,8 +6177,8 @@ export namespace Prisma {
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -6167,8 +6193,8 @@ export namespace Prisma {
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -6178,8 +6204,8 @@ export namespace Prisma {
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -6195,8 +6221,8 @@ export namespace Prisma {
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -6209,8 +6235,8 @@ export namespace Prisma {
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -6226,13 +6252,40 @@ export namespace Prisma {
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
 

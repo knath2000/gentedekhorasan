@@ -1,6 +1,6 @@
 # Progress: Gente de Khorasan Monorepo
 
-**Version:** 1.0.2
+**Version:** 1.0.3
 **Date:** 2025-05-26
 **Related Brief:** `memory-bank/projectbrief.md`
 **Active Context:** `memory-bank/activeContext.md`
@@ -12,7 +12,12 @@
     -   Configuración de proyectos `apps/luminous-verses-mobile` (renombrado de `luminous-verses-expo`), `apps/quran-data-api`, `apps/quranexpo-web`, y `packages/quran-types`.
 -   **`apps/quran-data-api` (API Serverless):**
     -   **Despliegue Exitoso en Vercel:** La API está desplegada y funcionando correctamente, sirviendo datos del Corán.
-    -   **Resolución de Errores de Despliegue:** Se resolvieron los problemas de compilación de TypeScript, generación de Prisma Client, y errores de enrutamiento `404` en Vercel.
+    -   **Resolución de Errores de Despliegue y Enrutamiento (404):** Se resolvieron los problemas de compilación de TypeScript, generación de Prisma Client, y errores de enrutamiento `404` en Vercel.
+        -   **Soluciones Clave:**
+            -   Configuración de `apps/quran-data-api/api/tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión de archivos (`"noEmit": false`).
+            -   Modificación del script `build` en `apps/quran-data-api/package.json` para ejecutar la compilación de funciones (`pnpm run build:functions`) y asegurar que `build:functions` use el `tsconfig.json` correcto (`tsc -p api/tsconfig.json`).
+            -   Movimiento de la configuración de `functions` y `routes` para `quran-data-api` al `vercel.json` de la **raíz del monorepo**. Las rutas ahora apuntan a los archivos JavaScript compilados en el directorio `dist` dentro de `apps/quran-data-api`.
+            -   El archivo `apps/quran-data-api/vercel.json` ahora solo contiene `{"version": 2}` para evitar conflictos.
     -   **Integración con Neon DB y Vercel Edge Config:** La API se conecta y recupera datos de ambas fuentes.
     -   **✅ FIX EXITOSO (2025-05-26):** El archivo `.vercelignore` resolvió completamente los conflictos de archivos Prisma. Deployment exitoso confirmado.
 -   **`apps/quranexpo-web` (Aplicación Web):**
@@ -53,7 +58,7 @@
  
  -   **Overall:** Progreso significativo en deployments. `quran-data-api` ahora desplegado exitosamente. `quranexpo-web` tiene las correcciones de SSR implementadas y **ha sido desplegado exitosamente**.
  -   **Resolved Issues:**
-     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404).
+     -   Problemas de despliegue de la API en Vercel (errores de compilación, Prisma Client, enrutamiento 404, errores de runtime de funciones).
      -   Errores de build de `luminous-verses-expo` (confusión de Next.js, rutas de imágenes, conflictos de merge).
      -   Configuración de scripts de TurboRepo en el `package.json` raíz.
      -   **Error SSR en Audio Player (`__H`):** Resuelto con la implementación de la estrategia híbrida SSR + Client Hydration, y posterior simplificación y corrección de importación.

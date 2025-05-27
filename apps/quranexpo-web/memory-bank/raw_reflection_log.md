@@ -94,3 +94,63 @@ Successes:
 Improvements_Identified_For_Consolidation:
 - Patrón: Sintaxis de configuración de Turborepo (`tasks` vs `pipeline`).
 ---
+Date: 2025-05-26
+TaskRef: "Depuración de despliegue de funciones de API en monorepo Vercel"
+
+Learnings:
+- El error `Function Runtimes must have a valid version` en Vercel para funciones de Node.js en un monorepo no siempre significa que el `runtime` en `vercel.json` esté mal. A menudo, significa que Vercel no está leyendo la configuración de `functions` del `vercel.json` anidado en un subdirectorio.
+- Para que las Vercel Functions en un subdirectorio de un monorepo (`apps/quran-data-api/api/`) sean desplegadas correctamente, la configuración de `functions` y `routes` debe estar en el `vercel.json` de la **raíz del monorepo**.
+- Es crucial que el `tsconfig.json` de la API (`apps/quran-data-api/api/tsconfig.json`) esté configurado para emitir archivos JavaScript (`"noEmit": false`) y que el `outDir` apunte a un directorio de salida (ej. `"dist"`).
+- El script `build` en el `package.json` de la aplicación de la API (`apps/quran-data-api/package.json`) debe ejecutar explícitamente la compilación de TypeScript (`tsc -p api/tsconfig.json`).
+- Las rutas en la sección `functions` y `routes` del `vercel.json` de la raíz deben apuntar a los archivos JavaScript compilados dentro del directorio `dist` del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
+- El `vercel.json` anidado en el subdirectorio de la API (`apps/quran-data-api/vercel.json`) debe ser mínimo, conteniendo solo `{"version": 2}`.
+- La advertencia de Turborepo `WARNING no output files found for task @quran-monorepo/quran-data-api#build` es un fuerte indicador de que el script de build no está produciendo los artefactos esperados para el despliegue de funciones.
+
+Difficulties:
+- Persistencia del error `Function Runtimes must have a valid version` a pesar de las correcciones iniciales en el `vercel.json` anidado, lo que llevó a la hipótesis de que el archivo no estaba siendo reconocido.
+- La depuración de problemas de despliegue en monorepos de Vercel es compleja debido a la interacción entre Vercel CLI, Turborepo y las configuraciones de proyectos anidados.
+
+Successes:
+- Se logró resolver el problema de despliegue de las funciones de la API (`quran-data-api`), permitiendo que la aplicación web (`quranexpo-web`) cargue los datos correctamente.
+- Se confirmó que el endpoint de prueba (`/test/v1/ping`) ahora funciona.
+- Se documentó una solución integral para futuros problemas similares en `memory-bank/propuesta-roo-rule-vercel-monorepo-debugging.md`.
+
+Improvements_Identified_For_Consolidation:
+- Patrón de configuración de Vercel Functions en monorepos.
+- Estrategias de depuración para errores de despliegue en Vercel.
+---
+
+---
+Date: 2025-05-27
+TaskRef: "Migración de base de datos de Neon a Turso e integración con quran-data-api"
+
+Learnings:
+- Dificultades con la instalación del CLI de Turso: `npm install -g turso-cli` y `npm install -g @libsql/cli` fallaron con `E404`. `curl -sSfL https://install.turso.tech/ | bash` falló con `Could not resolve host`. Esto sugiere problemas de red o de registro de paquetes en el entorno del usuario.
+- Problemas con la importación de datos a Turso:
+    - La importación inicial de `quran_data_dump.sql` resultó en tablas vacías.
+    - La importación directa de `quran_data.sql` falló con "table already exists" porque el script intenta crear tablas que ya existen.
+    - La solución fue ejecutar `DROP TABLE IF EXISTS` para todas las tablas (`en_yusufali`, `quran_sajdas`, `quran_surahs`, `quran_text`) antes de importar `quran_data.sql`.
+    - La importación final de `quran_data.sql` después de eliminar las tablas fue exitosa, confirmada por `SELECT COUNT(*)`.
+- Problemas persistentes con `prisma generate` y `Datasource provider not known: "libsql"`:
+    - Este error ocurrió consistentemente a pesar de:
+        - Versión de Prisma (`6.8.2`) compatible con `libsql`.
+        - `schema.prisma` configurado para `libsql`.
+        - `DATABASE_URL` en `.env.local`.
+        - Limpieza de caché de pnpm y reinstalación.
+        - Deshabilitación del `postinstall` hook.
+        - Intentos de ejecución de `prisma generate` de varias maneras (pnpm exec, script Node.js, npx directo).
+    - La depuración de Prisma (`DEBUG=prisma:*`) indicó que el error ocurre en el `getConfig Wasm` del motor de Prisma.
+    - Esto sugiere un problema más profundo con la forma en que Prisma carga o reconoce el adaptador `libsql` en este entorno específico, posiblemente un bug o una incompatibilidad no documentada.
+
+Difficulties:
+- La persistencia del error `Datasource provider not known: "libsql"` a pesar de múltiples intentos de solución, lo que indica un problema más allá de la configuración básica.
+- La necesidad de vaciar/eliminar tablas manualmente en Turso antes de una importación completa de un archivo SQL que incluye sentencias `CREATE TABLE`.
+
+Successes:
+- Se logró importar exitosamente los datos de `quran_data.sql` a la base de datos de Turso después de eliminar las tablas existentes.
+- Se confirmó que la base de datos de Turso ahora contiene los datos esperados.
+
+Improvements_Identified_For_Consolidation:
+- Patrón: Proceso robusto de importación de datos a Turso (DROP TABLE antes de importar).
+- Estrategias de depuración para errores de `prisma generate` con proveedores de base de datos (cuando la versión es compatible).
+---

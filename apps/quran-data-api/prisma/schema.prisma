@@ -2,12 +2,12 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
   output          = "../api/generated/prisma" // Output to api/generated/prisma
-  binaryTargets   = ["native", "rhel-openssl-3.0.x"] // Add rhel-openssl-3.0.x for Vercel
+  binaryTargets   = ["native", "rhel-openssl-3.0.x", "darwin-arm64"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("NEON_DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model EnYusufali {
@@ -37,6 +37,7 @@ model QuranSurah {
   revelationType     String @map("revelation_type")
   chronologicalOrder Int    @map("chronological_order")
   rukus              Int
+  startIndex         Int? @map("start_index") // Add this line
   
   @@map("quran_surahs")
 }
