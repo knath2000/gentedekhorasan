@@ -1,6 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QuranSurah } from '../generated/prisma'; // Import from generated client path
-import { prisma } from '../lib/prisma'
+import { prisma } from '../lib/prisma';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
@@ -39,7 +39,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ayas: s.ayas,
           type: s.revelationType,
           order: s.chronologicalOrder,
-          rukus: s.rukus
+          rukus: s.rukus,
+          startIndex: s.startIndex
         })))
       
       case 'sajdas':
