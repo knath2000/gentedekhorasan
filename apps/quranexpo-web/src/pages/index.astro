@@ -15,7 +15,7 @@ import '../styles/global.css'; // Importar estilos globales
 		{/* Preconnects removed as fonts are local, ensure fonts.css is correctly loading them */}
 	</head>
 	<body class="relative min-h-screen overflow-hidden"> {/* Removed bg-background */}
-		<Background client:idle />
+		<Background />
 		{/* Adjusted padding to account for new bottom nav height (60px) and safe areas */}
 		{/* Using env(safe-area-inset-bottom) for iOS safe area */}
 		<main class="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden" style="padding-bottom: env(safe-area-inset-bottom, 0px); padding-top: env(safe-area-inset-top, 20px);">

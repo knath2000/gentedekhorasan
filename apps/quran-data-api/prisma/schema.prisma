@@ -28,6 +28,7 @@ model QuranSajda {
   @@map("quran_sajdas")
 }
 
+
 model QuranSurah {
   number             Int    @id
   arabicName         String @map("arabic_name")

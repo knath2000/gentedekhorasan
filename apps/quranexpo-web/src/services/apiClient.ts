@@ -201,3 +201,28 @@ export async function fetchSingleTranslatedVerse(
     throw error;
   }
 }
+
+/**
+ * Fetches the description for a specific Surah from the API
+ * @param surahId The ID of the Surah to fetch the description for
+ * @returns A Promise resolving to the Surah description string or null if not found
+ * @throws Error If the API request fails
+ */
+export async function fetchSurahDescription(surahId: number): Promise<string | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/get-surah-description?surahId=${surahId}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null; // Description not found
+      }
+      throw new Error(`API error: Failed to fetch Surah description for ${surahId}. Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.description || null;
+  } catch (error) {
+    console.error(`Error in fetchSurahDescription for surahId ${surahId}:`, error);
+    throw error;
+  }
+}

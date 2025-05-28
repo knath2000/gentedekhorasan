@@ -12,10 +12,10 @@ const ClientOnlyReaderContainer = ({ surahId }: ClientOnlyReaderContainerProps) 
     return (
       <div className="w-full">
         <div className="animate-pulse">
-          <div className="h-20 bg-gray-200 rounded mb-4"></div>
+          <div className="h-20 bg-[rgba(32,32,64,0.7)] rounded mb-4"></div>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+              <div key={i} className="h-32 bg-[rgba(32,32,64,0.7)] rounded"></div>
             ))}
           </div>
         </div>

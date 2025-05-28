@@ -79,7 +79,7 @@ echo "Verificando lockfile..."
 if [ -f "pnpm-lock.yaml" ]; then
     echo "pnpm-lock.yaml encontrado"
 else
-    echo "ERROR: pnpm-lock.yaml no encontrado!"
+    echo "ERROR: pnpm-lockfile.yaml no encontrado!"
     exit 1
 fi
 

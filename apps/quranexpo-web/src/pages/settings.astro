@@ -1,6 +1,6 @@
 ---
-import Background from '../components/Background.tsx';
 import BackButton from '../components/BackButton.tsx';
+import Background from '../components/Background.tsx';
 import SettingsToggle from '../components/SettingsToggle.tsx';
 import '../styles/global.css';
 ---
@@ -15,7 +15,7 @@ import '../styles/global.css';
   </head>
   <body class="flex flex-col h-screen overflow-hidden">
     <!-- Background con estrellas y gradiente -->
-    <Background client:idle />
+    <Background />
     
     <main class="relative z-10 flex flex-col items-center flex-1 px-4 pt-4 h-full overflow-hidden" style="padding-bottom: env(safe-area-inset-bottom, 0px); padding-top: env(safe-area-inset-top, 20px);">
       <div class="w-full flex justify-between items-center mb-8 max-w-3xl">

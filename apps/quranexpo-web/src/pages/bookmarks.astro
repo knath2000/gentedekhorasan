@@ -1,6 +1,6 @@
 ---
-import Background from '../components/Background.tsx';
 import BackButton from '../components/BackButton.tsx';
+import Background from '../components/Background.tsx';
 import BookmarkListContainer from '../components/BookmarkListContainer.tsx';
 import '../styles/global.css';
 ---
@@ -14,7 +14,7 @@ import '../styles/global.css';
 		<title>Bookmarks - Luminous Verses</title>
 	</head>
 	<body class="flex flex-col h-screen overflow-hidden">
-		<Background client:idle />
+		<Background />
 		<main class="relative z-10 flex flex-col items-center flex-1 p-4 h-full overflow-hidden" style="padding-top: env(safe-area-inset-top, 20px); padding-bottom: env(safe-area-inset-bottom, 0px);">
 			<div class="w-full max-w-md absolute inset-x-0 top-[20px] bottom-[0px] mx-auto">
 				<h1 class="text-2xl font-englishBold text-textPrimary mb-6 text-center tracking-wide sm:text-3xl">

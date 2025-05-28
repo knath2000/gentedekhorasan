@@ -1,6 +1,6 @@
 {
   "name": "@quran-monorepo/quran-data-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "vercel dev",
@@ -11,21 +11,21 @@
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@libsql/client": "^0.15.7",
     "@prisma/adapter-libsql": "^6.8.2",
-    "@prisma/client": "^6.8.2",
-    "prisma": "^6.8.2",
     "@vercel/edge-config": "^1.4.0",
     "@vercel/node": "^4.0.0",
     "pg": "^8.16.0"
   },
   "devDependencies": {
+    "@prisma/client": "^6.8.2",
     "@types/node": "^20.14.10",
     "@types/pg": "^8.11.6",
     "eslint": "^9.25.0",
+    "prisma": "^6.8.2",
     "typescript": "~5.8.3"
   }
 }

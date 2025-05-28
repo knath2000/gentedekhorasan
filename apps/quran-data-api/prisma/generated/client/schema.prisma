@@ -28,6 +28,14 @@ model QuranSajda {
   @@map("quran_sajdas")
 }
 
+model SurahDescription {
+  surah_id    Int      @id @unique
+  description String
+  updated_at  DateTime @default(now()) @updatedAt
+
+  @@map("surah_descriptions")
+}
+
 model QuranSurah {
   number             Int    @id
   arabicName         String @map("arabic_name")

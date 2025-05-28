@@ -131,6 +131,12 @@ exports.Prisma.QuranSajdaScalarFieldEnum = {
   type: 'type'
 };
 
+exports.Prisma.SurahDescriptionScalarFieldEnum = {
+  surah_id: 'surah_id',
+  description: 'description',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.QuranSurahScalarFieldEnum = {
   number: 'number',
   arabicName: 'arabicName',
@@ -164,6 +170,7 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   EnYusufali: 'EnYusufali',
   QuranSajda: 'QuranSajda',
+  SurahDescription: 'SurahDescription',
   QuranSurah: 'QuranSurah',
   QuranText: 'QuranText'
 };

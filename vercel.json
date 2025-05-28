@@ -1,23 +1,26 @@
 {
   "version": 2,
   "functions": {
-    "apps/quran-data-api/dist/api/v1/get-metadata.js": {
+    "apps/quran-data-api/api/v1/get-metadata.ts": {
       "runtime": "nodejs@20.x"
     },
-    "apps/quran-data-api/dist/api/v1/get-verses.js": {
+    "apps/quran-data-api/api/v1/get-verses.ts": {
       "runtime": "nodejs@20.x"
     },
-    "apps/quran-data-api/dist/api/v1/get-translated-verse.js": {
+    "apps/quran-data-api/api/v1/get-translated-verse.ts": {
       "runtime": "nodejs@20.x"
     },
-    "apps/quran-data-api/dist/api/test/ping.js": {
+    "apps/quran-data-api/api/v1/get-surah-description.ts": {
+      "runtime": "nodejs@20.x"
+    },
+    "apps/quran-data-api/api/test/ping.ts": {
       "runtime": "nodejs@20.x"
     }
   },
   "routes": [
     {
       "src": "/api/v1/get-metadata",
-      "dest": "apps/quran-data-api/dist/v1/get-metadata.js",
+      "dest": "apps/quran-data-api/api/v1/get-metadata.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -26,7 +29,7 @@
     },
     {
       "src": "/api/v1/get-verses",
-      "dest": "apps/quran-data-api/dist/v1/get-verses.js",
+      "dest": "apps/quran-data-api/api/v1/get-verses.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -35,7 +38,16 @@
     },
     {
       "src": "/api/v1/get-translated-verse",
-      "dest": "apps/quran-data-api/dist/v1/get-translated-verse.js",
+      "dest": "apps/quran-data-api/api/v1/get-translated-verse.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    },
+    {
+      "src": "/api/v1/get-surah-description",
+      "dest": "apps/quran-data-api/api/v1/get-surah-description.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -44,7 +56,7 @@
     },
     {
       "src": "/api/v1/(.*)",
-      "dest": "apps/quran-data-api/dist/v1/$1.js",
+      "dest": "apps/quran-data-api/api/v1/$1.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -53,7 +65,7 @@
     },
     {
       "src": "/test/v1/ping",
-      "dest": "apps/quran-data-api/dist/test/ping.js",
+      "dest": "apps/quran-data-api/api/test/ping.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS",

@@ -1,0 +1,20 @@
+{
+  "name": "import-surah-descriptions",
+  "version": "1.0.0",
+  "description": "Script to import surah descriptions from JSON to TursoDB.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@libsql/client": "^0.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

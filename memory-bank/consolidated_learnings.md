@@ -116,3 +116,128 @@
 **Patrón: Verificación del contenido del archivo antes de `apply_diff`**
 - Siempre leer el contenido más reciente de un archivo antes de intentar aplicar un `diff` para evitar errores de coincidencia debido a cambios inesperados en el archivo.
 - *Razón:* Asegura que el bloque `SEARCH` del `diff` coincida exactamente con el contenido actual del archivo, previniendo fallos en la aplicación de los cambios.
+
+## Configuración de Entorno en Despliegues (Vercel)
+**Patrón: Configuración de Variables de Entorno en Plataformas de Despliegue**
+- Es crucial configurar las variables de entorno necesarias (ej., URLs de bases de datos, tokens de autenticación API) directamente en el panel de control del proveedor de despliegue (ej., Vercel, Netlify, AWS).
+- *Razón:* Las `.env.local` solo funcionan localmente y no son accedidas en entornos de producción.
+- *Confirmación:* Los errores de "variable not defined" o problemas de conexión a servicios externos en el despliegue son un fuerte indicador de que las variables de entorno no están configuradas correctamente en la plataforma.
+
+## Arquitectura de Monorepo y Unificación de Servicios
+**Patrón: Unificación de la Base de Datos y la Capa API en Monorepos**
+- En monorepos, es una buena práctica unificar la infraestructura de la base de datos y la capa API para evitar duplicación de funcionalidades y asegurar la coherencia de los datos.
+- *Razón:* Simplifica la gestión, reduce la superficie de ataque y asegura que todos los proyectos consuman la misma fuente de verdad.
+- *Ejemplo:* Migrar proyectos secundarios para usar la misma base de datos central (ej. Turso) y una única API de datos (ej. `quran-data-api`), eliminando conexiones directas a bases de datos duplicadas (ej. Neon) y directorios de API redundantes.
+
+**Patrón: Gestión de Dependencias en Monorepos pnpm**
+- Para monorepos que utilizan pnpm, la instalación de dependencias debe realizarse preferentemente ejecutando `pnpm install` desde la raíz del monorepo.
+- *Razón:* Esto asegura que pnpm gestione correctamente los enlaces simbólicos y las dependencias compartidas entre los subproyectos, evitando problemas que pueden surgir al intentar ejecutar `npm install` o `yarn install` en subdirectorios individuales.
+- *Depuración:* Errores como `Cannot read properties of null (reading 'matches')` al usar `npm install` en un subproyecto de pnpm suelen resolverse ejecutando `pnpm install` desde la raíz.
+
+## Optimización de Renderizado y Experiencia de Usuario
+**Patrón: Definición de colores de fondo explícitos para evitar FOUC (Flash of Unstyled Content)**
+- Para evitar el "flashing white box" o FOUC, es crucial definir `background-color` explícitamente en `html`, `body` y en los contenedores principales (`main`) de las páginas.
+- *Razón:* Esto asegura que el navegador pinte el fondo deseado antes de que se carguen todos los estilos o el contenido dinámico.
+
+**Patrón: Script de tema inline para evitar FOUC en Dark Mode**
+- Para aplicaciones con dark mode, un script inline en el `<head>` que aplique la clase `dark` al `document.documentElement` basado en el `localStorage` previene el "flashing" del tema claro antes de que se cargue el JavaScript principal.
+
+**Patrón: Manejo de Skeleton Loaders sin librerías dedicadas**
+- Cuando no se utilizan librerías de skeleton loader dedicadas, los indicadores de carga manuales (como spinners) deben estar contenidos en elementos con dimensiones fijas (ej. `min-height`) y sus fondos deben coincidir con el `background-color` del layout para evitar saltos visuales o cambios abruptos.
+
+**Proceso: Adaptación del plan de implementación**
+- Es importante ser flexible y adaptar el plan de implementación si las suposiciones iniciales (ej. uso de una librería específica) no se cumplen. La investigación y la adaptación son clave.
+
+## Restauración de Fondo y Gestión de Apariencia
+**Proceso: Reversión de cambios para restaurar funcionalidad previa**
+- Para restaurar una funcionalidad o apariencia previa, es necesario revertir sistemáticamente los cambios que la modificaron o eliminaron. Esto incluye archivos CSS, configuraciones de TailwindCSS y clases en componentes.
+
+**Patrón: Componentes de fondo dedicados**
+- El uso de un componente dedicado (ej. `Background.tsx`) para manejar el fondo visual de la aplicación (gradientes, estrellas, SVGs) permite una fácil gestión y reutilización.
+
+**Depuración: Entender la composición del fondo**
+- Cuando se trabaja con fondos, es crucial entender cómo se componen (colores sólidos, gradientes, imágenes, SVGs) y cómo interactúan las capas (z-index) para asegurar la visibilidad deseada.
+
+## Renderizado de Fondos en SSR
+**Patrón: Fondos visuales en SSR para evitar FOUC**
+- Los fondos visuales (gradientes, imágenes, SVGs) que deben estar presentes durante el Server-Side Rendering (SSR) y la animación de carga (skeleton loading) deben renderizarse siempre en el servidor, no solo en el cliente.
+- *Razón:* Esto asegura que el fondo esté presente desde el primer render, eliminando el "flashing white box" y proporcionando una experiencia visual consistente desde el inicio.
+- *Implementación:* Eliminar directivas como `client:idle` o `client:only` de los componentes de fondo si no utilizan hooks o lógica específica del cliente.
+
+## Skeletons y Placeholders en SSR
+**Patrón: Colores de skeletons y placeholders en SSR**
+- Los skeletons y placeholders que se renderizan durante el Server-Side Rendering (SSR) deben usar colores base y highlight que combinen con el fondo global de la aplicación.
+- *Razón:* Evitar el "flashing white box" o parches de color que no se integran visualmente con el fondo personalizado u oscuro.
+- *Implementación:* Utilizar colores semitransparentes o tonos oscuros que se mezclen con el fondo, en lugar de blancos o grises claros por defecto.
+
+## Modales y Accesibilidad
+**Patrón: Implementación de Modales Accesibles (Glassmorphism)**
+- Para implementar modales accesibles, es crucial utilizar atributos ARIA (`role="dialog"`, `aria-modal="true"`, `aria-labelledby"`), gestionar el foco (focus trap, restauración de foco al cerrar), y permitir el cierre con teclado (ESC) y click en el backdrop.
+- Los estilos glassmorphism se pueden lograr con `background`, `backdrop-filter`, `border-radius` y `box-shadow`.
+
+**Proceso: Creación de componentes modales**
+- Es una buena práctica encapsular la lógica y la UI de un modal en un componente separado para mejorar la modularidad y la reutilización.
+
+**Depuración: Verificación de tipos de TypeScript**
+- Siempre verificar las propiedades de los tipos de TypeScript (ej. `Surah`) para asegurar que se utilizan las propiedades correctas y evitar errores de compilación.
+
+## Coherencia Visual en Modales
+**Patrón: Integración visual de modales con el tema de la aplicación**
+- Para que un modal se integre visualmente con el resto de la aplicación, debe replicar los tokens de diseño (colores, tipografía, sombras, bordes, fondos) de los componentes existentes (ej. tarjetas, headers).
+- *Razón:* Asegura una experiencia de usuario coherente y premium, evitando que el modal se vea "flotante" o ajeno al tema.
+- *Implementación:* Utilizar las mismas clases de utilidad de TailwindCSS o variables CSS ya definidas para otros componentes, y aplicar la misma estructura de `glassmorphism` si es el patrón de diseño de la aplicación.
+
+## Generación de Contenido con LLMs
+**Proceso: Generación y almacenamiento de descripciones de suras**
+- Para generar descripciones de suras, se puede utilizar la API de OpenRouter con modelos como Gemini 2.5 Flash Preview 5-20, aplicando prompts claros y concisos.
+- *Validación:* Es crucial validar y limpiar la salida del LLM (ej. limitar la longitud, eliminar caracteres especiales) para asegurar la calidad del contenido.
+- *Almacenamiento:* Los resultados deben guardarse localmente en un formato adecuado para la base de datos de destino (ej. JSON para upsert batch en TursoDB).
+- *Consideraciones:* Manejar la clave API como variable de entorno y aplicar retrasos entre llamadas para evitar rate limits.
+- *Estructura del script:* Un script de Node.js/TypeScript independiente con su propio `package.json` y `tsconfig.json` es ideal para esta tarea en un monorepo.
+
+## Interacción de Usuario y Accesibilidad
+**Patrón: Restricción del área de click en elementos interactivos**
+- Para asegurar que el área de click de un elemento interactivo (ej. un título que abre un modal) sea precisa y no se extienda más allá del texto, es crucial aplicar los handlers de eventos y atributos de accesibilidad directamente al elemento de texto (ej. `h1`, `h2`, `span`) en lugar de a un contenedor padre con padding/margen excesivo.
+- Utilizar clases de TailwindCSS como `cursor-pointer` y manejar eventos de teclado (`onKeyDown` para `Enter` y `Space`) mejora la accesibilidad y la experiencia de usuario.
+
+**Proceso: Resolución de contradicciones en planes de implementación**
+- Cuando un plan contiene instrucciones contradictorias (ej. "trigger en título árabe o inglés" vs "no handler en div padre"), es importante analizar el objetivo final y tomar la decisión más lógica y que cumpla con las mejores prácticas (en este caso, aplicar handlers a ambos elementos de texto individualmente).
+
+## Importación de Datos a Bases de Datos (TursoDB)
+**Proceso: Importación de datos a TursoDB**
+- Para importar datos a TursoDB, se puede usar el SDK `@libsql/client`.
+- Es crucial usar el `authToken` correcto y la URL de la base de datos.
+- La ruta al archivo JSON debe ser precisa, especialmente en entornos de módulos ES y directorios anidados.
+- Si las transacciones explícitas (`BEGIN TRANSACTION`, `COMMIT`, `ROLLBACK`) causan problemas inesperados (ej. `cannot rollback - no transaction is active`), se puede optar por ejecutar las consultas individualmente, aunque sea menos eficiente.
+
+**Depuración: Errores de autenticación (401)**
+- Un error 401 (`Unauthorized`) al conectar a una base de datos indica un problema con el token de autenticación (inválido o sin permisos). Verificar que el token sea el correcto y esté actualizado.
+
+**Depuración: Errores de ruta de archivo (`ENOENT`)**
+- Los errores `ENOENT` (No such file or directory) suelen indicar una ruta incorrecta al archivo. Es importante considerar el `process.cwd()` y la estructura de directorios al construir rutas relativas, especialmente en scripts que se compilan y ejecutan desde un subdirectorio (`dist`).
+
+## Integración de Datos Dinámicos en UI
+**Patrón: Integración de API para datos dinámicos**
+- Para mostrar datos dinámicos (como descripciones de suras) en la UI, es necesario crear un endpoint de API dedicado que consulte la base de datos.
+- En entornos donde Prisma CLI presenta problemas (`Datasource provider not known`), se puede optar por usar el cliente de la base de datos directamente (ej. `@libsql/client`) en el endpoint de la API para modelos específicos.
+
+**Patrón: Manejo de estado de carga y errores en componentes UI**
+- Al obtener datos de una API en un componente de Preact (o React), es crucial usar `useState` para gestionar los estados de carga (`isLoading`), error (`error`) y los datos (`description`).
+- Utilizar `useEffect` para disparar la llamada a la API cuando el componente se monta o cuando las dependencias relevantes cambian (ej. `isOpen`, `surah.number`).
+- Mostrar mensajes de carga, error o "no disponible" en la UI para mejorar la experiencia del usuario.
+
+**Depuración: Problemas de Prisma en monorepos**
+- Los errores `Cannot find module 'prisma/build/index.js'` después de instalar Prisma en un monorepo pueden indicar problemas con la resolución de módulos o la ejecución del `postinstall` hook.
+- Intentar `pnpm install` desde la raíz del monorepo puede ayudar a resolver problemas de enlaces simbólicos.
+- Si los problemas persisten, considerar alternativas como usar el cliente de la base de datos directamente para modelos específicos, evitando la necesidad de `prisma generate` para esos modelos.
+
+## Depuración: Errores de CORS
+- Los errores de CORS (`Access to fetch... has been blocked by CORS policy`) ocurren cuando una aplicación web intenta hacer una solicitud a un recurso en un origen diferente (dominio, protocolo o puerto) y el servidor de destino no envía los encabezados `Access-Control-Allow-Origin` adecuados.
+- Para resolverlo en funciones de Vercel, se deben añadir los encabezados `response.setHeader('Access-Control-Allow-Origin', '*')` (o un origen específico), `response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')` y `response.setHeader('Access-Control-Allow-Headers', 'Content-Type')`.
+- Es crucial manejar las solicitudes `OPTIONS` (preflight) devolviendo un estado 200 y terminando la respuesta (`return response.status(200).end();`).
+
+## Depuración: Errores de Hydration Mismatch en SSR
+- El error `"Expected a DOM node of type 'div' but found ''"` indica un mismatch entre el HTML generado por SSR y el renderizado por el cliente.
+- Esto ocurre cuando el componente renderiza `null` o un tipo de nodo diferente en el servidor (cuando no está visible) y luego un `div` con contenido en el cliente (cuando se vuelve visible).
+- **Solución:** Asegurar que el componente siempre renderice la misma estructura DOM, incluso cuando no esté visible. Esto se logra renderizando el componente pero ocultándolo con CSS (ej. `opacity-0 invisible` en TailwindCSS) en lugar de devolver `null`.
+- Mostrar placeholders o skeleton loaders durante la carga de datos asíncronos ayuda a mantener la consistencia del DOM.
