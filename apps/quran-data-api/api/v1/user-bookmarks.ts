@@ -99,17 +99,97 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'POST') {
       try {
+        console.log('=== POST REQUEST DEBUG ===');
+        console.log('Request body:', req.body);
+        console.log('User ID:', userId);
+        
         const { surahId, verseNumber, verseText, surahName, translation, notes } = req.body;
-        if (!surahId || !verseNumber || !verseText || !surahName || !translation) {
-          return res.status(400).json({ error: 'Missing required fields' });
-        }
-        const bookmark = await prisma.userBookmark.create({
-          data: { userId, surahId, verseNumber, verseText, surahName, translation, notes }
+        
+        // ✅ VALIDACIÓN DETALLADA
+        console.log('Extracted fields:', {
+          surahId: surahId,
+          verseNumber: verseNumber,
+          verseText: verseText ? (verseText as string).substring(0, 50) + '...' : 'MISSING',
+          surahName: surahName,
+          translation: translation ? (translation as string).substring(0, 50) + '...' : 'MISSING',
+          notes: notes
         });
+        
+        if (!surahId || !verseNumber || !verseText || !surahName || !translation) {
+          console.log('Missing required fields validation failed');
+          return res.status(400).json({
+            error: 'Missing required fields',
+            received: { surahId, verseNumber, verseText: !!verseText, surahName, translation: !!translation }
+          });
+        }
+        
+        // ✅ VERIFICAR CONEXIÓN PRISMA
+        console.log('Testing Prisma connection...');
+        // await prisma.$connect(); // No es necesario llamar a $connect explícitamente en cada request
+        console.log('Prisma connection assumed to be active.');
+        
+        // ✅ VERIFICAR DUPLICATE CONSTRAINT
+        console.log('Checking for existing bookmark...');
+        const existingBookmark = await prisma.userBookmark.findFirst({
+          where: {
+            userId: userId,
+            surahId: surahId,
+            verseNumber: verseNumber
+          }
+        });
+        
+        if (existingBookmark) {
+          console.log('Bookmark already exists:', existingBookmark.id);
+          return res.status(409).json({
+            error: 'Bookmark already exists',
+            existingId: existingBookmark.id
+          });
+        }
+        
+        // ✅ CREAR BOOKMARK CON LOGGING DETALLADO
+        console.log('Creating bookmark with data:', {
+          userId,
+          surahId,
+          verseNumber,
+          verseText: (verseText as string).substring(0, 50) + '...',
+          surahName,
+          translation: (translation as string).substring(0, 50) + '...',
+          notes: notes || ''
+        });
+        
+        const bookmark = await prisma.userBookmark.create({
+          data: {
+            userId,
+            surahId,
+            verseNumber,
+            verseText: verseText as string,
+            surahName: surahName as string,
+            translation: translation as string,
+            notes: notes || ''
+          }
+        });
+        
+        console.log('Bookmark created successfully:', bookmark.id);
         return res.status(201).json(bookmark);
-      } catch (error) {
-        console.error('Error creating bookmark:', error);
-        return res.status(500).json({ error: 'Failed to create bookmark' });
+        
+      } catch (error: any) {
+        console.error('=== POST ERROR DETAILS ===');
+        console.error('Error type:', error.constructor.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        // ✅ ERRORES ESPECÍFICOS DE PRISMA
+        if (error.code) {
+          console.error('Prisma error code:', error.code);
+          console.error('Prisma error meta:', error.meta);
+        }
+        
+        // ✅ RESPUESTA DE ERROR DETALLADA
+        return res.status(500).json({
+          error: 'Failed to create bookmark',
+          details: error.message,
+          code: error.code || 'UNKNOWN'
+        });
       }
     }
 
