@@ -11,7 +11,7 @@ const adapter = new PrismaLibSQL({
 const prisma = new PrismaClient({ adapter });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS logic (mantener como está)...
+  // CORS DINÁMICO
   const allowedOrigins = [
     'https://quranexpo-web.vercel.app',
     'http://localhost:4321',
@@ -37,37 +37,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    console.log('=== TURSO CONNECTION DEBUG ===');
-    console.log('TURSO_DATABASE_URL present:', !!process.env.TURSO_DATABASE_URL);
-    console.log('TURSO_AUTH_TOKEN present:', !!process.env.TURSO_AUTH_TOKEN);
-    console.log('TURSO_DATABASE_URL starts with:', process.env.TURSO_DATABASE_URL?.substring(0, 20));
-    
-    // Test connection
-    console.log('Testing TursoDB connection...');
-    await prisma.$connect();
-    console.log('TursoDB connected successfully');
-    
-    // ... resto del código de autenticación igual
-    
-    const authHeader = req.headers.authorization;
-    let userId: string | undefined;
+    console.log('=== REQUEST DEBUG ===');
+    console.log('Method:', req.method);
+    console.log('Origin:', req.headers.origin);
+    console.log('All headers:', Object.keys(req.headers));
+    console.log('Authorization header:', req.headers.authorization);
+    console.log('Content-Type:', req.headers['content-type']);
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
+    console.log('=== CLERK DEBUG START ===');
+    console.log('Environment variables:');
+    console.log('- CLERK_SECRET_KEY present:', !!process.env.CLERK_SECRET_KEY);
+    console.log('- CLERK_SECRET_KEY length:', process.env.CLERK_SECRET_KEY?.length);
+    console.log('- CLERK_SECRET_KEY starts with:', process.env.CLERK_SECRET_KEY?.substring(0, 10));
+    
+    // Método 1: Usar x-clerk-user-id header
+    console.log('=== TRYING x-clerk-user-id header ===');
+    let userId: string | undefined = req.headers['x-clerk-user-id'] as string | undefined;
+    console.log('x-clerk-user-id result:', userId);
+    
+    // Método 2: Verificar token manualmente si x-clerk-user-id no está presente o para depuración
+    if (!userId && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      console.log('=== TRYING manual token verification ===');
+      const token = req.headers.authorization.substring(7);
+      console.log('Token extracted, length:', token.length);
+      console.log('Token start:', token.substring(0, 50));
+      
       try {
         const verifiedToken = await verifyToken(token, {
           secretKey: process.env.CLERK_SECRET_KEY!
         });
         userId = verifiedToken.sub;
         console.log('Manual verification success:', userId);
+        console.log('Token claims:', verifiedToken);
       } catch (verifyError: any) {
         console.error('Manual verification failed:', verifyError.message);
+        console.error('Verify error details:', verifyError);
       }
     }
-
+    
     if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      console.log('=== AUTH FAILED ===');
+      return res.status(401).json({ 
+        error: 'Unauthorized',
+        debug: {
+          hasAuthHeader: !!req.headers.authorization,
+          clerkSecretKeyPresent: !!process.env.CLERK_SECRET_KEY,
+          method: 'no_user_id_found'
+        }
+      });
     }
+    
+    console.log('=== AUTH SUCCESS ===');
     console.log('Authenticated user:', userId);
 
     if (req.method === 'GET') {

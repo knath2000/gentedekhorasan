@@ -1,44 +1,47 @@
-import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { createClient } from '@libsql/client';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '../../prisma/generated/client';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    console.log('=== TURSO CONNECTION TEST ===');
-    console.log('TURSO_DATABASE_URL:', process.env.TURSO_DATABASE_URL?.substring(0, 50) + '...');
-    console.log('TURSO_AUTH_TOKEN present:', !!process.env.TURSO_AUTH_TOKEN);
+    console.log('=== DIRECT TURSO CONNECTION TEST ===');
     
-    // Create LibSQL client
-    // Create Prisma client with adapter
-    const adapter = new PrismaLibSQL({
+    const libsql = createClient({
       url: process.env.TURSO_DATABASE_URL!,
       authToken: process.env.TURSO_AUTH_TOKEN!,
     });
-    const prisma = new PrismaClient({ adapter });
     
-    // Test connection
-    await prisma.$connect();
-    console.log('TursoDB connected successfully');
+    // Test basic connection
+    const result = await libsql.execute('SELECT 1 as test');
+    console.log('Basic query result:', result.rows);
     
-    // Test query
-    const count = await prisma.userBookmark.count();
-    console.log('Current bookmark count:', count);
-    
-    await prisma.$disconnect();
-    
-    return res.status(200).json({
-      status: 'success',
-      connection: 'ok',
-      bookmarkCount: count,
-      database: 'TursoDB via LibSQL'
-    });
+    // Test user_bookmarks table
+    try {
+      const countResult = await libsql.execute('SELECT COUNT(*) as count FROM user_bookmarks');
+      console.log('Bookmark count:', countResult.rows[0]);
+      
+      return res.status(200).json({
+        status: 'success',
+        connection: 'ok',
+        bookmarkCount: countResult.rows[0].count,
+        database: 'TursoDB via LibSQL Direct'
+      });
+    } catch (tableError: any) {
+      console.log('user_bookmarks table does not exist:', tableError.message);
+      
+      return res.status(200).json({
+        status: 'partial_success',
+        connection: 'ok',
+        tableExists: false,
+        message: 'Connection works but user_bookmarks table needs to be created',
+        error: tableError.message
+      });
+    }
     
   } catch (error: any) {
-    console.error('TursoDB test failed:', error);
+    console.error('Connection test failed:', error);
     return res.status(500).json({
       status: 'error',
-      message: error.message,
-      code: error.code
+      message: error.message
     });
   }
 }
