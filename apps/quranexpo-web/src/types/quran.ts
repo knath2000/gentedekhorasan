@@ -18,8 +18,9 @@ export interface Verse {
   id: number;
   surahId: number;
   numberInSurah: number;
-  text: string;     // Arabic text
+  verseText: string;     // Arabic text
   translation?: string;  // English or other translation
+  surahName?: string;    // Name of the surah (e.g., English name)
 }
 
 /**

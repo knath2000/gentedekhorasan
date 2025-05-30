@@ -1,6 +1,8 @@
-import { useRef } from 'preact/hooks'; // Importar useRef
-import { fetchSurahById } from '../services/apiClient'; // Para obtener el nombre de la sura
-import { addBookmark, isBookmarked, removeBookmark } from '../stores/bookmarkStore'; // Importar funciones del store
+import { $authStore } from '@clerk/astro/client';
+import { useStore } from '@nanostores/react';
+import { useRef } from 'preact/hooks';
+import { fetchSurahById } from '../services/apiClient';
+import { addBookmark, isBookmarked, removeBookmark } from '../stores/bookmarkStore';
 import type { Verse } from '../types/quran';
 import { ErrorIcon } from './icons/AudioIcons';
 
@@ -32,18 +34,23 @@ export const ReaderVerseCard = ({
 }: ReaderVerseCardProps) => {
   const longPressTimer = useRef<number | null>(null);
   const isLongPress = useRef(false);
+  const auth = useStore($authStore); // Obtener el estado de autenticación
 
   const handleTouchStart = (e: TouchEvent) => {
     longPressTimer.current = window.setTimeout(async () => {
       isLongPress.current = true;
+      if (!auth.userId) {
+        alert('Please sign in to add bookmarks.');
+        return;
+      }
       const verseKey = `${verse.surahId}-${verse.numberInSurah}`;
       if (isBookmarked(verse.surahId, verse.numberInSurah)) {
-        removeBookmark(verseKey);
+        removeBookmark(auth.userId, verseKey);
         alert('Bookmark removed!'); // Notificación simple
       } else {
         const surahData = await fetchSurahById(verse.surahId);
         const surahName = surahData?.englishName || `Surah ${verse.surahId}`;
-        addBookmark(verse, surahName);
+        addBookmark(auth.userId, verse, surahName);
         alert('Bookmark added!'); // Notificación simple
       }
     }, 500); // 500ms para pulsación larga
@@ -60,14 +67,18 @@ export const ReaderVerseCard = ({
   const handleMouseDown = (e: MouseEvent) => {
     longPressTimer.current = window.setTimeout(async () => {
       isLongPress.current = true;
+      if (!auth.userId) {
+        alert('Please sign in to add bookmarks.');
+        return;
+      }
       const verseKey = `${verse.surahId}-${verse.numberInSurah}`;
       if (isBookmarked(verse.surahId, verse.numberInSurah)) {
-        removeBookmark(verseKey);
+        removeBookmark(auth.userId, verseKey);
         alert('Bookmark removed!'); // Notificación simple
       } else {
         const surahData = await fetchSurahById(verse.surahId);
         const surahName = surahData?.englishName || `Surah ${verse.surahId}`;
-        addBookmark(verse, surahName);
+        addBookmark(auth.userId, verse, surahName);
         alert('Bookmark added!'); // Notificación simple
       }
     }, 500); // 500ms para pulsación larga
@@ -139,7 +150,7 @@ export const ReaderVerseCard = ({
           className="text-textArabic font-arabicRegular text-3xl text-right mb-2 leading-relaxed"
           dir="rtl"
         >
-          {verse.text}
+          {verse.verseText}
         </p>
         
         {/* English translation (if enabled) */}

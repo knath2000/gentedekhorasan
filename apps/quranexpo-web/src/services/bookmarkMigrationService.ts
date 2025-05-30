@@ -88,7 +88,7 @@ export async function migrateBookmarksToDatabase(userId: string): Promise<void> 
         const newBookmark: Omit<Bookmark, 'id' | 'userId'> = {
           surahId: localBookmark.surahId,
           verseNumber: localBookmark.verseNumber,
-          verseText: verseDetails.text,
+          verseText: verseDetails.verseText,
           surahName: surahDetails.englishName,
           translation: verseDetails.translation || '',
           notes: '', // Default empty notes for migrated bookmarks

@@ -69,7 +69,7 @@ export async function addBookmark(userId: string, verse: Verse, surahName: strin
     const newBookmarkData: Omit<Bookmark, 'id' | 'userId'> = {
       surahId: verse.surahId,
       verseNumber: verse.numberInSurah,
-      verseText: verse.text,
+      verseText: verse.verseText,
       surahName: surahName,
       translation: verse.translation || '',
       notes: '', // Inicialmente vacío

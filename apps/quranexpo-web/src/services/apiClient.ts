@@ -1,7 +1,7 @@
 import type { Bookmark, Surah, Verse } from '../types/quran';
 
 // The API base URL is hardcoded to match the quranexpo2 native app
-const API_BASE_URL = 'https://quran-data-api.vercel.app/api/v1'; // Updated to external API
+const API_BASE_URL = 'https://gentedekhorasan.vercel.app/api/v1'; // Updated to external API
 console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 
 /**
@@ -83,6 +83,13 @@ export async function fetchVersesForSurah(
   translator: string = "en.yusufali"
 ): Promise<Verse[]> {
   try {
+    // Fetch Surah details to get the surahName
+    const surahData = await fetchSurahById(surahId);
+    if (!surahData) {
+      throw new Error(`Surah with ID ${surahId} not found.`);
+    }
+    const surahName = surahData.englishName;
+
     // Fetch Arabic verses
     const arabicVersesResponse = await fetch(`${API_BASE_URL}/get-verses?surah=${surahId}`);
     
@@ -107,8 +114,12 @@ export async function fetchVersesForSurah(
         translator
       );
       return {
-        ...verse,
+        id: verse.id, // Ensure ID is passed
+        surahId: verse.surahId,
+        numberInSurah: verse.numberInSurah,
+        verseText: verse.text, // Use 'text' from API as 'verseText'
         translation: translatedVerse?.translation || '',
+        surahName: surahName, // Add surahName to each verse object
       };
     });
 
@@ -164,7 +175,7 @@ export async function fetchSingleTranslatedVerse(
       id: data.id || parseInt(`${surahId}${ayahId}`), // Use API's ID or generate one
       surahId: surahId,
       numberInSurah: ayahId,
-      text: data.text || '',
+      verseText: data.text || '', // Renamed 'text' to 'verseText'
       translation: data.translation || ''
     };
   } catch (error) {
