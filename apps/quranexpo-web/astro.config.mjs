@@ -1,21 +1,16 @@
 // @ts-check
-import node from '@astrojs/node';
 import preact from '@astrojs/preact';
 import tailwind from '@astrojs/tailwind';
+import vercel from '@astrojs/vercel/serverless'; // ✅ Cambiar a Vercel adapter
 import clerk from '@clerk/astro';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
-  outDir: './dist',
+  output: 'server', // ✅ Mantener SSR
+  adapter: vercel({}), // ✅ Usar Vercel adapter específico
   integrations: [
-    preact({
-      include: ['**/*.tsx']
-    }),
     tailwind(),
+    preact(),
     clerk()
   ],
   vite: {
