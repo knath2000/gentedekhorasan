@@ -26,13 +26,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    console.log('=== AUTH DEBUG ===');
+    console.log('Authorization header:', req.headers.authorization);
+    console.log('All headers:', Object.keys(req.headers));
+    
     // Get userId directly from headers (Clerk injects this)
     const userId = req.headers['x-clerk-user-id'] as string | undefined;
+    console.log('getAuth result - userId:', userId);
 
     if (!userId) {
-      console.warn('Unauthorized access attempt: No x-clerk-user-id header found.');
-      return res.status(401).json({ error: 'Unauthorized' });
+      console.log('=== AUTH FAILED ===');
+      console.log('CLERK_SECRET_KEY present:', !!process.env.CLERK_SECRET_KEY);
+      return res.status(401).json({
+        error: 'Unauthorized',
+        debug: {
+          hasAuthHeader: !!req.headers.authorization,
+          clerkSecretKey: !!process.env.CLERK_SECRET_KEY
+        }
+      });
     }
+    
+    console.log('=== AUTH SUCCESS ===');
+    console.log('Authenticated user:', userId);
 
     if (req.method === 'GET') {
       try {
@@ -106,8 +121,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
     
-  } catch (error) {
+  } catch (error: any) { // Cast error to any
     console.error('Error in handler:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }

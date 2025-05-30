@@ -23,7 +23,10 @@ export const bookmarksLoading = atom(false);
 export async function loadBookmarksFromApi(userId: string) {
   bookmarksLoading.set(true);
   const auth = $authStore.get(); // Get current auth state
-  const token = await auth.session?.getToken(); // Get session token
+  const token = await auth.session?.getToken({ template: 'default' }); // Get session token with template
+  console.log('Auth state:', auth);
+  console.log('Session:', auth.session);
+  console.log('Token obtained:', token ? 'Token present' : 'No token');
 
   if (!token) {
     console.warn('No authentication token available, cannot load bookmarks from API.');
@@ -57,7 +60,12 @@ export async function addBookmark(userId: string, verse: Verse, surahName: strin
   }
 
   const auth = $authStore.get();
-  const token = await auth.session?.getToken();
+  console.log('Auth state in addBookmark:', auth);
+  console.log('Session available:', !!auth.session);
+  console.log('User ID:', auth.userId);
+
+  const token = await auth.session?.getToken({ template: 'default' });
+  console.log('Token obtained:', token ? `${token.substring(0, 20)}...` : 'No token');
 
   if (!token) {
     console.warn('No authentication token available, cannot add bookmark.');
@@ -97,7 +105,7 @@ export async function removeBookmark(userId: string, bookmarkId: string) {
   }
 
   const auth = $authStore.get();
-  const token = await auth.session?.getToken();
+  const token = await auth.session?.getToken({ template: 'default' });
 
   if (!token) {
     console.warn('No authentication token available, cannot remove bookmark.');
@@ -127,7 +135,7 @@ export async function updateBookmarkNote(userId: string, bookmarkId: string, not
   }
 
   const auth = $authStore.get();
-  const token = await auth.session?.getToken();
+  const token = await auth.session?.getToken({ template: 'default' });
 
   if (!token) {
     console.warn('No authentication token available, cannot update bookmark note.');
