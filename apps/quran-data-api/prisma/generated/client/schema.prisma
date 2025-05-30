@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("LIBSQL_URL")
+  url      = env("TURSO_DATABASE_URL")
 }
 
 model EnYusufali {
