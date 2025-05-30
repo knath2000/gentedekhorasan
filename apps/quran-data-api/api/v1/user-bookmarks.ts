@@ -5,10 +5,21 @@ import { PrismaClient } from '../../prisma/generated/client';
 const prisma = new PrismaClient();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://quranexpo-web.vercel.app, http://localhost:4321');
+  // ✅ CORS DINÁMICO
+  const allowedOrigins = [
+    'https://quranexpo-web.vercel.app',
+    'http://localhost:4321',
+    'http://localhost:3000'
+  ];
+  
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // Handle preflight request
   if (req.method === 'OPTIONS') {

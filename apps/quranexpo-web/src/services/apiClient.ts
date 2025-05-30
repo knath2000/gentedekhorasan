@@ -249,14 +249,24 @@ export async function fetchBookmarks(userId: string, token: string): Promise<Boo
  */
 export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' | 'userId' | 'timestamp'>, token: string): Promise<Bookmark> {
   try {
+    const bookmarkData = {
+      surahId: bookmark.surahId,
+      verseNumber: bookmark.verseNumber,
+      verseText: bookmark.verseText,
+      surahName: bookmark.surahName,
+      translation: bookmark.translation,
+      notes: bookmark.notes || ''
+    };
+    
     const response = await fetch(`${API_BASE_URL}/user-bookmarks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ ...bookmark, userId, timestamp: new Date().toISOString() }),
+      body: JSON.stringify({ ...bookmarkData, userId, timestamp: new Date().toISOString() }), // Add userId and timestamp here
     });
+    
     if (!response.ok) {
       throw new Error(`API error: Failed to add bookmark for user ${userId}. Status: ${response.status}`);
     }
