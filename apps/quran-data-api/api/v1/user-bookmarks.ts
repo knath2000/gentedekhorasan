@@ -1,4 +1,4 @@
-import { getAuth } from '@clerk/nextjs/api';
+import { auth } from '@clerk/nextjs/server';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PrismaClient } from '../../prisma/generated/client';
 
@@ -15,7 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  const { userId } = getAuth(req);
+  const userId = (await auth()).userId;
 
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
