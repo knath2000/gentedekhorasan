@@ -18,25 +18,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Requested-With'); // Add X-Requested-With
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight por 24 horas
 
   // Handle preflight request
   if (req.method === 'OPTIONS') {
+    console.log('=== PREFLIGHT REQUEST ===');
+    console.log('Origin:', req.headers.origin);
+    console.log('Access-Control-Request-Headers:', req.headers['access-control-request-headers']);
     return res.status(200).end();
   }
 
   try {
+    console.log('=== REQUEST DEBUG ===');
+    console.log('Method:', req.method);
+    console.log('Origin:', req.headers.origin);
+    console.log('All headers:', Object.keys(req.headers));
+    console.log('Authorization header:', req.headers.authorization);
+    console.log('Content-Type:', req.headers['content-type']);
+
     console.log('=== CLERK DEBUG START ===');
     console.log('Environment variables:');
     console.log('- CLERK_SECRET_KEY present:', !!process.env.CLERK_SECRET_KEY);
     console.log('- CLERK_SECRET_KEY length:', process.env.CLERK_SECRET_KEY?.length);
     console.log('- CLERK_SECRET_KEY starts with:', process.env.CLERK_SECRET_KEY?.substring(0, 10));
-    
-    console.log('Request details:');
-    console.log('- Authorization header:', req.headers.authorization);
-    console.log('- Origin:', req.headers.origin);
-    console.log('- User-Agent:', req.headers['user-agent']);
     
     // Método 1: Usar x-clerk-user-id header
     console.log('=== TRYING x-clerk-user-id header ===');

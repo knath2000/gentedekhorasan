@@ -258,18 +258,34 @@ export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' 
       notes: bookmark.notes || ''
     };
     
+    // ✅ DEBUGGING - Verificar token y headers
+    console.log('=== FRONTEND API CALL DEBUG ===');
+    console.log('Token received:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
+    console.log('API URL:', `${API_BASE_URL}/user-bookmarks`);
+    console.log('Headers to send:', {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token.substring(0, 20)}...` : 'NO AUTH HEADER'
+    });
+    console.log('Body to send:', { ...bookmarkData, userId, timestamp: new Date().toISOString() });
+    
     const response = await fetch(`${API_BASE_URL}/user-bookmarks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ ...bookmarkData, userId, timestamp: new Date().toISOString() }), // Add userId and timestamp here
+      body: JSON.stringify({ ...bookmarkData, userId, timestamp: new Date().toISOString() }),
     });
     
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.log('Error response body:', errorText);
       throw new Error(`API error: Failed to add bookmark for user ${userId}. Status: ${response.status}`);
     }
+    
     const data = await response.json();
     return data as Bookmark;
   } catch (error) {
