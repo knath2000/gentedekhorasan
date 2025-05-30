@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Surah } from '../types/quran';
 
 interface SurahCardProps {
@@ -39,12 +38,12 @@ const ReactSurahCard = ({ surah, onPress, className = '' }: SurahCardProps) => {
         
         {/* English name */}
         <h4 className="text-textEnglish font-englishSemiBold text-lg">
-          {surah.englishName}
+          {surah.transliterationName}
         </h4>
         
         {/* Info text */}
         <p className="text-textSecondary font-englishRegular text-sm mt-1">
-          Chapter {surah.englishName} • {surah.numberOfAyahs} Verses
+          Chapter {surah.transliterationName} • {surah.numberOfAyahs} Verses
         </p>
         
         {/* Revelation type badge */}

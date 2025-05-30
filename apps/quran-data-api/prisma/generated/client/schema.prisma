@@ -28,14 +28,6 @@ model QuranSajda {
   @@map("quran_sajdas")
 }
 
-model SurahDescription {
-  surah_id    Int      @id @unique
-  description String
-  updated_at  DateTime @default(now()) @updatedAt
-
-  @@map("surah_descriptions")
-}
-
 model QuranSurah {
   number             Int    @id
   arabicName         String @map("arabic_name")
@@ -57,4 +49,20 @@ model QuranText {
   text String
 
   @@map("quran_text")
+}
+
+model UserBookmark {
+  id          String   @id @default(cuid())
+  userId      String
+  surahId     Int
+  verseNumber Int
+  verseText   String
+  surahName   String
+  translation String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, surahId, verseNumber])
+  @@map("user_bookmarks")
 }

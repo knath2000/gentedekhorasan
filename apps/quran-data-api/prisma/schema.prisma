@@ -51,3 +51,19 @@ model QuranText {
   
   @@map("quran_text")
 }
+
+model UserBookmark {
+  id          String   @id @default(cuid())
+  userId      String
+  surahId     Int
+  verseNumber Int
+  verseText   String
+  surahName   String
+  translation String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, surahId, verseNumber])
+  @@map("user_bookmarks")
+}

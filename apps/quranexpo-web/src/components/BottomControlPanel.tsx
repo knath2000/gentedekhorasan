@@ -1,6 +1,5 @@
-import { h } from 'preact';
-import { StopIcon, SkipIcon } from './icons/AudioIcons';
 import { ChevronLeft, ChevronRight } from 'lucide-preact'; // Importar iconos de paginación
+import { SkipIcon, StopIcon } from './icons/AudioIcons';
 
 interface BottomControlPanelProps {
   onStop: () => void;
@@ -17,12 +16,14 @@ interface BottomControlPanelProps {
   goToPreviousPage: () => void;
   goToNextPage: () => void;
   showNavigation?: boolean; // Nueva prop para controlar la visibilidad de la navegación
+  isModalOpen?: boolean; // Nueva prop para comunicar el estado del modal
 }
 
 const BottomControlPanel = ({
   onStop,
   onSkip,
   isAudioActive,
+  isModalOpen = false, // Asignar valor por defecto
   currentSurahName,
   currentSurahNumber,
   currentVerseNumber,
@@ -38,7 +39,16 @@ const BottomControlPanel = ({
   const audioControlsVisibility = isAudioActive ? 'flex' : 'hidden';
 
   return (
-    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-[999] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl py-5 px-4 min-w-[320px] w-[calc(100%-2rem)] max-w-md flex flex-col justify-center items-center shadow-2xl transition-all duration-300 ease-in-out ${panelHeightClass}`}>
+    <div
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-10
+        bg-slate-800/80 backdrop-blur-sm border border-white/20 rounded-3xl
+        py-5 px-6 shadow-2xl
+        flex flex-col justify-center items-center
+        transition-all duration-300 ease-in-out
+        ${panelHeightClass}
+        ${isModalOpen ? 'opacity-0 invisible translate-y-4' : 'opacity-100 visible translate-y-0'}
+      `}
+    >
       {/* Controles de audio (condicionalmente visibles) */}
       <div className={`${audioControlsVisibility} flex-col items-center justify-between w-full mb-4`}>
         {/* Información contextual y estado de reproducción */}
@@ -78,7 +88,7 @@ const BottomControlPanel = ({
 
       {/* Controles de paginación (condicionalmente visibles) */}
       {showNavigation && totalPages > 1 && (
-        <div className="flex items-center space-x-6 text-white w-full justify-center pt-2 border-t border-white/10">
+        <div className="flex items-center space-x-6 text-white pt-2 border-t border-white/10">
           <button
             onClick={goToPreviousPage}
             disabled={currentPage === 1}

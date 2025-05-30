@@ -1,30 +1,29 @@
 // @ts-check
+import node from '@astrojs/node';
+import preact from '@astrojs/preact';
+import tailwind from '@astrojs/tailwind';
+import clerk from '@clerk/astro';
 import { defineConfig } from 'astro/config';
 
-import preact from '@astrojs/preact';
-import tailwind from '@astrojs/tailwind'; // Re-enable Astro Tailwind integration
-
-// https://astro.build/config
 export default defineConfig({
-  output: 'static',
+  output: 'server',
+  adapter: node({
+    mode: 'standalone'
+  }),
   outDir: './dist',
   integrations: [
-    // Configurar Preact para todos los componentes TSX
     preact({
       include: ['**/*.tsx']
     }),
-    
-    tailwind()
+    tailwind(),
+    clerk()
   ],
-  // Configuración adicional para evitar conflictos
   vite: {
     ssr: {
-      // Evitar conflictos de hidratación
       noExternal: ['@tanstack/react-virtual']
     },
     resolve: {
       alias: {
-        // Alias React to Preact for compatibility
         'react': 'preact/compat',
         'react-dom/test-utils': 'preact/test-utils',
         'react-dom': 'preact/compat',

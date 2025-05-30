@@ -1,15 +1,13 @@
-import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-import type { Surah } from '../types/quran';
-import ReactSurahCard from './ReactSurahCard';
-import { fetchSurahList, fetchTransliterationNames } from '../services/apiClient';
-import { getComparator, sortOptionLabels } from '../utils/sorting';
+import { useEffect, useState } from 'preact/hooks';
+import { fetchSurahList } from '../services/apiClient';
 import { surahSortOrder } from '../stores/settingsStore';
+import type { Surah } from '../types/quran';
+import { getComparator, sortOptionLabels } from '../utils/sorting';
+import ReactSurahCard from './ReactSurahCard';
 
 // Versión simplificada sin virtualización
 const SurahListContainer = () => {
   const [surahs, setSurahs] = useState<Surah[]>([]);
-  const [transliterationMap, setTransliterationMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState(surahSortOrder.get());
@@ -28,19 +26,9 @@ const SurahListContainer = () => {
         setLoading(true);
         setError(null);
         
-        const [surahData, transliterationData] = await Promise.all([
-          fetchSurahList(),
-          fetchTransliterationNames()
-        ]);
-        
-        // Combinar los datos de transliteración con los datos de la sura
-        const combinedSurahs = surahData.map(surah => ({
-          ...surah,
-          transliterationName: transliterationData[surah.number] || surah.englishName // Usar transliteración del Edge Config, o fallback a englishName
-        }));
-
-        setSurahs(combinedSurahs);
-        setTransliterationMap(transliterationData);
+        // Solo cargar datos de surah (ya incluye transliterationName correcto)
+        const surahData = await fetchSurahList();
+        setSurahs(surahData);
       } catch (err: any) {
         console.error('Error loading surahs:', err);
         setError(err.message || 'Failed to load surahs. Please try again.');
@@ -59,7 +47,7 @@ const SurahListContainer = () => {
   }, [surahs, sortOrder]);
 
   const handleSurahPress = (surah: Surah) => {
-    console.log(`Surah ${surah.number} - ${surah.englishName} selected`);
+    console.log(`Surah ${surah.number} - ${surah.transliterationName} selected`);
     window.location.href = `/reader/${surah.number}`;
   };
 

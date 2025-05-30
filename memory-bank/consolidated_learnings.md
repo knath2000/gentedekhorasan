@@ -79,6 +79,22 @@
 - *Aprendizaje específico:* Los `focus:ring` de TailwindCSS pueden causar artefactos visuales inesperados en ciertos contextos de renderizado. Reemplazarlos con `box-shadow` personalizados puede ser una solución más robusta.
 - *Aprendizaje específico:* Los artefactos de texto como `:start_line:XX -------` en el código renderizado son el resultado de un `apply_diff` fallido que inserta metadatos de diff directamente en el archivo. La solución es reescribir el archivo completo con `write_to_file`.
 
+## Migración de Librerías de Estilo (styled-components a StyleSheet)
+**Proceso: Migración sistemática de librerías de estilo en React Native**
+- Para migrar de librerías CSS-in-JS (ej. `styled-components`) a `StyleSheet` nativo en React Native, es crucial un proceso sistemático:
+    1.  **Búsqueda exhaustiva:** Identificar todas las importaciones y usos de la librería a migrar en el codebase (ej. `grep -r "styled-components"`).
+    2.  **Eliminación de dependencias:** Desinstalar el paquete de la librería y eliminar archivos de configuración o declaración de tipos relacionados (ej. `styled-config.js`, `styled.d.ts`).
+    3.  **Creación de tema y contexto nativos:** Implementar un objeto de tema simple y un `ThemeContext` nativo para gestionar los estilos.
+    4.  **Migración de componentes:** Reescribir cada componente estilizado para usar `StyleSheet.create` y consumir el tema a través de `useTheme()`. Asegurarse de tipar correctamente las props `children` y `style`.
+    5.  **Limpieza profunda de caché:** Eliminar `node_modules`, cachés de Expo/Metro (`npx expo start --clear`, `npx react-native start --reset-cache`) y reinstalar dependencias (`npm install` o `pnpm install`).
+    6.  **Verificación final:** Ejecutar búsquedas (`grep`) para confirmar que no quedan referencias a la librería antigua.
+- *Razón:* Evita errores de runtime (`TypeError: Cannot read property 'S' of undefined`, `TypeError: Cannot read property 'default' of undefined`, `Unable to resolve module`) causados por incompatibilidades con Hermes Engine y problemas de resolución de módulos.
+- *Aprendizaje específico:* Los errores de TypeScript como `Property 'textPrimary' does not exist` o `Property 'radii' does not exist` después de la migración de temas indican que la estructura del tema en `src/theme/theme.ts` no coincide con el tema simple de `src/theme/nativeTheme.js` usado por `ThemeContext.js`. La solución es ajustar las referencias de propiedades (ej. `theme.colors.textPrimary` a `theme.colors.text`, `theme.radii.md` a `theme.borderRadius.md`).
+- *Aprendizaje específico:* Los errores de TypeScript como `JSX element class does not support attributes` y `Cannot find name 'TouchableOpacity'` después de la migración de componentes estilizados indican que los componentes nativos (`Text`, `TouchableOpacity`, `View`) se están usando incorrectamente. La solución es pasar las props `style` y `children` directamente, y no usar la sintaxis de `styled.Component`.
+- *Aprendizaje específico:* La definición duplicada de componentes en el mismo archivo (ej. `AnimatedBackground`) causa errores de `Cannot redeclare block-scoped variable`. Asegurarse de que solo haya una definición.
+- *Aprendizaje específico:* Los componentes de fondo que usan animaciones (ej. `LottieView`) deben contener la animación y aceptar `children` como props para que el contenido se renderice encima de la animación.
+- *Aprendizaje específico:* La importación de `Head` de `next/head` y el contenido HTML/web en componentes de React Native (ej. `_layout.tsx`) causan errores de runtime en la aplicación nativa. Estos deben ser eliminados o condicionales a la plataforma.
+
 ## Visualización de Datos
 **Patrón: Mostrar nombres de suras en transliteración inglesa en el título de la tarjeta**
 - Para mejorar la experiencia del usuario y la coherencia con las expectativas de los usuarios de habla inglesa, el título de la tarjeta de sura en la página de suras ahora muestra el nombre de la sura en transliteración inglesa (`surah.transliterationName`).
@@ -241,3 +257,13 @@
 - Esto ocurre cuando el componente renderiza `null` o un tipo de nodo diferente en el servidor (cuando no está visible) y luego un `div` con contenido en el cliente (cuando se vuelve visible).
 - **Solución:** Asegurar que el componente siempre renderice la misma estructura DOM, incluso cuando no esté visible. Esto se logra renderizando el componente pero ocultándolo con CSS (ej. `opacity-0 invisible` en TailwindCSS) en lugar de devolver `null`.
 - Mostrar placeholders o skeleton loaders durante la carga de datos asíncronos ayuda a mantener la consistencia del DOM.
+
+## Diseño UI: Redimensionamiento de modales y scroll
+- Para redimensionar un modal y permitir que su contenido sea scrollable, se pueden usar clases de TailwindCSS como `max-w-` (para ancho máximo), `max-h-` (para altura máxima) y `overflow-y-auto` (para scroll vertical automático).
+- Es importante aplicar `overflow-y-auto` al contenedor del contenido que se espera que sea scrollable, y `max-h-` al contenedor principal del modal para que el scroll funcione correctamente.
+
+## Diseño UI: Control de superposición de elementos (z-index) y efectos de fondo
+- Para lograr que un elemento (ej. un panel de navegación) se vea borroso detrás de un modal, es crucial que el `z-index` del backdrop del modal sea mayor que el `z-index` del elemento que se desea desenfocar.
+- El `backdrop-blur` de TailwindCSS aplica el efecto de desenfoque solo a lo que está *detrás* del elemento al que se aplica la clase.
+- Asegurarse de que el `z-index` del modal principal sea mayor que el de su propio backdrop para que el modal sea visible.
+- **Evitar aplicar `backdrop-blur` a elementos que se espera que sean desenfocados por un overlay superior.** El desenfoque debe ser manejado por el overlay, no por los elementos individuales. Esto evita conflictos y asegura que el efecto se aplique correctamente.

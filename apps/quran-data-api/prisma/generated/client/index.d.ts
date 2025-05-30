@@ -24,11 +24,6 @@ export type EnYusufali = $Result.DefaultSelection<Prisma.$EnYusufaliPayload>
  */
 export type QuranSajda = $Result.DefaultSelection<Prisma.$QuranSajdaPayload>
 /**
- * Model SurahDescription
- * 
- */
-export type SurahDescription = $Result.DefaultSelection<Prisma.$SurahDescriptionPayload>
-/**
  * Model QuranSurah
  * 
  */
@@ -38,6 +33,11 @@ export type QuranSurah = $Result.DefaultSelection<Prisma.$QuranSurahPayload>
  * 
  */
 export type QuranText = $Result.DefaultSelection<Prisma.$QuranTextPayload>
+/**
+ * Model UserBookmark
+ * 
+ */
+export type UserBookmark = $Result.DefaultSelection<Prisma.$UserBookmarkPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -185,16 +185,6 @@ export class PrismaClient<
   get quranSajda(): Prisma.QuranSajdaDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.surahDescription`: Exposes CRUD operations for the **SurahDescription** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more SurahDescriptions
-    * const surahDescriptions = await prisma.surahDescription.findMany()
-    * ```
-    */
-  get surahDescription(): Prisma.SurahDescriptionDelegate<ExtArgs, ClientOptions>;
-
-  /**
    * `prisma.quranSurah`: Exposes CRUD operations for the **QuranSurah** model.
     * Example usage:
     * ```ts
@@ -213,6 +203,16 @@ export class PrismaClient<
     * ```
     */
   get quranText(): Prisma.QuranTextDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userBookmark`: Exposes CRUD operations for the **UserBookmark** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserBookmarks
+    * const userBookmarks = await prisma.userBookmark.findMany()
+    * ```
+    */
+  get userBookmark(): Prisma.UserBookmarkDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -655,9 +655,9 @@ export namespace Prisma {
   export const ModelName: {
     EnYusufali: 'EnYusufali',
     QuranSajda: 'QuranSajda',
-    SurahDescription: 'SurahDescription',
     QuranSurah: 'QuranSurah',
-    QuranText: 'QuranText'
+    QuranText: 'QuranText',
+    UserBookmark: 'UserBookmark'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -676,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "enYusufali" | "quranSajda" | "surahDescription" | "quranSurah" | "quranText"
+      modelProps: "enYusufali" | "quranSajda" | "quranSurah" | "quranText" | "userBookmark"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -828,80 +828,6 @@ export namespace Prisma {
           }
         }
       }
-      SurahDescription: {
-        payload: Prisma.$SurahDescriptionPayload<ExtArgs>
-        fields: Prisma.SurahDescriptionFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.SurahDescriptionFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.SurahDescriptionFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>
-          }
-          findFirst: {
-            args: Prisma.SurahDescriptionFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.SurahDescriptionFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>
-          }
-          findMany: {
-            args: Prisma.SurahDescriptionFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>[]
-          }
-          create: {
-            args: Prisma.SurahDescriptionCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>
-          }
-          createMany: {
-            args: Prisma.SurahDescriptionCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.SurahDescriptionCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>[]
-          }
-          delete: {
-            args: Prisma.SurahDescriptionDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>
-          }
-          update: {
-            args: Prisma.SurahDescriptionUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>
-          }
-          deleteMany: {
-            args: Prisma.SurahDescriptionDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.SurahDescriptionUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.SurahDescriptionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>[]
-          }
-          upsert: {
-            args: Prisma.SurahDescriptionUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SurahDescriptionPayload>
-          }
-          aggregate: {
-            args: Prisma.SurahDescriptionAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateSurahDescription>
-          }
-          groupBy: {
-            args: Prisma.SurahDescriptionGroupByArgs<ExtArgs>
-            result: $Utils.Optional<SurahDescriptionGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.SurahDescriptionCountArgs<ExtArgs>
-            result: $Utils.Optional<SurahDescriptionCountAggregateOutputType> | number
-          }
-        }
-      }
       QuranSurah: {
         payload: Prisma.$QuranSurahPayload<ExtArgs>
         fields: Prisma.QuranSurahFieldRefs
@@ -1050,6 +976,80 @@ export namespace Prisma {
           }
         }
       }
+      UserBookmark: {
+        payload: Prisma.$UserBookmarkPayload<ExtArgs>
+        fields: Prisma.UserBookmarkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserBookmarkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserBookmarkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>
+          }
+          findFirst: {
+            args: Prisma.UserBookmarkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserBookmarkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>
+          }
+          findMany: {
+            args: Prisma.UserBookmarkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>[]
+          }
+          create: {
+            args: Prisma.UserBookmarkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>
+          }
+          createMany: {
+            args: Prisma.UserBookmarkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserBookmarkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>[]
+          }
+          delete: {
+            args: Prisma.UserBookmarkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>
+          }
+          update: {
+            args: Prisma.UserBookmarkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserBookmarkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserBookmarkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserBookmarkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>[]
+          }
+          upsert: {
+            args: Prisma.UserBookmarkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserBookmarkPayload>
+          }
+          aggregate: {
+            args: Prisma.UserBookmarkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserBookmark>
+          }
+          groupBy: {
+            args: Prisma.UserBookmarkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserBookmarkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserBookmarkCountArgs<ExtArgs>
+            result: $Utils.Optional<UserBookmarkCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1140,9 +1140,9 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     enYusufali?: EnYusufaliOmit
     quranSajda?: QuranSajdaOmit
-    surahDescription?: SurahDescriptionOmit
     quranSurah?: QuranSurahOmit
     quranText?: QuranTextOmit
+    userBookmark?: UserBookmarkOmit
   }
 
   /* Types for Logging */
@@ -3282,1007 +3282,6 @@ export namespace Prisma {
 
 
   /**
-   * Model SurahDescription
-   */
-
-  export type AggregateSurahDescription = {
-    _count: SurahDescriptionCountAggregateOutputType | null
-    _avg: SurahDescriptionAvgAggregateOutputType | null
-    _sum: SurahDescriptionSumAggregateOutputType | null
-    _min: SurahDescriptionMinAggregateOutputType | null
-    _max: SurahDescriptionMaxAggregateOutputType | null
-  }
-
-  export type SurahDescriptionAvgAggregateOutputType = {
-    surah_id: number | null
-  }
-
-  export type SurahDescriptionSumAggregateOutputType = {
-    surah_id: number | null
-  }
-
-  export type SurahDescriptionMinAggregateOutputType = {
-    surah_id: number | null
-    description: string | null
-    updated_at: Date | null
-  }
-
-  export type SurahDescriptionMaxAggregateOutputType = {
-    surah_id: number | null
-    description: string | null
-    updated_at: Date | null
-  }
-
-  export type SurahDescriptionCountAggregateOutputType = {
-    surah_id: number
-    description: number
-    updated_at: number
-    _all: number
-  }
-
-
-  export type SurahDescriptionAvgAggregateInputType = {
-    surah_id?: true
-  }
-
-  export type SurahDescriptionSumAggregateInputType = {
-    surah_id?: true
-  }
-
-  export type SurahDescriptionMinAggregateInputType = {
-    surah_id?: true
-    description?: true
-    updated_at?: true
-  }
-
-  export type SurahDescriptionMaxAggregateInputType = {
-    surah_id?: true
-    description?: true
-    updated_at?: true
-  }
-
-  export type SurahDescriptionCountAggregateInputType = {
-    surah_id?: true
-    description?: true
-    updated_at?: true
-    _all?: true
-  }
-
-  export type SurahDescriptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which SurahDescription to aggregate.
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of SurahDescriptions to fetch.
-     */
-    orderBy?: SurahDescriptionOrderByWithRelationInput | SurahDescriptionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: SurahDescriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` SurahDescriptions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` SurahDescriptions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned SurahDescriptions
-    **/
-    _count?: true | SurahDescriptionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: SurahDescriptionAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: SurahDescriptionSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: SurahDescriptionMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: SurahDescriptionMaxAggregateInputType
-  }
-
-  export type GetSurahDescriptionAggregateType<T extends SurahDescriptionAggregateArgs> = {
-        [P in keyof T & keyof AggregateSurahDescription]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateSurahDescription[P]>
-      : GetScalarType<T[P], AggregateSurahDescription[P]>
-  }
-
-
-
-
-  export type SurahDescriptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: SurahDescriptionWhereInput
-    orderBy?: SurahDescriptionOrderByWithAggregationInput | SurahDescriptionOrderByWithAggregationInput[]
-    by: SurahDescriptionScalarFieldEnum[] | SurahDescriptionScalarFieldEnum
-    having?: SurahDescriptionScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: SurahDescriptionCountAggregateInputType | true
-    _avg?: SurahDescriptionAvgAggregateInputType
-    _sum?: SurahDescriptionSumAggregateInputType
-    _min?: SurahDescriptionMinAggregateInputType
-    _max?: SurahDescriptionMaxAggregateInputType
-  }
-
-  export type SurahDescriptionGroupByOutputType = {
-    surah_id: number
-    description: string
-    updated_at: Date
-    _count: SurahDescriptionCountAggregateOutputType | null
-    _avg: SurahDescriptionAvgAggregateOutputType | null
-    _sum: SurahDescriptionSumAggregateOutputType | null
-    _min: SurahDescriptionMinAggregateOutputType | null
-    _max: SurahDescriptionMaxAggregateOutputType | null
-  }
-
-  type GetSurahDescriptionGroupByPayload<T extends SurahDescriptionGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<SurahDescriptionGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof SurahDescriptionGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], SurahDescriptionGroupByOutputType[P]>
-            : GetScalarType<T[P], SurahDescriptionGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type SurahDescriptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    surah_id?: boolean
-    description?: boolean
-    updated_at?: boolean
-  }, ExtArgs["result"]["surahDescription"]>
-
-  export type SurahDescriptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    surah_id?: boolean
-    description?: boolean
-    updated_at?: boolean
-  }, ExtArgs["result"]["surahDescription"]>
-
-  export type SurahDescriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    surah_id?: boolean
-    description?: boolean
-    updated_at?: boolean
-  }, ExtArgs["result"]["surahDescription"]>
-
-  export type SurahDescriptionSelectScalar = {
-    surah_id?: boolean
-    description?: boolean
-    updated_at?: boolean
-  }
-
-  export type SurahDescriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"surah_id" | "description" | "updated_at", ExtArgs["result"]["surahDescription"]>
-
-  export type $SurahDescriptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "SurahDescription"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      surah_id: number
-      description: string
-      updated_at: Date
-    }, ExtArgs["result"]["surahDescription"]>
-    composites: {}
-  }
-
-  type SurahDescriptionGetPayload<S extends boolean | null | undefined | SurahDescriptionDefaultArgs> = $Result.GetResult<Prisma.$SurahDescriptionPayload, S>
-
-  type SurahDescriptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<SurahDescriptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: SurahDescriptionCountAggregateInputType | true
-    }
-
-  export interface SurahDescriptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SurahDescription'], meta: { name: 'SurahDescription' } }
-    /**
-     * Find zero or one SurahDescription that matches the filter.
-     * @param {SurahDescriptionFindUniqueArgs} args - Arguments to find a SurahDescription
-     * @example
-     * // Get one SurahDescription
-     * const surahDescription = await prisma.surahDescription.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends SurahDescriptionFindUniqueArgs>(args: SelectSubset<T, SurahDescriptionFindUniqueArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one SurahDescription that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {SurahDescriptionFindUniqueOrThrowArgs} args - Arguments to find a SurahDescription
-     * @example
-     * // Get one SurahDescription
-     * const surahDescription = await prisma.surahDescription.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends SurahDescriptionFindUniqueOrThrowArgs>(args: SelectSubset<T, SurahDescriptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first SurahDescription that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionFindFirstArgs} args - Arguments to find a SurahDescription
-     * @example
-     * // Get one SurahDescription
-     * const surahDescription = await prisma.surahDescription.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends SurahDescriptionFindFirstArgs>(args?: SelectSubset<T, SurahDescriptionFindFirstArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first SurahDescription that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionFindFirstOrThrowArgs} args - Arguments to find a SurahDescription
-     * @example
-     * // Get one SurahDescription
-     * const surahDescription = await prisma.surahDescription.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends SurahDescriptionFindFirstOrThrowArgs>(args?: SelectSubset<T, SurahDescriptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more SurahDescriptions that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all SurahDescriptions
-     * const surahDescriptions = await prisma.surahDescription.findMany()
-     * 
-     * // Get first 10 SurahDescriptions
-     * const surahDescriptions = await prisma.surahDescription.findMany({ take: 10 })
-     * 
-     * // Only select the `surah_id`
-     * const surahDescriptionWithSurah_idOnly = await prisma.surahDescription.findMany({ select: { surah_id: true } })
-     * 
-     */
-    findMany<T extends SurahDescriptionFindManyArgs>(args?: SelectSubset<T, SurahDescriptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a SurahDescription.
-     * @param {SurahDescriptionCreateArgs} args - Arguments to create a SurahDescription.
-     * @example
-     * // Create one SurahDescription
-     * const SurahDescription = await prisma.surahDescription.create({
-     *   data: {
-     *     // ... data to create a SurahDescription
-     *   }
-     * })
-     * 
-     */
-    create<T extends SurahDescriptionCreateArgs>(args: SelectSubset<T, SurahDescriptionCreateArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many SurahDescriptions.
-     * @param {SurahDescriptionCreateManyArgs} args - Arguments to create many SurahDescriptions.
-     * @example
-     * // Create many SurahDescriptions
-     * const surahDescription = await prisma.surahDescription.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends SurahDescriptionCreateManyArgs>(args?: SelectSubset<T, SurahDescriptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many SurahDescriptions and returns the data saved in the database.
-     * @param {SurahDescriptionCreateManyAndReturnArgs} args - Arguments to create many SurahDescriptions.
-     * @example
-     * // Create many SurahDescriptions
-     * const surahDescription = await prisma.surahDescription.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many SurahDescriptions and only return the `surah_id`
-     * const surahDescriptionWithSurah_idOnly = await prisma.surahDescription.createManyAndReturn({
-     *   select: { surah_id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends SurahDescriptionCreateManyAndReturnArgs>(args?: SelectSubset<T, SurahDescriptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a SurahDescription.
-     * @param {SurahDescriptionDeleteArgs} args - Arguments to delete one SurahDescription.
-     * @example
-     * // Delete one SurahDescription
-     * const SurahDescription = await prisma.surahDescription.delete({
-     *   where: {
-     *     // ... filter to delete one SurahDescription
-     *   }
-     * })
-     * 
-     */
-    delete<T extends SurahDescriptionDeleteArgs>(args: SelectSubset<T, SurahDescriptionDeleteArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one SurahDescription.
-     * @param {SurahDescriptionUpdateArgs} args - Arguments to update one SurahDescription.
-     * @example
-     * // Update one SurahDescription
-     * const surahDescription = await prisma.surahDescription.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends SurahDescriptionUpdateArgs>(args: SelectSubset<T, SurahDescriptionUpdateArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more SurahDescriptions.
-     * @param {SurahDescriptionDeleteManyArgs} args - Arguments to filter SurahDescriptions to delete.
-     * @example
-     * // Delete a few SurahDescriptions
-     * const { count } = await prisma.surahDescription.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends SurahDescriptionDeleteManyArgs>(args?: SelectSubset<T, SurahDescriptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more SurahDescriptions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many SurahDescriptions
-     * const surahDescription = await prisma.surahDescription.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends SurahDescriptionUpdateManyArgs>(args: SelectSubset<T, SurahDescriptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more SurahDescriptions and returns the data updated in the database.
-     * @param {SurahDescriptionUpdateManyAndReturnArgs} args - Arguments to update many SurahDescriptions.
-     * @example
-     * // Update many SurahDescriptions
-     * const surahDescription = await prisma.surahDescription.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more SurahDescriptions and only return the `surah_id`
-     * const surahDescriptionWithSurah_idOnly = await prisma.surahDescription.updateManyAndReturn({
-     *   select: { surah_id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends SurahDescriptionUpdateManyAndReturnArgs>(args: SelectSubset<T, SurahDescriptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one SurahDescription.
-     * @param {SurahDescriptionUpsertArgs} args - Arguments to update or create a SurahDescription.
-     * @example
-     * // Update or create a SurahDescription
-     * const surahDescription = await prisma.surahDescription.upsert({
-     *   create: {
-     *     // ... data to create a SurahDescription
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the SurahDescription we want to update
-     *   }
-     * })
-     */
-    upsert<T extends SurahDescriptionUpsertArgs>(args: SelectSubset<T, SurahDescriptionUpsertArgs<ExtArgs>>): Prisma__SurahDescriptionClient<$Result.GetResult<Prisma.$SurahDescriptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of SurahDescriptions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionCountArgs} args - Arguments to filter SurahDescriptions to count.
-     * @example
-     * // Count the number of SurahDescriptions
-     * const count = await prisma.surahDescription.count({
-     *   where: {
-     *     // ... the filter for the SurahDescriptions we want to count
-     *   }
-     * })
-    **/
-    count<T extends SurahDescriptionCountArgs>(
-      args?: Subset<T, SurahDescriptionCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], SurahDescriptionCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a SurahDescription.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends SurahDescriptionAggregateArgs>(args: Subset<T, SurahDescriptionAggregateArgs>): Prisma.PrismaPromise<GetSurahDescriptionAggregateType<T>>
-
-    /**
-     * Group by SurahDescription.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SurahDescriptionGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends SurahDescriptionGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: SurahDescriptionGroupByArgs['orderBy'] }
-        : { orderBy?: SurahDescriptionGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, SurahDescriptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSurahDescriptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the SurahDescription model
-   */
-  readonly fields: SurahDescriptionFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for SurahDescription.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__SurahDescriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the SurahDescription model
-   */
-  interface SurahDescriptionFieldRefs {
-    readonly surah_id: FieldRef<"SurahDescription", 'Int'>
-    readonly description: FieldRef<"SurahDescription", 'String'>
-    readonly updated_at: FieldRef<"SurahDescription", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * SurahDescription findUnique
-   */
-  export type SurahDescriptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * Filter, which SurahDescription to fetch.
-     */
-    where: SurahDescriptionWhereUniqueInput
-  }
-
-  /**
-   * SurahDescription findUniqueOrThrow
-   */
-  export type SurahDescriptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * Filter, which SurahDescription to fetch.
-     */
-    where: SurahDescriptionWhereUniqueInput
-  }
-
-  /**
-   * SurahDescription findFirst
-   */
-  export type SurahDescriptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * Filter, which SurahDescription to fetch.
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of SurahDescriptions to fetch.
-     */
-    orderBy?: SurahDescriptionOrderByWithRelationInput | SurahDescriptionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for SurahDescriptions.
-     */
-    cursor?: SurahDescriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` SurahDescriptions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` SurahDescriptions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of SurahDescriptions.
-     */
-    distinct?: SurahDescriptionScalarFieldEnum | SurahDescriptionScalarFieldEnum[]
-  }
-
-  /**
-   * SurahDescription findFirstOrThrow
-   */
-  export type SurahDescriptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * Filter, which SurahDescription to fetch.
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of SurahDescriptions to fetch.
-     */
-    orderBy?: SurahDescriptionOrderByWithRelationInput | SurahDescriptionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for SurahDescriptions.
-     */
-    cursor?: SurahDescriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` SurahDescriptions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` SurahDescriptions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of SurahDescriptions.
-     */
-    distinct?: SurahDescriptionScalarFieldEnum | SurahDescriptionScalarFieldEnum[]
-  }
-
-  /**
-   * SurahDescription findMany
-   */
-  export type SurahDescriptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * Filter, which SurahDescriptions to fetch.
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of SurahDescriptions to fetch.
-     */
-    orderBy?: SurahDescriptionOrderByWithRelationInput | SurahDescriptionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing SurahDescriptions.
-     */
-    cursor?: SurahDescriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` SurahDescriptions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` SurahDescriptions.
-     */
-    skip?: number
-    distinct?: SurahDescriptionScalarFieldEnum | SurahDescriptionScalarFieldEnum[]
-  }
-
-  /**
-   * SurahDescription create
-   */
-  export type SurahDescriptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * The data needed to create a SurahDescription.
-     */
-    data: XOR<SurahDescriptionCreateInput, SurahDescriptionUncheckedCreateInput>
-  }
-
-  /**
-   * SurahDescription createMany
-   */
-  export type SurahDescriptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many SurahDescriptions.
-     */
-    data: SurahDescriptionCreateManyInput | SurahDescriptionCreateManyInput[]
-  }
-
-  /**
-   * SurahDescription createManyAndReturn
-   */
-  export type SurahDescriptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * The data used to create many SurahDescriptions.
-     */
-    data: SurahDescriptionCreateManyInput | SurahDescriptionCreateManyInput[]
-  }
-
-  /**
-   * SurahDescription update
-   */
-  export type SurahDescriptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * The data needed to update a SurahDescription.
-     */
-    data: XOR<SurahDescriptionUpdateInput, SurahDescriptionUncheckedUpdateInput>
-    /**
-     * Choose, which SurahDescription to update.
-     */
-    where: SurahDescriptionWhereUniqueInput
-  }
-
-  /**
-   * SurahDescription updateMany
-   */
-  export type SurahDescriptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update SurahDescriptions.
-     */
-    data: XOR<SurahDescriptionUpdateManyMutationInput, SurahDescriptionUncheckedUpdateManyInput>
-    /**
-     * Filter which SurahDescriptions to update
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * Limit how many SurahDescriptions to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * SurahDescription updateManyAndReturn
-   */
-  export type SurahDescriptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * The data used to update SurahDescriptions.
-     */
-    data: XOR<SurahDescriptionUpdateManyMutationInput, SurahDescriptionUncheckedUpdateManyInput>
-    /**
-     * Filter which SurahDescriptions to update
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * Limit how many SurahDescriptions to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * SurahDescription upsert
-   */
-  export type SurahDescriptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * The filter to search for the SurahDescription to update in case it exists.
-     */
-    where: SurahDescriptionWhereUniqueInput
-    /**
-     * In case the SurahDescription found by the `where` argument doesn't exist, create a new SurahDescription with this data.
-     */
-    create: XOR<SurahDescriptionCreateInput, SurahDescriptionUncheckedCreateInput>
-    /**
-     * In case the SurahDescription was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<SurahDescriptionUpdateInput, SurahDescriptionUncheckedUpdateInput>
-  }
-
-  /**
-   * SurahDescription delete
-   */
-  export type SurahDescriptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-    /**
-     * Filter which SurahDescription to delete.
-     */
-    where: SurahDescriptionWhereUniqueInput
-  }
-
-  /**
-   * SurahDescription deleteMany
-   */
-  export type SurahDescriptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which SurahDescriptions to delete
-     */
-    where?: SurahDescriptionWhereInput
-    /**
-     * Limit how many SurahDescriptions to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * SurahDescription without action
-   */
-  export type SurahDescriptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SurahDescription
-     */
-    select?: SurahDescriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SurahDescription
-     */
-    omit?: SurahDescriptionOmit<ExtArgs> | null
-  }
-
-
-  /**
    * Model QuranSurah
    */
 
@@ -6400,6 +5399,1102 @@ export namespace Prisma {
 
 
   /**
+   * Model UserBookmark
+   */
+
+  export type AggregateUserBookmark = {
+    _count: UserBookmarkCountAggregateOutputType | null
+    _avg: UserBookmarkAvgAggregateOutputType | null
+    _sum: UserBookmarkSumAggregateOutputType | null
+    _min: UserBookmarkMinAggregateOutputType | null
+    _max: UserBookmarkMaxAggregateOutputType | null
+  }
+
+  export type UserBookmarkAvgAggregateOutputType = {
+    surahId: number | null
+    verseNumber: number | null
+  }
+
+  export type UserBookmarkSumAggregateOutputType = {
+    surahId: number | null
+    verseNumber: number | null
+  }
+
+  export type UserBookmarkMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    surahId: number | null
+    verseNumber: number | null
+    verseText: string | null
+    surahName: string | null
+    translation: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserBookmarkMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    surahId: number | null
+    verseNumber: number | null
+    verseText: string | null
+    surahName: string | null
+    translation: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserBookmarkCountAggregateOutputType = {
+    id: number
+    userId: number
+    surahId: number
+    verseNumber: number
+    verseText: number
+    surahName: number
+    translation: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type UserBookmarkAvgAggregateInputType = {
+    surahId?: true
+    verseNumber?: true
+  }
+
+  export type UserBookmarkSumAggregateInputType = {
+    surahId?: true
+    verseNumber?: true
+  }
+
+  export type UserBookmarkMinAggregateInputType = {
+    id?: true
+    userId?: true
+    surahId?: true
+    verseNumber?: true
+    verseText?: true
+    surahName?: true
+    translation?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserBookmarkMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    surahId?: true
+    verseNumber?: true
+    verseText?: true
+    surahName?: true
+    translation?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserBookmarkCountAggregateInputType = {
+    id?: true
+    userId?: true
+    surahId?: true
+    verseNumber?: true
+    verseText?: true
+    surahName?: true
+    translation?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type UserBookmarkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserBookmark to aggregate.
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserBookmarks to fetch.
+     */
+    orderBy?: UserBookmarkOrderByWithRelationInput | UserBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserBookmarks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserBookmarks
+    **/
+    _count?: true | UserBookmarkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserBookmarkAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserBookmarkSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserBookmarkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserBookmarkMaxAggregateInputType
+  }
+
+  export type GetUserBookmarkAggregateType<T extends UserBookmarkAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserBookmark]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserBookmark[P]>
+      : GetScalarType<T[P], AggregateUserBookmark[P]>
+  }
+
+
+
+
+  export type UserBookmarkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserBookmarkWhereInput
+    orderBy?: UserBookmarkOrderByWithAggregationInput | UserBookmarkOrderByWithAggregationInput[]
+    by: UserBookmarkScalarFieldEnum[] | UserBookmarkScalarFieldEnum
+    having?: UserBookmarkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserBookmarkCountAggregateInputType | true
+    _avg?: UserBookmarkAvgAggregateInputType
+    _sum?: UserBookmarkSumAggregateInputType
+    _min?: UserBookmarkMinAggregateInputType
+    _max?: UserBookmarkMaxAggregateInputType
+  }
+
+  export type UserBookmarkGroupByOutputType = {
+    id: string
+    userId: string
+    surahId: number
+    verseNumber: number
+    verseText: string
+    surahName: string
+    translation: string
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: UserBookmarkCountAggregateOutputType | null
+    _avg: UserBookmarkAvgAggregateOutputType | null
+    _sum: UserBookmarkSumAggregateOutputType | null
+    _min: UserBookmarkMinAggregateOutputType | null
+    _max: UserBookmarkMaxAggregateOutputType | null
+  }
+
+  type GetUserBookmarkGroupByPayload<T extends UserBookmarkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserBookmarkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserBookmarkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserBookmarkGroupByOutputType[P]>
+            : GetScalarType<T[P], UserBookmarkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserBookmarkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    surahId?: boolean
+    verseNumber?: boolean
+    verseText?: boolean
+    surahName?: boolean
+    translation?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["userBookmark"]>
+
+  export type UserBookmarkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    surahId?: boolean
+    verseNumber?: boolean
+    verseText?: boolean
+    surahName?: boolean
+    translation?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["userBookmark"]>
+
+  export type UserBookmarkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    surahId?: boolean
+    verseNumber?: boolean
+    verseText?: boolean
+    surahName?: boolean
+    translation?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["userBookmark"]>
+
+  export type UserBookmarkSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    surahId?: boolean
+    verseNumber?: boolean
+    verseText?: boolean
+    surahName?: boolean
+    translation?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type UserBookmarkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "surahId" | "verseNumber" | "verseText" | "surahName" | "translation" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["userBookmark"]>
+
+  export type $UserBookmarkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserBookmark"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      surahId: number
+      verseNumber: number
+      verseText: string
+      surahName: string
+      translation: string
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["userBookmark"]>
+    composites: {}
+  }
+
+  type UserBookmarkGetPayload<S extends boolean | null | undefined | UserBookmarkDefaultArgs> = $Result.GetResult<Prisma.$UserBookmarkPayload, S>
+
+  type UserBookmarkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserBookmarkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserBookmarkCountAggregateInputType | true
+    }
+
+  export interface UserBookmarkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserBookmark'], meta: { name: 'UserBookmark' } }
+    /**
+     * Find zero or one UserBookmark that matches the filter.
+     * @param {UserBookmarkFindUniqueArgs} args - Arguments to find a UserBookmark
+     * @example
+     * // Get one UserBookmark
+     * const userBookmark = await prisma.userBookmark.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserBookmarkFindUniqueArgs>(args: SelectSubset<T, UserBookmarkFindUniqueArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserBookmark that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserBookmarkFindUniqueOrThrowArgs} args - Arguments to find a UserBookmark
+     * @example
+     * // Get one UserBookmark
+     * const userBookmark = await prisma.userBookmark.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserBookmarkFindUniqueOrThrowArgs>(args: SelectSubset<T, UserBookmarkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserBookmark that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkFindFirstArgs} args - Arguments to find a UserBookmark
+     * @example
+     * // Get one UserBookmark
+     * const userBookmark = await prisma.userBookmark.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserBookmarkFindFirstArgs>(args?: SelectSubset<T, UserBookmarkFindFirstArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserBookmark that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkFindFirstOrThrowArgs} args - Arguments to find a UserBookmark
+     * @example
+     * // Get one UserBookmark
+     * const userBookmark = await prisma.userBookmark.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserBookmarkFindFirstOrThrowArgs>(args?: SelectSubset<T, UserBookmarkFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserBookmarks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserBookmarks
+     * const userBookmarks = await prisma.userBookmark.findMany()
+     * 
+     * // Get first 10 UserBookmarks
+     * const userBookmarks = await prisma.userBookmark.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userBookmarkWithIdOnly = await prisma.userBookmark.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserBookmarkFindManyArgs>(args?: SelectSubset<T, UserBookmarkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserBookmark.
+     * @param {UserBookmarkCreateArgs} args - Arguments to create a UserBookmark.
+     * @example
+     * // Create one UserBookmark
+     * const UserBookmark = await prisma.userBookmark.create({
+     *   data: {
+     *     // ... data to create a UserBookmark
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserBookmarkCreateArgs>(args: SelectSubset<T, UserBookmarkCreateArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserBookmarks.
+     * @param {UserBookmarkCreateManyArgs} args - Arguments to create many UserBookmarks.
+     * @example
+     * // Create many UserBookmarks
+     * const userBookmark = await prisma.userBookmark.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserBookmarkCreateManyArgs>(args?: SelectSubset<T, UserBookmarkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserBookmarks and returns the data saved in the database.
+     * @param {UserBookmarkCreateManyAndReturnArgs} args - Arguments to create many UserBookmarks.
+     * @example
+     * // Create many UserBookmarks
+     * const userBookmark = await prisma.userBookmark.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserBookmarks and only return the `id`
+     * const userBookmarkWithIdOnly = await prisma.userBookmark.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserBookmarkCreateManyAndReturnArgs>(args?: SelectSubset<T, UserBookmarkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserBookmark.
+     * @param {UserBookmarkDeleteArgs} args - Arguments to delete one UserBookmark.
+     * @example
+     * // Delete one UserBookmark
+     * const UserBookmark = await prisma.userBookmark.delete({
+     *   where: {
+     *     // ... filter to delete one UserBookmark
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserBookmarkDeleteArgs>(args: SelectSubset<T, UserBookmarkDeleteArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserBookmark.
+     * @param {UserBookmarkUpdateArgs} args - Arguments to update one UserBookmark.
+     * @example
+     * // Update one UserBookmark
+     * const userBookmark = await prisma.userBookmark.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserBookmarkUpdateArgs>(args: SelectSubset<T, UserBookmarkUpdateArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserBookmarks.
+     * @param {UserBookmarkDeleteManyArgs} args - Arguments to filter UserBookmarks to delete.
+     * @example
+     * // Delete a few UserBookmarks
+     * const { count } = await prisma.userBookmark.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserBookmarkDeleteManyArgs>(args?: SelectSubset<T, UserBookmarkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserBookmarks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserBookmarks
+     * const userBookmark = await prisma.userBookmark.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserBookmarkUpdateManyArgs>(args: SelectSubset<T, UserBookmarkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserBookmarks and returns the data updated in the database.
+     * @param {UserBookmarkUpdateManyAndReturnArgs} args - Arguments to update many UserBookmarks.
+     * @example
+     * // Update many UserBookmarks
+     * const userBookmark = await prisma.userBookmark.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserBookmarks and only return the `id`
+     * const userBookmarkWithIdOnly = await prisma.userBookmark.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserBookmarkUpdateManyAndReturnArgs>(args: SelectSubset<T, UserBookmarkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserBookmark.
+     * @param {UserBookmarkUpsertArgs} args - Arguments to update or create a UserBookmark.
+     * @example
+     * // Update or create a UserBookmark
+     * const userBookmark = await prisma.userBookmark.upsert({
+     *   create: {
+     *     // ... data to create a UserBookmark
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserBookmark we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserBookmarkUpsertArgs>(args: SelectSubset<T, UserBookmarkUpsertArgs<ExtArgs>>): Prisma__UserBookmarkClient<$Result.GetResult<Prisma.$UserBookmarkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserBookmarks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkCountArgs} args - Arguments to filter UserBookmarks to count.
+     * @example
+     * // Count the number of UserBookmarks
+     * const count = await prisma.userBookmark.count({
+     *   where: {
+     *     // ... the filter for the UserBookmarks we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserBookmarkCountArgs>(
+      args?: Subset<T, UserBookmarkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserBookmarkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserBookmark.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserBookmarkAggregateArgs>(args: Subset<T, UserBookmarkAggregateArgs>): Prisma.PrismaPromise<GetUserBookmarkAggregateType<T>>
+
+    /**
+     * Group by UserBookmark.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserBookmarkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserBookmarkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserBookmarkGroupByArgs['orderBy'] }
+        : { orderBy?: UserBookmarkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserBookmarkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserBookmarkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserBookmark model
+   */
+  readonly fields: UserBookmarkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserBookmark.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserBookmarkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserBookmark model
+   */
+  interface UserBookmarkFieldRefs {
+    readonly id: FieldRef<"UserBookmark", 'String'>
+    readonly userId: FieldRef<"UserBookmark", 'String'>
+    readonly surahId: FieldRef<"UserBookmark", 'Int'>
+    readonly verseNumber: FieldRef<"UserBookmark", 'Int'>
+    readonly verseText: FieldRef<"UserBookmark", 'String'>
+    readonly surahName: FieldRef<"UserBookmark", 'String'>
+    readonly translation: FieldRef<"UserBookmark", 'String'>
+    readonly notes: FieldRef<"UserBookmark", 'String'>
+    readonly createdAt: FieldRef<"UserBookmark", 'DateTime'>
+    readonly updatedAt: FieldRef<"UserBookmark", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserBookmark findUnique
+   */
+  export type UserBookmarkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * Filter, which UserBookmark to fetch.
+     */
+    where: UserBookmarkWhereUniqueInput
+  }
+
+  /**
+   * UserBookmark findUniqueOrThrow
+   */
+  export type UserBookmarkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * Filter, which UserBookmark to fetch.
+     */
+    where: UserBookmarkWhereUniqueInput
+  }
+
+  /**
+   * UserBookmark findFirst
+   */
+  export type UserBookmarkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * Filter, which UserBookmark to fetch.
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserBookmarks to fetch.
+     */
+    orderBy?: UserBookmarkOrderByWithRelationInput | UserBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserBookmarks.
+     */
+    cursor?: UserBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserBookmarks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserBookmarks.
+     */
+    distinct?: UserBookmarkScalarFieldEnum | UserBookmarkScalarFieldEnum[]
+  }
+
+  /**
+   * UserBookmark findFirstOrThrow
+   */
+  export type UserBookmarkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * Filter, which UserBookmark to fetch.
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserBookmarks to fetch.
+     */
+    orderBy?: UserBookmarkOrderByWithRelationInput | UserBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserBookmarks.
+     */
+    cursor?: UserBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserBookmarks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserBookmarks.
+     */
+    distinct?: UserBookmarkScalarFieldEnum | UserBookmarkScalarFieldEnum[]
+  }
+
+  /**
+   * UserBookmark findMany
+   */
+  export type UserBookmarkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * Filter, which UserBookmarks to fetch.
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserBookmarks to fetch.
+     */
+    orderBy?: UserBookmarkOrderByWithRelationInput | UserBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserBookmarks.
+     */
+    cursor?: UserBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserBookmarks.
+     */
+    skip?: number
+    distinct?: UserBookmarkScalarFieldEnum | UserBookmarkScalarFieldEnum[]
+  }
+
+  /**
+   * UserBookmark create
+   */
+  export type UserBookmarkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * The data needed to create a UserBookmark.
+     */
+    data: XOR<UserBookmarkCreateInput, UserBookmarkUncheckedCreateInput>
+  }
+
+  /**
+   * UserBookmark createMany
+   */
+  export type UserBookmarkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserBookmarks.
+     */
+    data: UserBookmarkCreateManyInput | UserBookmarkCreateManyInput[]
+  }
+
+  /**
+   * UserBookmark createManyAndReturn
+   */
+  export type UserBookmarkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserBookmarks.
+     */
+    data: UserBookmarkCreateManyInput | UserBookmarkCreateManyInput[]
+  }
+
+  /**
+   * UserBookmark update
+   */
+  export type UserBookmarkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * The data needed to update a UserBookmark.
+     */
+    data: XOR<UserBookmarkUpdateInput, UserBookmarkUncheckedUpdateInput>
+    /**
+     * Choose, which UserBookmark to update.
+     */
+    where: UserBookmarkWhereUniqueInput
+  }
+
+  /**
+   * UserBookmark updateMany
+   */
+  export type UserBookmarkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserBookmarks.
+     */
+    data: XOR<UserBookmarkUpdateManyMutationInput, UserBookmarkUncheckedUpdateManyInput>
+    /**
+     * Filter which UserBookmarks to update
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * Limit how many UserBookmarks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserBookmark updateManyAndReturn
+   */
+  export type UserBookmarkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * The data used to update UserBookmarks.
+     */
+    data: XOR<UserBookmarkUpdateManyMutationInput, UserBookmarkUncheckedUpdateManyInput>
+    /**
+     * Filter which UserBookmarks to update
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * Limit how many UserBookmarks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserBookmark upsert
+   */
+  export type UserBookmarkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * The filter to search for the UserBookmark to update in case it exists.
+     */
+    where: UserBookmarkWhereUniqueInput
+    /**
+     * In case the UserBookmark found by the `where` argument doesn't exist, create a new UserBookmark with this data.
+     */
+    create: XOR<UserBookmarkCreateInput, UserBookmarkUncheckedCreateInput>
+    /**
+     * In case the UserBookmark was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserBookmarkUpdateInput, UserBookmarkUncheckedUpdateInput>
+  }
+
+  /**
+   * UserBookmark delete
+   */
+  export type UserBookmarkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+    /**
+     * Filter which UserBookmark to delete.
+     */
+    where: UserBookmarkWhereUniqueInput
+  }
+
+  /**
+   * UserBookmark deleteMany
+   */
+  export type UserBookmarkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserBookmarks to delete
+     */
+    where?: UserBookmarkWhereInput
+    /**
+     * Limit how many UserBookmarks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserBookmark without action
+   */
+  export type UserBookmarkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserBookmark
+     */
+    select?: UserBookmarkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserBookmark
+     */
+    omit?: UserBookmarkOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -6430,15 +6525,6 @@ export namespace Prisma {
   export type QuranSajdaScalarFieldEnum = (typeof QuranSajdaScalarFieldEnum)[keyof typeof QuranSajdaScalarFieldEnum]
 
 
-  export const SurahDescriptionScalarFieldEnum: {
-    surah_id: 'surah_id',
-    description: 'description',
-    updated_at: 'updated_at'
-  };
-
-  export type SurahDescriptionScalarFieldEnum = (typeof SurahDescriptionScalarFieldEnum)[keyof typeof SurahDescriptionScalarFieldEnum]
-
-
   export const QuranSurahScalarFieldEnum: {
     number: 'number',
     arabicName: 'arabicName',
@@ -6462,6 +6548,22 @@ export namespace Prisma {
   };
 
   export type QuranTextScalarFieldEnum = (typeof QuranTextScalarFieldEnum)[keyof typeof QuranTextScalarFieldEnum]
+
+
+  export const UserBookmarkScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    surahId: 'surahId',
+    verseNumber: 'verseNumber',
+    verseText: 'verseText',
+    surahName: 'surahName',
+    translation: 'translation',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type UserBookmarkScalarFieldEnum = (typeof UserBookmarkScalarFieldEnum)[keyof typeof UserBookmarkScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -6614,50 +6716,6 @@ export namespace Prisma {
     type?: StringNullableWithAggregatesFilter<"QuranSajda"> | string | null
   }
 
-  export type SurahDescriptionWhereInput = {
-    AND?: SurahDescriptionWhereInput | SurahDescriptionWhereInput[]
-    OR?: SurahDescriptionWhereInput[]
-    NOT?: SurahDescriptionWhereInput | SurahDescriptionWhereInput[]
-    surah_id?: IntFilter<"SurahDescription"> | number
-    description?: StringFilter<"SurahDescription"> | string
-    updated_at?: DateTimeFilter<"SurahDescription"> | Date | string
-  }
-
-  export type SurahDescriptionOrderByWithRelationInput = {
-    surah_id?: SortOrder
-    description?: SortOrder
-    updated_at?: SortOrder
-  }
-
-  export type SurahDescriptionWhereUniqueInput = Prisma.AtLeast<{
-    surah_id?: number
-    AND?: SurahDescriptionWhereInput | SurahDescriptionWhereInput[]
-    OR?: SurahDescriptionWhereInput[]
-    NOT?: SurahDescriptionWhereInput | SurahDescriptionWhereInput[]
-    description?: StringFilter<"SurahDescription"> | string
-    updated_at?: DateTimeFilter<"SurahDescription"> | Date | string
-  }, "surah_id" | "surah_id">
-
-  export type SurahDescriptionOrderByWithAggregationInput = {
-    surah_id?: SortOrder
-    description?: SortOrder
-    updated_at?: SortOrder
-    _count?: SurahDescriptionCountOrderByAggregateInput
-    _avg?: SurahDescriptionAvgOrderByAggregateInput
-    _max?: SurahDescriptionMaxOrderByAggregateInput
-    _min?: SurahDescriptionMinOrderByAggregateInput
-    _sum?: SurahDescriptionSumOrderByAggregateInput
-  }
-
-  export type SurahDescriptionScalarWhereWithAggregatesInput = {
-    AND?: SurahDescriptionScalarWhereWithAggregatesInput | SurahDescriptionScalarWhereWithAggregatesInput[]
-    OR?: SurahDescriptionScalarWhereWithAggregatesInput[]
-    NOT?: SurahDescriptionScalarWhereWithAggregatesInput | SurahDescriptionScalarWhereWithAggregatesInput[]
-    surah_id?: IntWithAggregatesFilter<"SurahDescription"> | number
-    description?: StringWithAggregatesFilter<"SurahDescription"> | string
-    updated_at?: DateTimeWithAggregatesFilter<"SurahDescription"> | Date | string
-  }
-
   export type QuranSurahWhereInput = {
     AND?: QuranSurahWhereInput | QuranSurahWhereInput[]
     OR?: QuranSurahWhereInput[]
@@ -6781,6 +6839,86 @@ export namespace Prisma {
     text?: StringWithAggregatesFilter<"QuranText"> | string
   }
 
+  export type UserBookmarkWhereInput = {
+    AND?: UserBookmarkWhereInput | UserBookmarkWhereInput[]
+    OR?: UserBookmarkWhereInput[]
+    NOT?: UserBookmarkWhereInput | UserBookmarkWhereInput[]
+    id?: StringFilter<"UserBookmark"> | string
+    userId?: StringFilter<"UserBookmark"> | string
+    surahId?: IntFilter<"UserBookmark"> | number
+    verseNumber?: IntFilter<"UserBookmark"> | number
+    verseText?: StringFilter<"UserBookmark"> | string
+    surahName?: StringFilter<"UserBookmark"> | string
+    translation?: StringFilter<"UserBookmark"> | string
+    notes?: StringNullableFilter<"UserBookmark"> | string | null
+    createdAt?: DateTimeFilter<"UserBookmark"> | Date | string
+    updatedAt?: DateTimeFilter<"UserBookmark"> | Date | string
+  }
+
+  export type UserBookmarkOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+    verseText?: SortOrder
+    surahName?: SortOrder
+    translation?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserBookmarkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_surahId_verseNumber?: UserBookmarkUserIdSurahIdVerseNumberCompoundUniqueInput
+    AND?: UserBookmarkWhereInput | UserBookmarkWhereInput[]
+    OR?: UserBookmarkWhereInput[]
+    NOT?: UserBookmarkWhereInput | UserBookmarkWhereInput[]
+    userId?: StringFilter<"UserBookmark"> | string
+    surahId?: IntFilter<"UserBookmark"> | number
+    verseNumber?: IntFilter<"UserBookmark"> | number
+    verseText?: StringFilter<"UserBookmark"> | string
+    surahName?: StringFilter<"UserBookmark"> | string
+    translation?: StringFilter<"UserBookmark"> | string
+    notes?: StringNullableFilter<"UserBookmark"> | string | null
+    createdAt?: DateTimeFilter<"UserBookmark"> | Date | string
+    updatedAt?: DateTimeFilter<"UserBookmark"> | Date | string
+  }, "id" | "userId_surahId_verseNumber">
+
+  export type UserBookmarkOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+    verseText?: SortOrder
+    surahName?: SortOrder
+    translation?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: UserBookmarkCountOrderByAggregateInput
+    _avg?: UserBookmarkAvgOrderByAggregateInput
+    _max?: UserBookmarkMaxOrderByAggregateInput
+    _min?: UserBookmarkMinOrderByAggregateInput
+    _sum?: UserBookmarkSumOrderByAggregateInput
+  }
+
+  export type UserBookmarkScalarWhereWithAggregatesInput = {
+    AND?: UserBookmarkScalarWhereWithAggregatesInput | UserBookmarkScalarWhereWithAggregatesInput[]
+    OR?: UserBookmarkScalarWhereWithAggregatesInput[]
+    NOT?: UserBookmarkScalarWhereWithAggregatesInput | UserBookmarkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UserBookmark"> | string
+    userId?: StringWithAggregatesFilter<"UserBookmark"> | string
+    surahId?: IntWithAggregatesFilter<"UserBookmark"> | number
+    verseNumber?: IntWithAggregatesFilter<"UserBookmark"> | number
+    verseText?: StringWithAggregatesFilter<"UserBookmark"> | string
+    surahName?: StringWithAggregatesFilter<"UserBookmark"> | string
+    translation?: StringWithAggregatesFilter<"UserBookmark"> | string
+    notes?: StringNullableWithAggregatesFilter<"UserBookmark"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"UserBookmark"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"UserBookmark"> | Date | string
+  }
+
   export type EnYusufaliCreateInput = {
     index: number
     sura: number
@@ -6874,48 +7012,6 @@ export namespace Prisma {
     surahNumber?: IntFieldUpdateOperationsInput | number
     ayahNumber?: IntFieldUpdateOperationsInput | number
     type?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type SurahDescriptionCreateInput = {
-    surah_id: number
-    description: string
-    updated_at?: Date | string
-  }
-
-  export type SurahDescriptionUncheckedCreateInput = {
-    surah_id: number
-    description: string
-    updated_at?: Date | string
-  }
-
-  export type SurahDescriptionUpdateInput = {
-    surah_id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SurahDescriptionUncheckedUpdateInput = {
-    surah_id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SurahDescriptionCreateManyInput = {
-    surah_id: number
-    description: string
-    updated_at?: Date | string
-  }
-
-  export type SurahDescriptionUpdateManyMutationInput = {
-    surah_id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SurahDescriptionUncheckedUpdateManyInput = {
-    surah_id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuranSurahCreateInput = {
@@ -7046,6 +7142,97 @@ export namespace Prisma {
     sura?: IntFieldUpdateOperationsInput | number
     aya?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserBookmarkCreateInput = {
+    id?: string
+    userId: string
+    surahId: number
+    verseNumber: number
+    verseText: string
+    surahName: string
+    translation: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserBookmarkUncheckedCreateInput = {
+    id?: string
+    userId: string
+    surahId: number
+    verseNumber: number
+    verseText: string
+    surahName: string
+    translation: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserBookmarkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    surahId?: IntFieldUpdateOperationsInput | number
+    verseNumber?: IntFieldUpdateOperationsInput | number
+    verseText?: StringFieldUpdateOperationsInput | string
+    surahName?: StringFieldUpdateOperationsInput | string
+    translation?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserBookmarkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    surahId?: IntFieldUpdateOperationsInput | number
+    verseNumber?: IntFieldUpdateOperationsInput | number
+    verseText?: StringFieldUpdateOperationsInput | string
+    surahName?: StringFieldUpdateOperationsInput | string
+    translation?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserBookmarkCreateManyInput = {
+    id?: string
+    userId: string
+    surahId: number
+    verseNumber: number
+    verseText: string
+    surahName: string
+    translation: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserBookmarkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    surahId?: IntFieldUpdateOperationsInput | number
+    verseNumber?: IntFieldUpdateOperationsInput | number
+    verseText?: StringFieldUpdateOperationsInput | string
+    surahName?: StringFieldUpdateOperationsInput | string
+    translation?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserBookmarkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    surahId?: IntFieldUpdateOperationsInput | number
+    verseNumber?: IntFieldUpdateOperationsInput | number
+    verseText?: StringFieldUpdateOperationsInput | string
+    surahName?: StringFieldUpdateOperationsInput | string
+    translation?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -7208,57 +7395,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type SurahDescriptionCountOrderByAggregateInput = {
-    surah_id?: SortOrder
-    description?: SortOrder
-    updated_at?: SortOrder
-  }
-
-  export type SurahDescriptionAvgOrderByAggregateInput = {
-    surah_id?: SortOrder
-  }
-
-  export type SurahDescriptionMaxOrderByAggregateInput = {
-    surah_id?: SortOrder
-    description?: SortOrder
-    updated_at?: SortOrder
-  }
-
-  export type SurahDescriptionMinOrderByAggregateInput = {
-    surah_id?: SortOrder
-    description?: SortOrder
-    updated_at?: SortOrder
-  }
-
-  export type SurahDescriptionSumOrderByAggregateInput = {
-    surah_id?: SortOrder
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -7371,6 +7507,86 @@ export namespace Prisma {
     aya?: SortOrder
   }
 
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type UserBookmarkUserIdSurahIdVerseNumberCompoundUniqueInput = {
+    userId: string
+    surahId: number
+    verseNumber: number
+  }
+
+  export type UserBookmarkCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+    verseText?: SortOrder
+    surahName?: SortOrder
+    translation?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserBookmarkAvgOrderByAggregateInput = {
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+  }
+
+  export type UserBookmarkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+    verseText?: SortOrder
+    surahName?: SortOrder
+    translation?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserBookmarkMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+    verseText?: SortOrder
+    surahName?: SortOrder
+    translation?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserBookmarkSumOrderByAggregateInput = {
+    surahId?: SortOrder
+    verseNumber?: SortOrder
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -7387,16 +7603,16 @@ export namespace Prisma {
     set?: string | null
   }
 
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
-  }
-
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -7510,31 +7726,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -7560,6 +7751,31 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
 

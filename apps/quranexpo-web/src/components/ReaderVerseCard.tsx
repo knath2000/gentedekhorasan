@@ -1,9 +1,8 @@
-import { h } from 'preact';
-import { useState, useEffect, useRef } from 'preact/hooks'; // Importar useRef
+import { useRef } from 'preact/hooks'; // Importar useRef
+import { fetchSurahById } from '../services/apiClient'; // Para obtener el nombre de la sura
+import { addBookmark, isBookmarked, removeBookmark } from '../stores/bookmarkStore'; // Importar funciones del store
 import type { Verse } from '../types/quran';
 import { ErrorIcon } from './icons/AudioIcons';
-import { addBookmark, removeBookmark, isBookmarked } from '../stores/bookmarkStore'; // Importar funciones del store
-import { fetchSurahById } from '../services/apiClient'; // Para obtener el nombre de la sura
 
 interface ReaderVerseCardProps {
   verse: Verse;

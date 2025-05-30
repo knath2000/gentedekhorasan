@@ -131,12 +131,6 @@ exports.Prisma.QuranSajdaScalarFieldEnum = {
   type: 'type'
 };
 
-exports.Prisma.SurahDescriptionScalarFieldEnum = {
-  surah_id: 'surah_id',
-  description: 'description',
-  updated_at: 'updated_at'
-};
-
 exports.Prisma.QuranSurahScalarFieldEnum = {
   number: 'number',
   arabicName: 'arabicName',
@@ -156,6 +150,19 @@ exports.Prisma.QuranTextScalarFieldEnum = {
   text: 'text'
 };
 
+exports.Prisma.UserBookmarkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  surahId: 'surahId',
+  verseNumber: 'verseNumber',
+  verseText: 'verseText',
+  surahName: 'surahName',
+  translation: 'translation',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -170,9 +177,9 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   EnYusufali: 'EnYusufali',
   QuranSajda: 'QuranSajda',
-  SurahDescription: 'SurahDescription',
   QuranSurah: 'QuranSurah',
-  QuranText: 'QuranText'
+  QuranText: 'QuranText',
+  UserBookmark: 'UserBookmark'
 };
 
 /**

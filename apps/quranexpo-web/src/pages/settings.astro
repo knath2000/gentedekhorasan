@@ -1,33 +1,41 @@
 ---
+import AuthSection from '../components/AuthSection.astro';
 import BackButton from '../components/BackButton.tsx';
-import Background from '../components/Background.tsx';
 import SettingsToggle from '../components/SettingsToggle.tsx';
-import '../styles/global.css';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Configuración - Luminous Verses</title>
-  </head>
-  <body class="flex flex-col h-screen overflow-hidden">
-    <!-- Background con estrellas y gradiente -->
-    <Background />
-    
-    <main class="relative z-10 flex flex-col items-center flex-1 px-4 pt-4 h-full overflow-hidden" style="padding-bottom: env(safe-area-inset-bottom, 0px); padding-top: env(safe-area-inset-top, 20px);">
-      <div class="w-full flex justify-between items-center mb-8 max-w-3xl">
-        <BackButton client:visible />
-        <h1 class="text-2xl font-englishBold text-textPrimary">Configuración</h1>
-        <div class="w-10"></div> {/* Placeholder para alinear el título */}
+<Layout title="Settings - QuranExpo">
+  <main class="min-h-screen bg-gradient-to-br from-skyLightBlue via-skyMediumBlue to-skyDeepBlue p-4">
+    <BackButton client:load />
+    <div class="max-w-md mx-auto pt-8 space-y-6">
+      
+      <!-- Account Section -->
+      <AuthSection client:load />
+      
+      <!-- App Settings Section -->
+      <div class="bg-glassmorphism-strong backdrop-blur-md rounded-xl p-6 border border-white/20">
+        <h2 class="text-xl font-semibold text-textPrimary mb-4">App Settings</h2>
+        
+        <div class="space-y-4">
+          <SettingsToggle
+            client:only="preact"
+            label="Autoplay"
+            description="Automatically play next ayah"
+            storeKey="autoplayEnabled"
+            settingKey="autoplayEnabled"
+          />
+          
+          <SettingsToggle
+            client:only="preact"
+            label="Show Translation"
+            description="Display English translation"
+            storeKey="showTranslation"
+            settingKey="showTranslation"
+          />
+        </div>
       </div>
-
-      <div class="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 shadow-2xl">
-        <SettingsToggle client:visible label="Autoplay Verses" settingKey="autoplay" />
-        <SettingsToggle client:visible label="Show Translation" settingKey="translation" />
-      </div>
-    </main>
-  </body>
-</html>
+      
+    </div>
+  </main>
+</Layout>

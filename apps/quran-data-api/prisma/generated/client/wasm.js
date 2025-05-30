@@ -103,12 +103,6 @@ exports.Prisma.QuranSajdaScalarFieldEnum = {
   type: 'type'
 };
 
-exports.Prisma.SurahDescriptionScalarFieldEnum = {
-  surah_id: 'surah_id',
-  description: 'description',
-  updated_at: 'updated_at'
-};
-
 exports.Prisma.QuranSurahScalarFieldEnum = {
   number: 'number',
   arabicName: 'arabicName',
@@ -128,6 +122,19 @@ exports.Prisma.QuranTextScalarFieldEnum = {
   text: 'text'
 };
 
+exports.Prisma.UserBookmarkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  surahId: 'surahId',
+  verseNumber: 'verseNumber',
+  verseText: 'verseText',
+  surahName: 'surahName',
+  translation: 'translation',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -142,9 +149,9 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   EnYusufali: 'EnYusufali',
   QuranSajda: 'QuranSajda',
-  SurahDescription: 'SurahDescription',
   QuranSurah: 'QuranSurah',
-  QuranText: 'QuranText'
+  QuranText: 'QuranText',
+  UserBookmark: 'UserBookmark'
 };
 /**
  * Create the Client
@@ -203,13 +210,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"./generated/client\" // Cambiar de \"../api/generated/prisma\"\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel SurahDescription {\n  surah_id    Int      @id @unique\n  description String\n  updated_at  DateTime @default(now()) @updatedAt\n\n  @@map(\"surah_descriptions\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n",
-  "inlineSchemaHash": "c095c3198b397d79e104bf362874c4282579ac11de08b71654b77c1eb22648a3",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"./generated/client\" // Cambiar de \"../api/generated/prisma\"\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n\nmodel UserBookmark {\n  id          String   @id @default(cuid())\n  userId      String\n  surahId     Int\n  verseNumber Int\n  verseText   String\n  surahName   String\n  translation String\n  notes       String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@unique([userId, surahId, verseNumber])\n  @@map(\"user_bookmarks\")\n}\n",
+  "inlineSchemaHash": "5e74041480da1e8a33b3a1f085f94b41d5d5b5c8286083def6044eec649a1793",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"EnYusufali\":{\"fields\":[{\"name\":\"index\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"en_yusufali\"},\"QuranSajda\":{\"fields\":[{\"name\":\"sajdaId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"sajda_id\"},{\"name\":\"surahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"surah_number\"},{\"name\":\"ayahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"ayah_number\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_sajdas\"},\"SurahDescription\":{\"fields\":[{\"name\":\"surah_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"updated_at\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"surah_descriptions\"},\"QuranSurah\":{\"fields\":[{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"arabicName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"arabic_name\"},{\"name\":\"transliteration\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"englishName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"english_name\"},{\"name\":\"ayas\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"revelationType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"revelation_type\"},{\"name\":\"chronologicalOrder\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"chronological_order\"},{\"name\":\"rukus\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startIndex\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"start_index\"}],\"dbName\":\"quran_surahs\"},\"QuranText\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_text\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"EnYusufali\":{\"fields\":[{\"name\":\"index\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"en_yusufali\"},\"QuranSajda\":{\"fields\":[{\"name\":\"sajdaId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"sajda_id\"},{\"name\":\"surahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"surah_number\"},{\"name\":\"ayahNumber\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"ayah_number\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_sajdas\"},\"QuranSurah\":{\"fields\":[{\"name\":\"number\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"arabicName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"arabic_name\"},{\"name\":\"transliteration\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"englishName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"english_name\"},{\"name\":\"ayas\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"revelationType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"revelation_type\"},{\"name\":\"chronologicalOrder\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"chronological_order\"},{\"name\":\"rukus\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startIndex\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"start_index\"}],\"dbName\":\"quran_surahs\"},\"QuranText\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sura\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"aya\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":\"quran_text\"},\"UserBookmark\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"surahId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"verseNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"verseText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"surahName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"translation\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"user_bookmarks\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

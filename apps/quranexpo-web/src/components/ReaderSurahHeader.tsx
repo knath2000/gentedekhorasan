@@ -4,9 +4,10 @@ import SurahDescriptionModal from './SurahDescriptionModal';
 
 interface ReaderSurahHeaderProps {
   surah: Surah | null;
+  onModalStateChange?: (isOpen: boolean) => void; // Nueva prop
 }
 
-const ReaderSurahHeader = ({ surah }: ReaderSurahHeaderProps) => {
+const ReaderSurahHeader = ({ surah, onModalStateChange }: ReaderSurahHeaderProps) => {
   if (!surah) {
     return (
       <div className="py-6 px-4 text-center mb-4">
@@ -22,10 +23,12 @@ const ReaderSurahHeader = ({ surah }: ReaderSurahHeaderProps) => {
 
   const openModal = () => {
     setIsModalOpen(true);
+    onModalStateChange?.(true); // Notificar al padre
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    onModalStateChange?.(false); // Notificar al padre
     // Restaurar el foco al título árabe por defecto, o al que se considere principal
     arabicTitleRef.current?.focus();
   };
@@ -59,7 +62,7 @@ const ReaderSurahHeader = ({ surah }: ReaderSurahHeaderProps) => {
         ref={englishTitleRef}
         onKeyDown={handleKeyDown}
       >
-        {surah.englishName}
+        {surah.transliterationName}
       </h2>
 
       <SurahDescriptionModal surah={surah} isOpen={isModalOpen} onClose={closeModal} />

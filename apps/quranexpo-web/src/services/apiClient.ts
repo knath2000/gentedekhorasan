@@ -48,32 +48,6 @@ export async function fetchSurahList(): Promise<Surah[]> {
     throw error;
   }
 }
-
-/**
- * Fetches transliteration names from the Astro API endpoint.
- * @returns A Promise resolving to an object mapping surah numbers to transliterated names.
- * @throws Error If the API request fails.
- */
-export async function fetchTransliterationNames(): Promise<Record<string, string>> {
-  try {
-    const response = await fetch('/api/transliterations'); // Llama al endpoint de Astro
-    
-    if (!response.ok) {
-      throw new Error(`API error: Failed to fetch transliterations. Status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('API returned invalid data structure for transliterations');
-    }
-    
-    return data;
-  } catch (error: any) {
-    console.error('Error in fetchTransliterationNames:', error);
-    throw error;
-  }
-}
  
 /**
  * Fetches a specific Surah by its ID

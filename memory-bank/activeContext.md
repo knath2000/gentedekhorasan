@@ -1,58 +1,79 @@
-# Active Context: Gente de Khorasan Monorepo
+## Contexto Activo: Problemas de UI, Autenticación y Almacenamiento de Datos
 
-**Date:** 2025-05-26
-**Related Brief:** `memory-bank/projectbrief.md`
-**Progress:** `memory-bank/progress.md`
+### Problemas Pendientes:
+- **Migración completa de `styled-components` en `quranexpo-native`:**
+    - Asegurar que no queden referencias a `styled-components` en ningún archivo.
+    - Verificar que todos los componentes estilizados han sido refactorizados a `StyleSheet` nativo.
+- **Resolución de errores de runtime en `quranexpo-native`:**
+    - Confirmar que la aplicación nativa inicia sin errores de `TypeError: Cannot read property 'S' of undefined` o `TypeError: Cannot read property 'default' of undefined`.
+    - Asegurar la compatibilidad total con Hermes Engine.
+- **Unificación de versiones de React en el monorepo:**
+    - Verificar que solo una versión de React (React 18.2.x) está siendo utilizada en todo el monorepo.
+- **Verificación de la Implementación de Clerk:**
+    - Probar los flujos de login/signup.
+    - Verificar la persistencia de sesión.
+    - Confirmar que los componentes de Clerk se renderizan correctamente y con el estilo glassmorphism.
+    - Asegurarse de que no haya errores en la consola relacionados con Clerk.
+- **Verificación de la API de Bookmarks:**
+    - Probar los endpoints GET, POST, PUT, DELETE para bookmarks.
+    - Asegurarse de que los bookmarks se guardan y recuperan correctamente por usuario.
+- **Verificación de la Migración de Bookmarks (futuro):**
+    - Asegurarse de que los bookmarks de localStorage se migran correctamente a la base de datos.
+- **Verificación de la Integración Frontend de Bookmarks (futuro):**
+    - Actualizar la UI para interactuar con la nueva API de bookmarks.
 
-## 1. Current Work Focus
+### Acciones Tomadas Recientemente:
+- **Resolución de Conflictos de Versiones de React:**
+    - Se diagnosticó un conflicto de versiones de React (React 19 en `quranexpo-web` y React 18 en `quranexpo-native`) debido al `hoisting` de pnpm.
+    - Se unificaron las versiones de React en todo el monorepo a React 18.2.x.
+- **Migración de `styled-components` a `StyleSheet` nativo en `quranexpo-native`:**
+    - Se inició la migración de `styled-components` a `StyleSheet` nativo para resolver errores de runtime con Hermes Engine.
+    - Se corrigió `apps/quranexpo-native/app/_layout.tsx` (typo en variable de entorno de Clerk, eliminación de importaciones web y contenido HTML).
+    - Se crearon `apps/quranexpo-native/src/theme/nativeTheme.js` y `apps/quranexpo-native/src/theme/ThemeContext.js` para el tema nativo.
+    - Se actualizó `apps/quranexpo-native/src/components/ThemeProvider.tsx` para usar el nuevo `ThemeContext`.
+    - Se migró `apps/quranexpo-native/app/(tabs)/settings.tsx` para usar las propiedades del tema nativo.
+    - Se migró `apps/quranexpo-native/src/components/AnimatedBackground.tsx` para usar `StyleSheet` y contener `LottieView`.
+    - Se actualizó `apps/quranexpo-native/app/(tabs)/index.tsx` para usar `AnimatedBackground` correctamente.
+    - Se migró `apps/quranexpo-native/src/components/VerseOfTheDay.tsx` para usar `StyleSheet` y el nuevo tema.
+    - Se creó y ejecutó `apps/quranexpo-native/fix-styled-components.sh` para identificar archivos restantes.
+    - Se eliminaron `apps/quranexpo-native/src/styled-config.js` y `apps/quranexpo-native/src/types/nativeTheme.d.ts` (o `src/styled.d.ts`).
+- **Solución Definitiva para Blur Modal:** Se implementó la solución definitiva para el blur del modal, eliminando el JavaScript de blur y confiando únicamente en `backdrop-filter`.
+    - **CSS:** Se eliminó la clase `.modal-blur-content` de `apps/quranexpo-web/src/styles/global.css` ya que no es necesaria.
+    - **SurahDescriptionModal.tsx:**
+        - Se **eliminó completamente el `useEffect`** que aplicaba `filter: blur()` a elementos DOM.
+        - El `Backdrop` (línea 159) se configuró con `bg-skyDeepBlue/85 backdrop-blur-2xl z-40` para un desenfoque intenso y un fondo más opaco.
+        - Se simplificó el `className` del modal principal (líneas 162-167) volviendo el `z-index` a `z-50` y eliminando `style={{ filter: 'none !important' }}` y la clase `modal-no-blur`, ya que el modal no debería recibir blur si el `body` no lo tiene.
+    - **ReaderSurahHeader.tsx:** Se añadió la prop `onModalStateChange?: (isOpen: boolean) => void`, y esta se invoca en `openModal` y `closeModal` para notificar al componente padre sobre el estado del modal.
+    - **ReaderContainer.tsx:** Se añadió un estado `isDescriptionModalOpen` y un `handleModalStateChange`, el cual se pasa como `onModalStateChange` al `ReaderSurahHeader`. Se pasó la prop `isModalOpen={isDescriptionModalOpen}` al `BottomControlPanel`.
+    - **BottomControlPanel.tsx:** Se añadió la prop `isModalOpen?: boolean;` a la interfaz y al componente, y se aplicaron clases condicionales (`${isModalOpen ? 'opacity-0 invisible translate-y-4' : 'opacity-100 visible translate-y-0'}`) para ocultar/mostrar el panel con una transición suave.
+    - **Data Attributes:** Los `data attributes` (`data-bottom-panel`, `data-surah-header`, `data-verse-card`) fueron eliminados de sus respectivos componentes ya que ya no son necesarios con la nueva estrategia de blur.
+    - La jerarquía final de `z-index` ahora es: Contenido principal (sin z-index o z-0 implícito) < `z-10` (BottomControlPanel) < `z-40` (Backdrop del modal) < `z-50` (Modal principal).
+- **Cambio de Títulos de Surahs a Transliteración Inglesa:** Se modificaron `ReactSurahCard.tsx`, `SurahDescriptionModal.tsx` y `ReaderSurahHeader.tsx` para usar `surah.transliterationName` en lugar de `surah.englishName` para los títulos de las surahs, buscando mayor autenticidad y consistencia. Se actualizó el log de debug en `SurahListContainer.tsx`.
+- **Corrección del Problema de Transliteración:** Se simplificó `SurahListContainer.tsx` para eliminar la dependencia de `fetchTransliterationNames()` y el `transliterationMap`, confiando únicamente en el `tname` proporcionado directamente por `fetchSurahList()`. Se eliminó el archivo `/api/transliterations.ts` y la función `fetchTransliterationNames()` de `apiClient.ts`.
+- **Ajuste del Tamaño del Panel de Navegación:** Se modificó `apps/quranexpo-web/src/components/BottomControlPanel.tsx` para eliminar el ancho fijo (`w-[calc(100%-2rem)]` y `max-w-md`) y ajustar el padding horizontal (`px-6`) del `div` principal, permitiendo que el panel se ajuste mejor a los botones de navegación.
+- **Implementación de Autenticación con Clerk:**
+    - **Instalación:** Se instaló `@clerk/astro` y `@astrojs/node`.
+    - **Variables de Entorno:** Se agregaron `PUBLIC_CLERK_PUBLISHABLE_KEY` y `CLERK_SECRET_KEY` al `.env.local`.
+    - **Middleware:** Se creó `apps/quranexpo-web/src/middleware.ts` (solución al error `Astro2.locals.auth is not a function`).
+    - **Configuración de Astro:** Se modificó `apps/quranexpo-web/astro.config.mjs` para usar `output: 'server'`, el adaptador `node` y la integración de `clerk`.
+    - **Componente AuthSection:** Se creó `apps/quranexpo-web/src/components/AuthSection.astro` para usar los componentes nativos de `@clerk/astro/components` y se aplicaron estilos glassmorphism.
+    - **Integración en Settings:** Se modificó `apps/quranexpo-web/src/pages/settings.astro` para usar el nuevo `AuthSection.astro` y un `Layout.astro` básico.
+    - **Creación de Layout:** Se creó `apps/quranexpo-web/src/layouts/Layout.astro`.
+    - **Actualización de SettingsToggle:** Se modificó `apps/quranexpo-web/src/components/SettingsToggle.tsx` para aceptar la prop `description` y `storeKey`.
+    - **Limpieza:** Se desinstalaron `@clerk/clerk-js` y `@clerk/clerk-react`.
+    - **Botón de Cerrar Sesión:** Se añadió un `SignOutButton` funcional a `AuthSection.astro` con estilos consistentes.
+- **Adición de Botón de Retroceso a Settings:** Se añadió el componente `BackButton.tsx` a `apps/quranexpo-web/src/pages/settings.astro`, permitiendo al usuario navegar de vuelta a la página del lector.
+- **Corrección de Autoplay al Cargar Página:** Se eliminó la lógica de reproducción automática inicial en `apps/quranexpo-web/src/components/ReaderContainer.tsx` (líneas 101-105) para que el audio no se reproduzca al cargar la página, respetando la interacción del usuario. La lógica de autoplay entre versos en `useVersePlayer.ts` se mantiene intacta.
+- **Corrección de Hidratación de Settings Toggle:** Se cambió la directiva de hidratación de `client:load` a `client:only="preact"` en ambas instancias de `SettingsToggle` en `apps/quranexpo-web/src/pages/settings.astro`. Esto asegura que el componente solo se renderice en el cliente, eliminando el problema de inconsistencia visual al navegar.
+- **Implementación de Almacenamiento de Bookmarks (Fase 1 y 2):**
+    - Se añadió el modelo `UserBookmark` al esquema de Prisma en `apps/quran-data-api/prisma/schema.prisma`.
+    - Se creó el endpoint de la API para los bookmarks de usuario en `apps/quran-data-api/api/v1/user-bookmarks.ts`, que incluye las operaciones GET, POST, PUT y DELETE.
+    - Se instaló `@clerk/backend` en `apps/quran-data-api` y se actualizó la importación de `getAuth` en el nuevo endpoint para usarlo.
 
-The primary focus is on ensuring the correct deployment and routing of API functions within the monorepo on Vercel, and resolving any related frontend issues.
-
-## 2. Recent Changes & Updates
-
--   **`apps/quran-data-api` Deployment:**
-    -   **RESUELTO (2025-05-26):** El despliegue de `quran-data-api` en Vercel ahora es exitoso y las funciones de la API son accesibles.
-    -   **Soluciones Clave:**
-        -   Configuración de `apps/quran-data-api/api/tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión de archivos (`"noEmit": false`).
-        -   Modificación del script `build` en `apps/quran-data-api/package.json` para ejecutar la compilación de funciones (`pnpm run build:functions`) y asegurar que `build:functions` use el `tsconfig.json` correcto (`tsc -p api/tsconfig.json`).
-        -   Movimiento de la configuración de `functions` y `routes` para `quran-data-api` al `vercel.json` de la **raíz del monorepo**. Las rutas ahora apuntan a los archivos JavaScript compilados en el directorio `dist` dentro de `apps/quran-data-api`.
-        -   El archivo `apps/quran-data-api/vercel.json` ahora solo contiene `{"version": 2}` para evitar conflictos.
--   **`apps/quranexpo-web` Deployment:**
-    -   **RESUELTO (2025-05-26):** El despliegue de `quranexpo-web` en Vercel ahora es exitoso.
-    -   **Soluciones Clave:**
-        -   Aislamiento del proyecto en Vercel Dashboard (`Root Directory: apps/quranexpo-web`).
-        -   Actualización de la versión de Node.js a `22.x`.
-        -   Cambio del gestor de paquetes de `pnpm` a `npm` para la instalación y el build.
--   **`apps/quranexpo-web` SSR Audio Player Fix:**
-    -   Initial fix implemented using `useIsClient` hook and `ClientOnlyReaderContainer`.
-    -   **REVISIÓN (2025-05-26):** La solución de SSR para el audio player ha sido simplificada. Se eliminó el hook `useIsClient` y la verificación de entorno (`typeof window !== 'undefined'`) se realiza directamente dentro de `ClientOnlyReaderContainer.tsx`. Esto evita la ejecución de hooks de Preact durante el SSR, que era la causa raíz del error `Cannot read properties of undefined (reading '__H')`.
-    -   El archivo `apps/quranexpo-web/src/hooks/useIsClient.ts` ha sido eliminado.
-    -   **CORRECCIÓN (2025-05-26):** Se eliminó la importación de `useIsClient` de `apps/quranexpo-web/src/hooks/useVersePlayer.ts` y se reemplazó la declaración de `isClient` con `typeof window !== 'undefined'`. El hook `useVersePreloader` ha sido deshabilitado temporalmente en `useVersePlayer.ts` para simplificar el debugging.
--   **`apps/quranexpo-web` SSR Settings Toggle Fix:**
-    -   **CORRECCIÓN (2025-05-26):** Se identificó que `SettingsToggle` también causaba errores de SSR debido al uso de `useStore`. Se creó `ClientOnlySettingsToggle.tsx` para envolver `SettingsToggle` y asegurar que se renderice solo en el cliente. Se actualizó `apps/quranexpo-web/src/components/SettingsPanel.tsx` para usar `ClientOnlySettingsToggle`.
--   **`apps/luminous-verses-mobile`:** Local build issues resolved.
-
-## 3. Next Steps & Active Decisions
-
--   **Primary Goal:** Ensure long-term stability of Vercel deployments for both `quran-data-api` and `quranexpo-web`.
--   **Secondary Goal:** Integrate `apps/luminous-verses-mobile` con la API desplegada.
-
-## 4. Important Patterns & Preferences
-
--   **Monorepo Structure:** Adhering to pnpm workspaces y TurboRepo for efficient dependency management and build caching.
--   **Serverless API:** Utilizing Vercel's serverless functions for the `quran-data-api`.
--   **SSR for Web App:** Implementing SSR where beneficial for performance and SEO, with careful handling of client-side only components.
--   **Memory Bank Usage:** Continuous documentation of progress, decisions, and solutions within the `memory-bank` directory.
-
-## 5. Learnings & Project Insights
-
--   Vercel's build environment has specific behaviors regarding `pnpm` and `Corepack` that require explicit handling.
--   SSR with Preact/Astro requires careful isolation of client-side specific code to prevent errors during the build process. Direct `typeof window !== 'undefined'` checks are more robust for simple client-only rendering than hooks that might execute during SSR.
--   El `.vercelignore` file is crucial for managing files that can cause conflicts or unnecessary overhead during Vercel deployments, especially with Prisma.
--   Es fundamental asegurarse de que todas las importaciones de archivos eliminados o renombrados se actualicen o eliminen en todo el codebase para evitar errores de resolución de módulos durante el build.
--   Cualquier componente de Preact que utilice hooks (como `useStore` de Nanostores) debe ser envuelto en un componente "Client-Only" para evitar errores de SSR cuando se renderiza en el servidor.
--   **Vercel Monorepo Functions:** Para que las funciones de la API en un subdirectorio de un monorepo sean desplegadas correctamente, es crucial:
-    -   Configurar `tsconfig.json` para compilar TypeScript a JavaScript en un directorio de salida (`"outDir": "dist"`) y permitir la emisión (`"noEmit": false`).
-    -   Asegurarse de que el script `build` del `package.json` de la aplicación de la API ejecute esta compilación (`tsc -p api/tsconfig.json`).
-    -   Mover la configuración de `functions` y `routes` al `vercel.json` de la **raíz del monorepo**, apuntando a los archivos JavaScript compilados en el directorio `dist` dentro del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
-    -   El `vercel.json` anidado en el subdirectorio de la API debe ser mínimo (solo `{"version": 2}`).
+### Decisiones y Consideraciones Recientes:
+- La aplicación `quranexpo-web` se basa en `Astro`, `Preact` y `React`.
+- La API `quran-data-api` utiliza `Vercel Serverless Functions`, `TypeScript`, `Neon PostgreSQL` y `Prisma ORM`.
+- Se decidió usar `@libsql/client` directamente en el endpoint de la API para `surah_descriptions` debido a problemas persistentes con `prisma generate` y el adaptador `libsql`.
+- Se adoptó una estrategia de `backdrop-filter` para el blur del modal, eliminando la manipulación de `filter` con JavaScript.
+- Se optó por la integración nativa de `@clerk/astro` y su middleware para la autenticación, en lugar de `@clerk/clerk-js` imperativo.
+- Se recomendó TursoDB para el almacenamiento de bookmarks de usuario debido a su alineación arquitectónica, soporte para estructuras de datos ricas, escalabilidad y rendimiento global.

@@ -92,17 +92,18 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
     };
   }, [isOpen]);
 
-
   // Renderizar el modal solo si isOpen es true, pero siempre con la misma estructura DOM
   // La visibilidad se controla con clases CSS
   return (
     <>
-      <div
-        className={`fixed inset-0 bg-skyPurple/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+      <div // Backdrop mejorado
+        className={`fixed inset-0 bg-skyDeepBlue/85 backdrop-blur-2xl z-40 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         onClick={onClose}
       />
       <div
-        className={`fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-skyPurple/60 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg p-6 w-full max-w-md flex flex-col items-center transition-opacity duration-300
+        className={`fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2
+          glassmorphism-strong shadow-2xl p-6 w-full max-w-lg max-h-[80vh]
+          flex flex-col items-center transition-all duration-300 ease-out
           ${isOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'}
         `}
         role="dialog"
@@ -111,22 +112,25 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
         tabIndex={-1}
         ref={modalRef}
       >
-        <button className="absolute top-4 right-4 text-white/70 hover:text-desertHighlightGold text-2xl" onClick={onClose} aria-label="Close modal" ref={closeButtonRef}>×</button>
+        <button className="absolute top-4 right-4 text-white/70 hover:text-desertHighlightGold text-2xl font-bold transition-colors duration-200" onClick={onClose} aria-label="Close modal" ref={closeButtonRef}>
+          ×
+        </button>
         <h2 id="modal-title" className="text-desertHighlightGold font-arabicBold text-3xl text-center mb-1">
           {surah.name}
         </h2>
         <h3 className="text-white font-englishBold text-xl text-center mb-1">
-          {surah.englishName}
+          {surah.transliterationName}
         </h3>
-        <div className="text-center text-sm text-gray-700 mb-4">
+        <div className="text-center text-sm text-white/60 mb-4">
           Surah {surah.number}
         </div>
-        <div className="text-white/90 text-base text-center mt-2">
-          {isLoading && <p>Loading description...</p>}
+        <div className="text-white/90 text-base text-center mt-2 overflow-y-auto max-h-64 leading-relaxed">
+          {isLoading && <p className="text-white/70">Loading description...</p>}
           {error && <p className="text-red-400">{error}</p>}
-          {!isLoading && !error && !description && <p>No description available.</p>}
-          {!isLoading && !error && description &&
-          description}
+          {!isLoading && !error && !description && <p className="text-white/50">No description available.</p>}
+          {!isLoading && !error && description && (
+            <p className="leading-relaxed">{description}</p>
+          )}
         </div>
       </div>
     </>

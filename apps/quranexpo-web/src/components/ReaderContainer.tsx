@@ -1,15 +1,14 @@
-import { h } from 'preact';
-import { useEffect, useState, useMemo } from 'preact/hooks';
+import { useStore } from '@nanostores/preact';
+import { useEffect, useMemo, useState } from 'preact/hooks';
+import { usePagination } from '../hooks/usePagination'; // Importar usePagination
+import { useVersePlayer } from '../hooks/useVersePlayer';
 import { fetchSurahById, fetchVersesForSurah } from '../services/apiClient';
+import { audioActive, autoplayEnabled, showTranslation } from '../stores/settingsStore';
 import type { Surah, Verse } from '../types/quran';
+import { getVerseKey } from '../utils/audioUtils';
+import BottomControlPanel from './BottomControlPanel';
 import ReaderSurahHeader from './ReaderSurahHeader';
 import { ReaderVerseCard } from './ReaderVerseCard';
-import { useVersePlayer } from '../hooks/useVersePlayer';
-import { getVerseKey } from '../utils/audioUtils';
-import { useStore } from '@nanostores/preact';
-import { showTranslation, audioActive, autoplayEnabled } from '../stores/settingsStore';
-import BottomControlPanel from './BottomControlPanel';
-import { usePagination } from '../hooks/usePagination'; // Importar usePagination
 
 interface ReaderContainerProps {
   surahId: number;
@@ -20,6 +19,14 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estado para controlar si el modal de descripción está abierto
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  
+  // Función para manejar el cambio de estado del modal desde ReaderSurahHeader
+  const handleModalStateChange = (isOpen: boolean) => {
+    setIsDescriptionModalOpen(isOpen);
+  };
   
   // Use showTranslation and autoplayEnabled from the store
   const $showTranslation = useStore(showTranslation);
@@ -91,11 +98,8 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
         console.log('Loading data for Surah:', surahId);
         console.log('Verses after fetch:', versesData.length);
 
-        // Autoplay the first verse if autoplay is enabled
-        if ($autoplayEnabled && versesData.length > 0) {
-          console.log('Autoplay enabled, playing first verse.');
-          playVerse(versesData[0].surahId, versesData[0].numberInSurah);
-        }
+        // ✅ NO reproducir automáticamente - esperar interacción del usuario
+        
       } catch (err: any) {
         console.error('Error loading Surah data:', err);
         setError(err.message || 'Failed to load Surah data. Please try again.');
@@ -205,7 +209,10 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
       {/* Scrollable container for verses */}
       <div className="flex-1 overflow-y-auto space-y-4 z-10 pb-40" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="opacity-0 animate-fade-in animation-delay-[100ms] z-20 relative">
-          <ReaderSurahHeader surah={surah} />
+          <ReaderSurahHeader
+            surah={surah}
+            onModalStateChange={handleModalStateChange}
+          />
         </div>
         {currentVerses.map((verse: Verse, index: number) => { // Usar currentVerses para renderizar
           const verseKey = getVerseKey(verse.surahId, verse.numberInSurah);
@@ -235,6 +242,7 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
       {/* Panel de control inferior combinado (audio y paginación) */}
       {(totalVersesCount > 7 || (totalVersesCount <= 7 && $audioActive)) && (
         <BottomControlPanel
+          isModalOpen={isDescriptionModalOpen} // Comunicar si el modal D-S está abierto
           isAudioActive={$audioActive && (isPlaying || (!!currentVerseKey && !isLoadingAudio && !audioError))}
           onStop={stopAndUnload}
           onSkip={skipToNextVerse}
