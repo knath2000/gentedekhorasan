@@ -1,7 +1,7 @@
-import type { Surah, Verse } from '../types/quran';
+import type { Bookmark, Surah, Verse } from '../types/quran';
 
 // The API base URL is hardcoded to match the quranexpo2 native app
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://gentedekhorasan.vercel.app/api/v1';
+const API_BASE_URL = 'https://quran-data-api.vercel.app/api/v1'; // Updated to external API
 console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 
 /**
@@ -197,6 +197,118 @@ export async function fetchSurahDescription(surahId: number): Promise<string | n
     return data.description || null;
   } catch (error) {
     console.error(`Error in fetchSurahDescription for surahId ${surahId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches bookmarks for a specific user.
+ * @param userId The ID of the user.
+ * @returns A Promise resolving to an array of Bookmark objects.
+ * @throws Error If the API request fails.
+ */
+export async function fetchBookmarks(userId: string, token: string): Promise<Bookmark[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user-bookmarks?userId=${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`API error: Failed to fetch bookmarks for user ${userId}. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new Error('API returned invalid data structure for bookmarks');
+    }
+    return data as Bookmark[];
+  } catch (error) {
+    console.error(`Error in fetchBookmarks for user ${userId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Adds a new bookmark for a user.
+ * @param userId The ID of the user.
+ * @param bookmark The bookmark object to add.
+ * @param token The authentication token.
+ * @returns A Promise resolving to the added Bookmark object.
+ * @throws Error If the API request fails.
+ */
+export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' | 'userId' | 'timestamp'>, token: string): Promise<Bookmark> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user-bookmarks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...bookmark, userId, timestamp: new Date().toISOString() }),
+    });
+    if (!response.ok) {
+      throw new Error(`API error: Failed to add bookmark for user ${userId}. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data as Bookmark;
+  } catch (error) {
+    console.error(`Error in addBookmark for user ${userId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Updates an existing bookmark for a user.
+ * @param userId The ID of the user.
+ * @param bookmarkId The ID of the bookmark to update.
+ * @param updatedBookmark The updated bookmark object.
+ * @param token The authentication token.
+ * @returns A Promise resolving to the updated Bookmark object.
+ * @throws Error If the API request fails.
+ */
+export async function updateBookmark(userId: string, bookmarkId: string, updatedBookmark: Partial<Bookmark>, token: string): Promise<Bookmark> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user-bookmarks?userId=${userId}&bookmarkId=${bookmarkId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedBookmark),
+    });
+    if (!response.ok) {
+      throw new Error(`API error: Failed to update bookmark ${bookmarkId} for user ${userId}. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data as Bookmark;
+  } catch (error) {
+    console.error(`Error in updateBookmark ${bookmarkId} for user ${userId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Deletes a bookmark for a user.
+ * @param userId The ID of the user.
+ * @param bookmarkId The ID of the bookmark to delete.
+ * @param token The authentication token.
+ * @returns A Promise resolving to true if successful, false otherwise.
+ * @throws Error If the API request fails.
+ */
+export async function deleteBookmark(userId: string, bookmarkId: string, token: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user-bookmarks?userId=${userId}&bookmarkId=${bookmarkId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`API error: Failed to delete bookmark ${bookmarkId} for user ${userId}. Status: ${response.status}`);
+    }
+    return true;
+  } catch (error) {
+    console.error(`Error in deleteBookmark ${bookmarkId} for user ${userId}:`, error);
     throw error;
   }
 }

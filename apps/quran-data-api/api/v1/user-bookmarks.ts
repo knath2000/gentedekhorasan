@@ -1,10 +1,20 @@
-import { getAuth } from '@clerk/backend';
+import { getAuth } from '@clerk/nextjs/api';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PrismaClient } from '../../prisma/generated/client';
 
 const prisma = new PrismaClient();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', 'https://quranexpo-web.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+
+  // Handle preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   const { userId } = getAuth(req);
 
   if (!userId) {

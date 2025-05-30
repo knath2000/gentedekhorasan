@@ -1,5 +1,5 @@
 ---
-import AuthSection from '../components/AuthSection.astro';
+import AuthSectionReact from '../components/AuthSectionReact.tsx';
 import BackButton from '../components/BackButton.tsx';
 import SettingsToggle from '../components/SettingsToggle.tsx';
 import Layout from '../layouts/Layout.astro';
@@ -11,7 +11,7 @@ import Layout from '../layouts/Layout.astro';
     <div class="max-w-md mx-auto pt-8 space-y-6">
       
       <!-- Account Section -->
-      <AuthSection client:load />
+      <AuthSectionReact client:only="react" />
       
       <!-- App Settings Section -->
       <div class="bg-glassmorphism-strong backdrop-blur-md rounded-xl p-6 border border-white/20">
