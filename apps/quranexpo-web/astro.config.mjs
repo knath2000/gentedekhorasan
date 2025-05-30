@@ -1,13 +1,11 @@
 // @ts-check
 import preact from '@astrojs/preact';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel/serverless'; // ✅ Cambiar a Vercel adapter
 import clerk from '@clerk/astro';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  output: 'server', // ✅ Mantener SSR
-  adapter: vercel({}), // ✅ Usar Vercel adapter específico
+  output: 'static', // ✅ Cambiar a static
   integrations: [
     tailwind(),
     preact(),
