@@ -1,52 +1,20 @@
-# progress.md
+# Progreso del Proyecto (quranexpo-web)
 
-## Qué funciona
-- El efecto de glasmorfismo se ha aplicado correctamente a las tarjetas (`VerseOfTheDay.tsx`, `SurahCard.tsx`, `ReaderVerseCard.tsx`).
-- El componente `AudioControlsPopup.tsx` ha sido renombrado a `BottomControlPanel.tsx` y refactorizado para combinar los controles de audio y paginación en un solo componente persistente en la parte inferior de la pantalla.
-- El servidor de desarrollo se inicia correctamente sin errores de renderizado.
-- El componente `BottomNavigation.tsx` ha sido completamente eliminado del código base.
-- La funcionalidad del `BottomControlPanel` en la página del lector ha sido verificada y funciona correctamente.
-- **El `BottomControlPanel.tsx` ha sido modificado para estar fijo en la parte inferior central de la página, tiene un fondo blanco plateado cromado, y los controles de audio se muestran por encima de los controles de paginación.**
-- **Se ha resuelto el problema de la visibilidad de los controles de audio para suras con 7 o menos versos: el `BottomControlPanel` ahora se muestra solo durante la reproducción de audio para estas suras, mostrando únicamente los controles de audio y ocultando los botones de navegación.**
-- `src/services/apiClient.ts` está configurado para usar la API de `quran-api-data` desplegada en Vercel (`https://gentedekhorasan.vercel.app/api/v1`).
-- **La funcionalidad de desenfoque/primer plano en la página del lector ha sido eliminada por completo.**
-- **✅ La funcionalidad de auto-scroll en la página del lector ahora funciona correctamente.**
-- **🚨 PROBLEMA CRÍTICO EN quran-data-api:** Error persistente de TypeScript `Property 'startIndex' is missing` debido a duplicación del cliente de Prisma en dos ubicaciones:
-- ❌ `apps/quran-data-api/api/generated/prisma/` (ubicación antigua - PERSISTE)
-- ✅ `apps/quran-data-api/prisma/generated/client/` (ubicación nueva - correcta)
-- **Causa Raíz:** La carpeta `api/generated/` no se elimina completamente a pesar de múltiples intentos con `rm -rf`, causando conflicto de tipos en TypeScript.
-- **Estado Actual:** Build local falla, despliegue en Vercel bloqueado.
+## Lo que funciona
+- La funcionalidad de marcadores está operativa en el frontend.
+- La interfaz de usuario para añadir/eliminar marcadores y editar notas está presente.
 
-## Qué queda por construir
-- Ninguno. La funcionalidad de marcadores está actualizada.
+## Lo que queda por construir
+- Verificación exhaustiva y testing de la funcionalidad de notas en el frontend después de los cambios aplicados.
+- Implementación de cualquier mejora o característica adicional que surja del testing.
 
-## Estado del Deployment en Vercel
-- **✅ quranexpo-web:** Desplegado exitosamente en Vercel.
-    - **Problemas Resueltos:**
-        - Conflicto de Prisma (`prisma: command not found`) durante `pnpm install` en el monorepo.
-        - Versión de Node.js (`18.x` vs `22.x`).
-        - Errores de registro de pnpm (`ERR_INVALID_THIS`, `ERR_PNPM_META_FETCH_FAIL`).
-    - **Solución Final:**
-        - **Root Directory:** `apps/quranexpo-web`
-        - **Build Command:** `npm run build`
-        - **Output Directory:** `dist`
-        - **Install Command:** `npm install`
-        - **Node.js Version:** `22.x`
-    - **Razón:** El aislamiento del proyecto en Vercel y el cambio de `pnpm` a `npm` para `quranexpo-web` resolvieron los problemas de compatibilidad y los conflictos del monorepo.
+## Estado Actual
+- Se han aplicado las correcciones necesarias para la funcionalidad de notas en la página de marcadores en el frontend.
+- Se corrigió el mismatch de parámetros en la llamada a la API para actualizar marcadores en `src/services/apiClient.ts`.
 
-## Estado actual
-- La funcionalidad de marcadores ha sido actualizada:
-    - Se ha añadido el botón de marcadores a la página de suras (`src/pages/surahs.astro`).
-    - Se ha eliminado el icono de marcadores de cada verso en la página del lector (`src/components/ReaderVerseCard.tsx`).
-    - Se ha implementado la funcionalidad de pulsación larga en `ReaderVerseCard.tsx` para añadir/eliminar marcadores.
-    - Se ha modificado `SurahCard.tsx` para mostrar el nombre de la sura en transliteración inglesa como título y el nombre en inglés simple como subtítulo.
-- Los archivos del banco de memoria (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `progress.md`) han sido actualizados para reflejar estos cambios.
+## Problemas Conocidos
+- No se han identificado problemas conocidos en el frontend después de los cambios, pero se requiere testing para confirmarlo.
 
-## Problemas conocidos
-- La funcionalidad de desenfoque/primer plano en la página del lector ha sido pospuesta para una implementación futura.
-
-## Evolución de las decisiones del proyecto
-- Se decidió implementar la funcionalidad completa de marcadores, lo que representa un cambio de alcance con respecto a la versión inicial.
-- Se decidió cambiar la interacción de marcado de un clic en un icono a una pulsación larga en la tarjeta del verso para simplificar la UI del lector.
-- Se decidió añadir un botón de marcadores dedicado en la página de suras para facilitar el acceso a los marcadores.
-- Se decidió eliminar temporalmente la funcionalidad de desenfoque/primer plano debido a problemas persistentes de implementación y apilamiento.
+## Evolución de las Decisiones del Proyecto
+- La decisión de usar TursoDB para el almacenamiento de notas se ha reafirmado debido a su integración existente y eficiencia.
+- Se ha priorizado la corrección de errores de integración sobre la implementación de nuevas características para asegurar la estabilidad del frontend.

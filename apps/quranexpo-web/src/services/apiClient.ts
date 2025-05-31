@@ -305,7 +305,7 @@ export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' 
  */
 export async function updateBookmark(userId: string, bookmarkId: string, updatedBookmark: Partial<Bookmark>, token: string): Promise<Bookmark> {
   try {
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks?userId=${userId}&bookmarkId=${bookmarkId}`, {
+    const response = await fetch(`${API_BASE_URL}/user-bookmarks?id=${bookmarkId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
