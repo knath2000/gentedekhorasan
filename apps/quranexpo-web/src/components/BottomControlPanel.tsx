@@ -1,29 +1,27 @@
-import { ChevronLeft, ChevronRight } from 'lucide-preact'; // Importar iconos de paginación
+import { ChevronLeft, ChevronRight } from 'lucide-preact';
 import { SkipIcon, StopIcon } from './icons/AudioIcons';
 
 interface BottomControlPanelProps {
   onStop: () => void;
   onSkip: () => void;
-  isAudioActive: boolean; // Renombrado de isVisible para mayor claridad
+  isAudioActive: boolean;
   currentSurahName?: string;
   currentSurahNumber?: number;
   currentVerseNumber?: number;
   totalVerses?: number;
-  
-  // Props de paginación
   currentPage: number;
   totalPages: number;
   goToPreviousPage: () => void;
   goToNextPage: () => void;
-  showNavigation?: boolean; // Nueva prop para controlar la visibilidad de la navegación
-  isModalOpen?: boolean; // Nueva prop para comunicar el estado del modal
+  showNavigation?: boolean;
+  isModalOpen?: boolean;
 }
 
 const BottomControlPanel = ({
   onStop,
   onSkip,
   isAudioActive,
-  isModalOpen = false, // Asignar valor por defecto
+  isModalOpen = false,
   currentSurahName,
   currentSurahNumber,
   currentVerseNumber,
@@ -32,10 +30,9 @@ const BottomControlPanel = ({
   totalPages,
   goToPreviousPage,
   goToNextPage,
-  showNavigation = true, // Asignar valor por defecto directamente en la desestructuración
+  showNavigation = true,
 }: BottomControlPanelProps) => {
-  // Determinar la altura del panel basada en si el audio está activo o si la navegación está visible
-  const panelHeightClass = isAudioActive ? 'h-48' : 'h-16'; // Aumentado a 192px para un espacio adicional en la parte inferior
+  const panelHeightClass = isAudioActive ? 'h-64' : 'h-28';
   const audioControlsVisibility = isAudioActive ? 'flex' : 'hidden';
 
   return (
@@ -49,44 +46,39 @@ const BottomControlPanel = ({
         ${isModalOpen ? 'opacity-0 invisible translate-y-4' : 'opacity-100 visible translate-y-0'}
       `}
     >
-      {/* Controles de audio (condicionalmente visibles) */}
-      <div className={`${audioControlsVisibility} flex-col items-center justify-between w-full mb-4`}>
-        {/* Información contextual y estado de reproducción */}
-        <div className="flex items-center justify-between text-sm text-white/80 mb-3 w-full">
-          <div className="flex items-center space-x-2 font-englishMedium text-base">
+      {/* Información contextual */}
+      {isAudioActive && (
+        <div className="flex flex-col items-center justify-center text-white mb-4">
+          <div className="flex items-center space-x-2 font-englishMedium text-base mb-1">
             <span>📖</span>
             <span>Surah {currentSurahName} ({currentSurahNumber})</span>
           </div>
-          <div className="text-desertHighlightGold font-englishMedium text-base">
+          <div className="text-desertHighlightGold font-englishMedium text-base mb-4">
             Verse {currentVerseNumber}/{totalVerses}
           </div>
-        </div>
-        
-        {/* Controles de audio principales */}
-        <div className="flex items-center justify-between w-full mb-4">
-          <span className="text-white text-lg font-englishBold animate-pulse">
-            Currently Playing
-          </span>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={onStop}
-              className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-desertWarmOrange to-desertHighlightGold text-white shadow-lg hover:scale-110 active:scale-95 transition-all duration-200 ease-in-out transform-gpu"
-              aria-label="Stop audio"
-            >
-              <StopIcon size={28} />
-            </button>
-            <button
-              onClick={onSkip}
-              className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-skyDeepBlue to-skyLightBlue text-white shadow-lg hover:scale-110 active:scale-95 transition-all duration-200 ease-in-out transform-gpu"
-              aria-label="Skip to next verse"
-            >
-              <SkipIcon size={28} />
-            </button>
+          
+          {/* Botones de audio */}
+          <div className="flex items-center justify-between w-full mb-4">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={onStop}
+                className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-desertWarmOrange to-desertHighlightGold text-white shadow-lg hover:scale-110 active:scale-95 transition-all duration-200 ease-in-out transform-gpu"
+                aria-label="Stop audio"
+              >
+                <StopIcon size={28} />
+              </button>
+              <button
+                onClick={onSkip}
+                className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-skyDeepBlue to-skyLightBlue text-white shadow-lg hover:scale-110 active:scale-95 transition-all duration-200 ease-in-out transform-gpu"
+                aria-label="Skip to next verse"
+              >
+                <SkipIcon size={28} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Controles de paginación (condicionalmente visibles) */}
+      )}
+      
       {showNavigation && totalPages > 1 && (
         <div className="flex items-center space-x-6 text-white pt-2 border-t border-white/10">
           <button

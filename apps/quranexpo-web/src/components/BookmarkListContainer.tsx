@@ -1,9 +1,9 @@
-import { h } from 'preact';
+import { $authStore } from '@clerk/astro/client';
 import { useStore } from '@nanostores/preact';
-import { bookmarks, removeBookmark, updateBookmarkNote, type Bookmark } from '../stores/bookmarkStore';
-import { useState, useEffect } from 'preact/hooks';
-import { getVerseKey } from '../utils/audioUtils';
+import { useEffect, useState } from 'preact/hooks';
 import { fetchSurahById } from '../services/apiClient';
+import { bookmarks, removeBookmark, updateBookmarkNote } from '../stores/bookmarkStore';
+import type { Bookmark } from '../types/quran'; // Importar Bookmark desde types/quran
 
 interface BookmarkListContainerProps {
   // No props needed as it fetches from store
@@ -11,6 +11,7 @@ interface BookmarkListContainerProps {
 
 const BookmarkListContainer = ({}: BookmarkListContainerProps) => {
   const $bookmarks = useStore(bookmarks); // Usar el átomo directamente
+  const auth = useStore($authStore); // Mover la llamada al hook al nivel superior
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [currentNote, setCurrentNote] = useState<string>('');
   const [surahNames, setSurahNames] = useState<Record<number, string>>({});
@@ -36,12 +37,20 @@ const BookmarkListContainer = ({}: BookmarkListContainerProps) => {
   }, [sortedBookmarks]); // Depende de los marcadores ordenados para recargar nombres si se añaden nuevas suras
 
   const handleEditNote = (bookmark: Bookmark) => {
+    if (!bookmark.id) {
+      console.warn('Bookmark ID is undefined, cannot edit note.');
+      return;
+    }
     setEditingNoteId(bookmark.id);
     setCurrentNote(bookmark.notes || '');
   };
 
   const handleSaveNote = (bookmarkId: string) => {
-    updateBookmarkNote(bookmarkId, currentNote);
+    if (!auth.userId) { // Usar la variable auth del nivel superior
+      console.warn('No user ID available, cannot update bookmark note.');
+      return;
+    }
+    updateBookmarkNote(auth.userId, bookmarkId, currentNote);
     setEditingNoteId(null);
     setCurrentNote('');
   };
@@ -52,8 +61,12 @@ const BookmarkListContainer = ({}: BookmarkListContainerProps) => {
   };
 
   const handleDeleteBookmark = (bookmarkId: string) => {
+    if (!auth.userId) { // Usar la variable auth del nivel superior
+      console.warn('No user ID available, cannot delete bookmark.');
+      return;
+    }
     if (confirm('Are you sure you want to delete this bookmark?')) {
-      removeBookmark(bookmarkId);
+      removeBookmark(auth.userId, bookmarkId);
     }
   };
 
@@ -105,8 +118,8 @@ const BookmarkListContainer = ({}: BookmarkListContainerProps) => {
                 >
                   Cancel
                 </button>
-                <button 
-                  onClick={() => handleSaveNote(bookmark.id)} 
+                <button
+                  onClick={() => handleSaveNote(bookmark.id!)} // Usar ! para afirmar que no es undefined
                   className="px-3 py-1 bg-desertWarmOrange text-skyDeepBlue rounded-full text-sm hover:bg-desertHighlightGold transition-colors"
                 >
                   Save Note
@@ -125,8 +138,8 @@ const BookmarkListContainer = ({}: BookmarkListContainerProps) => {
                 >
                   Edit Note
                 </button>
-                <button 
-                  onClick={() => handleDeleteBookmark(bookmark.id)} 
+                <button
+                  onClick={() => handleDeleteBookmark(bookmark.id!)} // Usar ! para afirmar que no es undefined
                   className="px-3 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition-colors"
                 >
                   Delete

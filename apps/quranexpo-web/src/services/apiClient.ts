@@ -334,7 +334,7 @@ export async function updateBookmark(userId: string, bookmarkId: string, updated
  */
 export async function deleteBookmark(userId: string, bookmarkId: string, token: string): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks?userId=${userId}&bookmarkId=${bookmarkId}`, {
+    const response = await fetch(`${API_BASE_URL}/user-bookmarks?id=${bookmarkId}`, { // Corregido el parámetro de consulta a 'id'
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
