@@ -45,14 +45,20 @@ const BookmarkListContainer = ({}: BookmarkListContainerProps) => {
     setCurrentNote(bookmark.notes || '');
   };
 
-  const handleSaveNote = (bookmarkId: string) => {
+  const handleSaveNote = async (bookmarkId: string) => {
     if (!auth.userId) { // Usar la variable auth del nivel superior
       console.warn('No user ID available, cannot update bookmark note.');
       return;
     }
-    updateBookmarkNote(auth.userId, bookmarkId, currentNote);
-    setEditingNoteId(null);
-    setCurrentNote('');
+    
+    try {
+      await updateBookmarkNote(auth.userId, bookmarkId, currentNote);
+      setEditingNoteId(null);
+      setCurrentNote('');
+    } catch (error) {
+      console.error('Error updating bookmark note:', error);
+      // Optionalmente mostrar un mensaje de error al usuario
+    }
   };
 
   const handleCancelEdit = () => {
