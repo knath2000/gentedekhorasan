@@ -37,7 +37,7 @@ const BottomControlPanel = ({
 
   return (
     <div
-      className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-10
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-40
         bg-slate-800/80 backdrop-blur-sm border border-white/20 rounded-3xl
         py-5 px-6 shadow-2xl
         flex flex-col justify-center items-center
@@ -58,7 +58,7 @@ const BottomControlPanel = ({
           </div>
           
           {/* Botones de audio */}
-          <div className="flex items-center justify-between w-full mb-4">
+          <div className={`flex items-center ${showNavigation ? 'justify-between' : 'justify-center'} w-full mb-4`}>
             <div className="flex items-center space-x-4">
               <button
                 onClick={onStop}

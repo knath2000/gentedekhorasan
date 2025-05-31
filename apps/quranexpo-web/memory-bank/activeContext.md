@@ -10,6 +10,9 @@
 - Se ha verificado que el botón de retroceso (`BackButton.tsx`) funciona correctamente utilizando `history.back()` y su `z-index` ha sido ajustado para estar por encima de las tarjetas de versos.
 - Se ha implementado la paginación híbrida en la página del lector (`ReaderContainer.tsx`) para manejar Surahs largas, incluyendo el hook `usePagination` y los controles de paginación.
 - **Se ha resuelto el problema de la visibilidad de los controles de audio para suras con 7 o menos versos: el `BottomControlPanel` ahora se muestra solo durante la reproducción de audio para estas suras, mostrando únicamente los controles de audio y ocultando los botones de navegación.**
+- **La funcionalidad de desenfoque/primer plano en la página del lector ha sido eliminada por completo debido a problemas de implementación y apilamiento.**
+- **✅ PROBLEMA RESUELTO:** El error `Module '"preact"' has no exported member 'forwardRef'.` en `ReaderVerseCard.tsx` se resolvió al confirmar que la importación ya estaba usando `preact/compat` (debido a los alias de Vite en `astro.config.mjs`). El problema original era probablemente un error de caché de TypeScript o del servidor de lenguaje.
+- **✅ PROBLEMA RESUELTO:** La funcionalidad de auto-scroll en la página del lector ahora funciona correctamente. Se corrigió el mismatch en las referencias de los versos, se unificaron las importaciones de hooks y se resolvieron los errores de hidratación SSR.
 
 ## Cambios recientes
 - Se actualizó `src/pages/index.astro` para corregir el "parpadeo" de las animaciones.
@@ -23,6 +26,7 @@
 - **Se modificó `src/components/BottomControlPanel.tsx` para reordenar los controles de audio y paginación.**
 - **Se modificó `src/components/ReaderContainer.tsx` y `src/components/BottomControlPanel.tsx` para implementar la lógica de visibilidad de los controles de audio para suras cortas.**
 - Se actualizó `src/services/apiClient.ts` para usar la API de `quran-api-data` desplegada en Vercel (`https://gentedekhorasan.vercel.app/api/v1`).
+- **Se revirtieron los cambios en `src/components/ReaderContainer.tsx`, `src/components/ReaderVerseCard.tsx` y `src/styles/global.css` para eliminar la funcionalidad de desenfoque/primer plano.**
 - **🚨 PROBLEMA CRÍTICO ACTUAL:** Migración de base de datos de Neon a Turso bloqueada por error persistente de TypeScript en `quran-data-api`. Error `Property 'startIndex' is missing` causado por duplicación del cliente de Prisma en dos ubicaciones.
 
 ## Próximos pasos
@@ -40,15 +44,17 @@
 - Se ha adoptado un enfoque de paginación híbrida (paginación tradicional + scroll virtual) para optimizar el rendimiento y la UX en Surahs largas.
 - **Se ha resuelto el conflicto visual entre los controles de audio y paginación al combinarlos en un solo componente y ajustar su orden de renderizado.**
 - **La visibilidad condicional del `BottomControlPanel` para suras cortas asegura una experiencia de usuario limpia y funcional, mostrando los controles de audio solo cuando son relevantes.**
+- **La funcionalidad de desenfoque/primer plano ha sido eliminada temporalmente debido a problemas de implementación y apilamiento.**
+- **Se ha implementado y depurado exitosamente la funcionalidad de auto-scroll en la página del lector.**
 
 ## Aprendizajes y conocimientos del proyecto
 - La importancia de asegurar que los contenedores padres tengan alturas definidas para componentes con scroll interno o posicionamiento absoluto.
 - La necesidad de usar clases de animación consistentes de TailwindCSS (`animate-*`, `animation-delay-*`) y centralizar su definición.
 - La utilidad de verificar los procesos en ejecución antes de intentar iniciarlos.
 - La preferencia de `history.back()` sobre rutas fijas para la navegación de retroceso.
-- **La implementación de lógica de renderizado condicional basada en el estado de audio y el número de versos para optimizar la visibilidad de los controles de UI.**
-- **Vercel Monorepo Functions Deployment:** Se aprendió que para desplegar funciones de API en un subdirectorio de un monorepo en Vercel, es necesario:
-    -   Configurar `tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión (`"noEmit": false`).
-    -   Asegurarse de que el script `build` del `package.json` de la aplicación de la API ejecute esta compilación (`tsc -p api/tsconfig.json`).
-    -   Mover la configuración de `functions` y `routes` al `vercel.json` de la **raíz del monorepo**, apuntando a los archivos JavaScript compilados en el directorio `dist` dentro del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
-    -   El `vercel.json` anidado en el subdirectorio de la API debe ser mínimo (solo `{"version": 2}`).
+- La implementación de lógica de renderizado condicional basada en el estado de audio y el número de versos para optimizar la visibilidad de los controles de UI.
+- Vercel Monorepo Functions Deployment: Se aprendió que para desplegar funciones de API en un subdirectorio de un monorepo en Vercel, es necesario:
+    - Configurar `tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión (`"noEmit": false`).
+    - Asegurarse de que el script `build` del `package.json` de la aplicación de la API ejecute esta compilación (`tsc -p api/tsconfig.json`).
+    - Mover la configuración de `functions` y `routes` al `vercel.json` de la **raíz del monorepo**, apuntando a los archivos JavaScript compilados en el directorio `dist` dentro del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
+    - El `vercel.json` anidado en el subdirectorio de la API debe ser mínimo (solo `{"version": 2}`).

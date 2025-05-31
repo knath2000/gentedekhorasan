@@ -1,5 +1,6 @@
 import { useStore } from '@nanostores/preact';
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useAutoScroll } from '../hooks/useAutoScroll'; // Import useAutoScroll
 import { usePagination } from '../hooks/usePagination';
 import { useVersePlayer } from '../hooks/useVersePlayer';
 import { fetchSurahById, fetchVersesForSurah } from '../services/apiClient';
@@ -15,10 +16,11 @@ interface ReaderContainerProps {
 }
 
 const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
- const [surah, setSurah] = useState<Surah | null>(null);
- const [verses, setVerses] = useState<Verse[]>([]);
- const [loading, setLoading] = useState(true);
- const [error, setError] = useState<string | null>(null);
+  const [surah, setSurah] = useState<Surah | null>(null);
+  const [verses, setVerses] = useState<Verse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false); // Estado para controlar la hidratación
   
  // Estado para controlar si el modal de descripción está abierto
  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
@@ -37,6 +39,7 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  status,
  error: audioError,
  currentVerseKey,
+ activeVerseIndex, // Get activeVerseIndex from useVersePlayer
  togglePlayPause,
  stopAndUnload,
  duration,
@@ -46,16 +49,16 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  skipToNextVerse,
  onSeekChange,
  playVerse,
- } = useVersePlayer(verses);
+  } = useVersePlayer(verses);
 
  const isPlaying = status === 'playing';
  const isLoadingAudio = status === 'loading';
  const $audioActive = useStore(audioActive);
-  
+ 
  // Obtener el verso actual de forma segura usando useMemo
  const currentVerse = useMemo(() => {
- if (!verses || !currentVerseKey) return null;
- return verses.find((v: Verse) => getVerseKey(v.surahId, v.numberInSurah) === currentVerseKey);
+   if (!verses || !currentVerseKey) return null;
+   return verses.find((v: Verse) => getVerseKey(v.surahId, v.numberInSurah) === currentVerseKey);
  }, [verses, currentVerseKey]);
 
  // Hook de paginación
@@ -72,15 +75,36 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  totalVerses: totalVersesCount,
  } = usePagination(verses);
 
+ // Auto-scroll refs and hook
+ const verseRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+ const setVerseRef = useCallback((index: number, element: HTMLDivElement | null) => {
+   if (element) {
+     verseRefs.current.set(index, element);
+   } else {
+     verseRefs.current.delete(index);
+   }
+ }, []);
+
+ const { isVerseInCurrentPage, scrollToVerse } = useAutoScroll({
+   activeVerseIndex,
+   verses,
+   currentPage,
+   versesPerPage,
+   goToPage,
+   verseRefs,
+ });
+
  useEffect(() => {
- const loadData = async () => {
- setLoading(true);
- setError(null);
- setSurah(null);
- setVerses([]);
-      
- // Stop any playing audio when changing Surahs
- stopAndUnload();
+   setIsClient(true); // Marcar como cliente una vez montado
+   const loadData = async () => {
+     setLoading(true);
+     setError(null);
+     setSurah(null);
+     setVerses([]);
+          
+     // Stop any playing audio when changing Surahs
+     stopAndUnload();
 
  try {
  const [surahData, versesData] = await Promise.all([
@@ -179,56 +203,58 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  }
 
  return (
- <div className="w-full flex flex-col relative h-full">
- <div className="flex-1 overflow-y-auto space-y-4 z-10 pb-40" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
- <div className="opacity-0 animate-fade-in animation-delay-[100ms] z-20 relative">
- <ReaderSurahHeader
- surah={surah}
- onModalStateChange={handleModalStateChange}
- />
- </div>
- {currentVerses.map((verse: Verse, index: number) => {
- const verseKey = getVerseKey(verse.surahId, verse.numberInSurah);
- const isActiveAudio = currentVerseKey === verseKey;
+   <div className="w-full flex flex-col relative h-full">
+     <div className={`flex-1 overflow-y-auto space-y-4 pb-40 relative verse-container`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+       <div className="opacity-0 animate-fade-in animation-delay-[100ms] relative">
+         <ReaderSurahHeader
+           surah={surah}
+           onModalStateChange={handleModalStateChange}
+         />
+       </div>
+       {currentVerses.map((verse: Verse, index: number) => {
+         const verseKey = getVerseKey(verse.surahId, verse.numberInSurah);
+         const isActiveAudio = currentVerseKey === verseKey;
 
- return (
- <div key={verse.id} className={`animate-list-item animate-item-${Math.min(index,19)}`}>
- <ReaderVerseCard
- verse={verse}
- showTranslation={$showTranslation}
- isActiveAudio={isActiveAudio}
- isPlayingAudio={isActiveAudio && isPlaying}
- isLoadingAudio={isLoadingAudio}
- audioError={audioError}
- onAudioPress={() => handleVerseAudioToggle(verse)}
- currentTime={currentTime}
- duration={duration}
- onSeek={onSeekChange}
- className="last:mb-0"
- />
- </div>
- );
- })}
- <div className="h-4"></div>
- </div>
- {(totalVersesCount >7 || $audioActive) && (
- <BottomControlPanel
- isModalOpen={isDescriptionModalOpen}
- isAudioActive={$audioActive && (isPlaying || (!!currentVerseKey && !isLoadingAudio && !audioError))}
- onStop={stopAndUnload}
- onSkip={skipToNextVerse}
- currentSurahName={surah?.englishName}
- currentSurahNumber={surah?.number}
- currentVerseNumber={currentVerse?.numberInSurah}
- totalVerses={surah?.numberOfAyahs}
- currentPage={currentPage}
- totalPages={totalPages}
- goToPreviousPage={goToPreviousPage}
- goToNextPage={goToNextPage}
- showNavigation={totalVersesCount >7}
- />
- )}
- </div>
+         return (
+           <div key={verse.id} className={`animate-list-item animate-item-${Math.min(index, 19)}`}>
+             <ReaderVerseCard
+               ref={(el: HTMLDivElement | null) => setVerseRef(firstVerseIndex + index, el)} // Pass ref to ReaderVerseCard
+               verse={verse}
+               showTranslation={$showTranslation}
+               isActiveAudio={isActiveAudio}
+               isPlayingAudio={isActiveAudio && isPlaying}
+               isLoadingAudio={isLoadingAudio}
+               audioError={audioError}
+               onAudioPress={() => handleVerseAudioToggle(verse)}
+               currentTime={currentTime}
+               duration={duration}
+               onSeek={onSeekChange}
+               className="last:mb-0"
+             />
+           </div>
+         );
+       })}
+       <div className="h-4"></div>
+     </div>
+
+     {(totalVersesCount > 7 || $audioActive) && (
+       <BottomControlPanel
+         isModalOpen={isDescriptionModalOpen}
+         isAudioActive={$audioActive && (isPlaying || (!!currentVerseKey && !isLoadingAudio && !audioError))}
+         onStop={stopAndUnload}
+         onSkip={skipToNextVerse}
+         currentSurahName={surah?.englishName}
+         currentSurahNumber={surah?.number}
+         currentVerseNumber={currentVerse?.numberInSurah}
+         totalVerses={surah?.numberOfAyahs}
+         currentPage={currentPage}
+         totalPages={totalPages}
+         goToPreviousPage={goToPreviousPage}
+         goToNextPage={goToNextPage}
+         showNavigation={totalVersesCount > 7}
+       />
+     )}
+   </div>
  );
 };
 

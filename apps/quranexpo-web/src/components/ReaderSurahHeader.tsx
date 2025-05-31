@@ -4,10 +4,11 @@ import SurahDescriptionModal from './SurahDescriptionModal';
 
 interface ReaderSurahHeaderProps {
   surah: Surah | null;
-  onModalStateChange?: (isOpen: boolean) => void; // Nueva prop
+  onModalStateChange?: (isOpen: boolean) => void;
+  isPageInFocusMode?: boolean; // Nueva prop
 }
 
-const ReaderSurahHeader = ({ surah, onModalStateChange }: ReaderSurahHeaderProps) => {
+const ReaderSurahHeader = ({ surah, onModalStateChange, isPageInFocusMode = false }: ReaderSurahHeaderProps) => {
   if (!surah) {
     return (
       <div className="py-6 px-4 text-center mb-4">
@@ -40,7 +41,7 @@ const ReaderSurahHeader = ({ surah, onModalStateChange }: ReaderSurahHeaderProps
   };
 
   return (
-    <div className="py-6 px-4 text-center flex flex-col gap-2">
+    <div className={`py-6 px-4 text-center flex flex-col gap-2 ${isPageInFocusMode ? 'opacity-75 transition-opacity duration-300' : 'opacity-100'}`}>
       <h1
         className="font-arabicBold text-4xl text-desertHighlightGold cursor-pointer"
         dir="rtl"

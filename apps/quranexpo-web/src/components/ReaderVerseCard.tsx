@@ -1,5 +1,6 @@
 import { $authStore } from '@clerk/astro/client';
 import { useStore } from '@nanostores/react';
+import { forwardRef, type Ref } from 'preact/compat'; // Import forwardRef and type Ref from 'preact/compat'
 import { useRef } from 'preact/hooks';
 import { fetchSurahById } from '../services/apiClient';
 import { addBookmark, isBookmarked, removeBookmark } from '../stores/bookmarkStore';
@@ -20,7 +21,7 @@ interface ReaderVerseCardProps {
   className?: string;
 }
 
-export const ReaderVerseCard = ({
+export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(({
   verse,
   showTranslation = true,
   isActiveAudio = false,
@@ -31,7 +32,8 @@ export const ReaderVerseCard = ({
   currentTime = 0,
   duration = 0,
   onSeek = () => {},
-}: ReaderVerseCardProps) => {
+  className,
+}: ReaderVerseCardProps, ref: Ref<HTMLDivElement>) => { // Explicitly type props and ref
   const longPressTimer = useRef<number | null>(null);
   const isLongPress = useRef(false);
   const auth = useStore($authStore); // Obtener el estado de autenticación
@@ -109,23 +111,25 @@ export const ReaderVerseCard = ({
   const getCardClassNames = () => {
     const baseClasses = "relative flex flex-row items-start overflow-hidden p-4 mb-3 rounded-xl cursor-pointer bg-skyPurple/60 backdrop-blur-xl border border-white/10 transition-all duration-300 ease-in-out";
     
+    let dynamicClasses = baseClasses;
+
     if (isActiveAudio) {
-      let activeClasses = `${baseClasses} verse-border-gradient-flow`;
+      dynamicClasses += ` verse-border-gradient-flow`;
       if (isLoadingAudio) {
-        return `${activeClasses} verse-audio-loading`;
+        dynamicClasses += ` verse-audio-loading`;
       } else if (isPlayingAudio) {
-        return `${activeClasses} verse-audio-playing`;
-      } else {
-        return `${activeClasses}`;
+        dynamicClasses += ` verse-audio-playing`;
       }
     }
-    
-    return baseClasses;
+
+    return dynamicClasses;
   };
 
   return (
     <div
-      className={getCardClassNames()}
+      ref={ref} // Assign the forwarded ref to the div
+      id={`verse-${verse.surahId}-${verse.numberInSurah}`} // Añadir ID para scroll
+      className={`${getCardClassNames()} ${className || ''}`} // Apply className prop
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -169,6 +173,7 @@ export const ReaderVerseCard = ({
               max={duration}
               value={currentTime}
               onInput={onSeek}
+              step="0.01" // Ajustado para una granularidad más fina
               className="flex-1 h-1 bg-skyIndigo/50 rounded-lg appearance-none cursor-pointer range-sm"
               style={{
                 background: `linear-gradient(to right, var(--tw-colors-desertWarmOrange) ${((currentTime / duration) * 100) || 0}%, var(--tw-colors-desertHighlightGold) ${((currentTime / duration) * 100) || 0}%)`,
@@ -196,4 +201,4 @@ export const ReaderVerseCard = ({
       </div>
     </div>
   );
-};
+}); // Close forwardRef

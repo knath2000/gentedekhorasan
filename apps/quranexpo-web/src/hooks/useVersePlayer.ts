@@ -151,6 +151,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
     currentVerseKey: null,
   });
   const [currentVerseIndex, setCurrentVerseIndex] = useState<number | null>(null);
+  const [playingVerseIndex, setPlayingVerseIndex] = useState<number | null>(null);
   const $autoplayEnabled = useStore(autoplayEnabled);
 
   // Integrar el preloader (también debe ser SSR-safe)
@@ -192,6 +193,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
     setAudioActive(true);
     const verseIndex = verses?.findIndex(v => v.surahId === surahId && v.numberInSurah === verseNumber) ?? null;
     setCurrentVerseIndex(verseIndex);
+    setPlayingVerseIndex(verseIndex);
 
     if (state.currentVerseKey === verseKey && state.status === 'playing' && !state.error) {
       console.log(`[Audio] playVerse: Ya reproduciendo el verso ${verseKey}.`);
@@ -235,8 +237,8 @@ export const useVersePlayer = (verses?: Verse[]) => {
   skipToNextVerseRef.current = useCallback(() => {
     if (!isClient) return;
     console.log(`[Audio#${audioRef.current?.id}] skipToNextVerse called`);
-    if (verses && currentVerseIndex !== null) {
-      const nextIndex = currentVerseIndex + 1;
+    if (verses && playingVerseIndex !== null) {
+      const nextIndex = playingVerseIndex + 1;
       if (nextIndex < verses.length) {
         const nextVerse = verses[nextIndex];
         playVerseRef.current?.(nextVerse.surahId, nextVerse.numberInSurah);
@@ -317,12 +319,12 @@ export const useVersePlayer = (verses?: Verse[]) => {
 
         console.log(`[Audio#${id}] Autoplay habilitado (desde hook):`, $autoplayEnabled);
         console.log(`[Audio#${id}] Versos disponibles:`, !!verses, verses?.length);
-        console.log(`[Audio#${id}] Índice de verso actual (desde el estado):`, currentVerseIndex);
+        console.log(`[Audio#${id}] Índice de verso actual (desde el estado):`, playingVerseIndex);
 
-        if ($autoplayEnabled && verses && currentVerseIndex !== null) {
+        if ($autoplayEnabled && verses && playingVerseIndex !== null) {
           console.log(`[Audio#${id}] Condición de autoplay CUMPLIDA. Intentando reproducir siguiente verso.`);
-          const nextIndex = currentVerseIndex + 1;
-          console.log(`[Audio#${id}] Índice de verso actual:`, currentVerseIndex, 'Siguiente índice:', nextIndex);
+          const nextIndex = playingVerseIndex + 1;
+          console.log(`[Audio#${id}] Índice de verso actual:`, playingVerseIndex, 'Siguiente índice:', nextIndex);
 
           if (nextIndex < verses.length) {
             const nextVerse = verses[nextIndex];
@@ -374,7 +376,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
         audio.removeEventListener('loadstart', handleLoadStart);
         audio.removeEventListener('progress', handleProgress);
       };
-    }, [audioElement, dispatch, currentVerseIndex, verses, playVerseRef, stopAndUnloadCompletelyRef, $autoplayEnabled, isClient]);
+    }, [audioElement, dispatch, playingVerseIndex, verses, playVerseRef, stopAndUnloadCompletelyRef, $autoplayEnabled, isClient]);
   };
 
   useAudioEventManager(audioRef.current, dispatch, isClient);
@@ -461,6 +463,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
   // Add function to set current verse index
   const setVerseIndex = useCallback((index: number) => {
     setCurrentVerseIndex(index);
+    setPlayingVerseIndex(index);
   }, []);
 
   // Efecto para asegurar que audioActive se desactive si no hay audio reproduciéndose o cargándose
@@ -479,6 +482,7 @@ export const useVersePlayer = (verses?: Verse[]) => {
     duration: state.duration,
     currentTime: state.currentTime,
     currentVerseKey: state.currentVerseKey,
+    activeVerseIndex: playingVerseIndex, // Export the playing verse index
     playVerse: playVerseRef.current!,
     pauseVerse,
     resumeVerse,

@@ -3,6 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Auto-scroll styles */
+.verse-container {
+  scroll-margin-top: 120px; /* Offset for BottomControlPanel */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 /* Custom fonts */
 @font-face {
   font-family: 'Montserrat';
@@ -256,5 +265,42 @@
 @keyframes subtleBackgroundShift {
   0% { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
+}
+
+
+/* Estilos para el thumb del input type="range" para una transición más suave */
+input[type="range"].range-sm::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px; /* Ajusta el tamaño si es necesario */
+  height: 16px; /* Ajusta el tamaño si es necesario */
+  border-radius: 50%;
+  background-color: #E09F3E; /* Color del thumb (desertWarmOrange) */
+  cursor: pointer;
+  transition: background 0.15s ease-in-out, transform 0.15s ease-in-out; /* Transición para el movimiento */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); /* Sombra para el thumb */
+}
+
+input[type="range"].range-sm::-moz-range-thumb {
+  width: 16px; /* Ajusta el tamaño si es necesario */
+  height: 16px; /* Ajusta el tamaño si es necesario */
+  border-radius: 50%;
+  background-color: #E09F3E; /* Color del thumb (desertWarmOrange) */
+  cursor: pointer;
+  transition: background 0.15s ease-in-out, transform 0.15s ease-in-out; /* Transición para el movimiento */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); /* Sombra para el thumb */
+}
+
+/* Estilos al pasar el ratón/foco sobre el thumb */
+input[type="range"].range-sm::-webkit-slider-thumb:hover,
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.1); /* Ligeramente más grande al interactuar */
+  background-color: #FFD700; /* Cambiar color al interactuar (desertHighlightGold) */
+}
+
+input[type="range"].range-sm::-moz-range-thumb:hover,
+input[type="range"]::-moz-range-thumb:active {
+  transform: scale(1.1); /* Ligeramente más grande al interactuar */
+  background-color: #FFD700; /* Cambiar color al interactuar (desertHighlightGold) */
 }
 

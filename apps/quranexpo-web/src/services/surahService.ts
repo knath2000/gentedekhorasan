@@ -173,7 +173,7 @@ export const fetchRandomVerse = async (): Promise<DisplayVerse> => {
 
     // Create DisplayVerse from the API response
     return {
-      arabic: translatedVerse.text,
+      arabic: translatedVerse.verseText, // Corregido: usar verseText en lugar de text
       english: translatedVerse.translation || '',
       surahName: surahEnglishName,
       surahNumber: surahNumber,

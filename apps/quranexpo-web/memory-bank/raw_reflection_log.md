@@ -761,3 +761,61 @@ Improvements_Identified_For_Consolidation:
 - **Aislamiento Definitivo:** Cuando Metro funciona pero el error `n=0` persiste en el runtime, es necesario crear un proyecto completamente nuevo fuera del contexto actual para determinar si el problema es del proyecto/monorepo o del entorno de desarrollo.
 - **Límites del Diagnóstico:** Algunos problemas de inicialización del puente nativo están fuera del alcance de las configuraciones del proyecto y requieren investigación del entorno de desarrollo.
 ---
+Date: 2025-05-31
+TaskRef: "Reversión de la funcionalidad de desenfoque/primer plano en la página del lector"
+
+Learnings:
+- La implementación de un overlay con `position: absolute` y `inset: 0` dentro de un contenedor de scroll (`flex-1 overflow-y-auto relative`) puede romper el layout de la página, haciendo que el overlay se extienda más allá de lo esperado.
+- La propiedad `backdrop-filter` en CSS puede interferir de forma compleja con los contextos de apilamiento (`z-index`), impidiendo que los elementos con `z-index` más altos se muestren correctamente por encima del elemento con el filtro.
+- Los errores de sintaxis CSS persistentes (ej. `CssSyntaxError: Unknown word z-index`) que no se resuelven con `apply_diff` incremental, incluso después de corregir la sintaxis aparente, pueden requerir una reescritura completa de la sección o del archivo CSS afectado utilizando `write_to_file`. Esto asegura la eliminación de caracteres ocultos o problemas de parsing.
+- La combinación de `position: fixed` para el overlay, `position: relative` con `z-index` para el contenedor de scroll y el header, y `isolation: isolate` con un `z-index` alto para el verso activo, es la estrategia correcta para el apilamiento, pero fue bloqueada por el `backdrop-filter` y los errores de sintaxis.
+- La necesidad de revertir completamente una funcionalidad si causa problemas persistentes y bloquea el progreso, posponiendo su implementación para otro momento.
+
+Difficulties:
+- Problemas de layout inesperados al cambiar el overlay a `position: absolute` con `inset: 0`.
+- Errores de sintaxis CSS persistentes en `global.css` que impedían que la aplicación se cargara, a pesar de múltiples intentos de corrección con `apply_diff` y `write_to_file`.
+- La dificultad de diagnosticar la interacción entre `backdrop-filter` y los contextos de apilamiento.
+- La necesidad de revertir completamente una funcionalidad compleja después de múltiples intentos fallidos.
+
+Successes:
+- Se logró identificar la causa raíz de los errores de sintaxis en `global.css` (declaración duplicada de `z-index`).
+- Se logró revertir completamente la funcionalidad de desenfoque/primer plano, restaurando la interfaz de usuario de la página del lector a su estado funcional anterior.
+- Se confirmó que la aplicación ahora carga sin errores de CSS.
+
+Improvements_Identified_For_Consolidation:
+- Patrón de depuración: Si `apply_diff` o `write_to_file` fallan repetidamente con errores de sintaxis CSS, considerar la reescritura completa de la sección o el archivo.
+- Patrón de depuración: `backdrop-filter` puede causar problemas de apilamiento inesperados; probar a eliminarlo como paso de diagnóstico.
+- Proceso de trabajo: Saber cuándo posponer una funcionalidad si se convierte en un bloqueador persistente.
+---
+Date: 2025-05-31
+TaskRef: "Depuración y solución de auto-scroll y errores de hidratación SSR en quranexpo-web"
+
+Learnings:
+- El error `Module '"preact"' has no exported member 'forwardRef'.` en `ReaderVerseCard.tsx` se resolvió al confirmar que la importación ya estaba usando `preact/compat` (debido a los alias de Vite en `astro.config.mjs`). El problema original era probablemente un error de caché de TypeScript o del servidor de lenguaje.
+- La funcionalidad de auto-scroll no funcionaba debido a un mismatch en las referencias de los versos: se estaba usando `verse.id` como clave en `setVerseRef` en `ReaderContainer.tsx`, pero el hook `useAutoScroll` esperaba el índice del verso.
+- La solución para el mismatch de referencias fue cambiar `setVerseRef(verse.id, el)` a `setVerseRef(firstVerseIndex + index, el)` en `ReaderContainer.tsx`.
+- La inconsistencia de importaciones entre `useAutoScroll.ts` (que usaba `'react'`) y `ReaderContainer.tsx` (que usaba `'preact/hooks'`) se corrigió cambiando `useAutoScroll.ts` para importar desde `'preact/hooks'`.
+- El error de hidratación SSR `"Expected a DOM node of type 'div' but found ''"` se abordó añadiendo un estado `isClient` y un `useEffect` en `ReaderContainer.tsx` para asegurar que el componente solo intente renderizar contenido específico del cliente después de la hidratación.
+- Se encontró y eliminó una declaración duplicada de `isClient` en `ReaderContainer.tsx` que causaba errores de compilación (`Cannot redeclare block-scoped variable`).
+- La adición de `console.log` en `useAutoScroll.ts` fue útil para depurar y verificar la ejecución del hook.
+- La adición de una `guard clause` (`!verses.length`) en `useAutoScroll.ts` mejora la robustez del hook.
+
+Difficulties:
+- El diagnóstico inicial del error `forwardRef` fue engañoso debido a una versión desactualizada del archivo o problemas de caché.
+- La depuración del auto-scroll requirió una comprensión profunda de cómo se manejan las referencias en Preact/React y cómo interactúan con la paginación.
+- Los errores de hidratación SSR son complejos de depurar y requieren un manejo cuidadoso del renderizado condicional en el cliente.
+- La declaración duplicada de variables causó errores de compilación inesperados.
+
+Successes:
+- Se resolvió el problema de `forwardRef` (aunque ya estaba corregido en el código).
+- Se implementó y depuró exitosamente la funcionalidad de auto-scroll.
+- Se resolvieron los errores de hidratación SSR.
+- Se mejoró la robustez de los hooks y componentes relacionados.
+
+Improvements_Identified_For_Consolidation:
+- Patrón de depuración: Cuando un error de tipo o importación persiste a pesar de que el código parece correcto, considerar la limpieza de caché de TypeScript y la reinstalación de dependencias.
+- Patrón de desarrollo: Asegurar que las referencias de elementos en listas (`map`) se basen en índices consistentes (ej. `firstVerseIndex + index`) cuando se trabaja con paginación y auto-scroll.
+- Patrón de desarrollo: Mantener la consistencia en las importaciones de hooks (ej. `preact/hooks` vs `react`) en todo el codebase.
+- Patrón de depuración: Para errores de hidratación SSR, usar un estado `isClient` y `useEffect` para renderizar condicionalmente el contenido del cliente.
+- Patrón de depuración: Verificar declaraciones duplicadas de variables al encontrar errores de "Cannot redeclare block-scoped variable".
+---

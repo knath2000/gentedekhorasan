@@ -9,9 +9,11 @@
 - **El `BottomControlPanel.tsx` ha sido modificado para estar fijo en la parte inferior central de la página, tiene un fondo blanco plateado cromado, y los controles de audio se muestran por encima de los controles de paginación.**
 - **Se ha resuelto el problema de la visibilidad de los controles de audio para suras con 7 o menos versos: el `BottomControlPanel` ahora se muestra solo durante la reproducción de audio para estas suras, mostrando únicamente los controles de audio y ocultando los botones de navegación.**
 - `src/services/apiClient.ts` está configurado para usar la API de `quran-api-data` desplegada en Vercel (`https://gentedekhorasan.vercel.app/api/v1`).
+- **La funcionalidad de desenfoque/primer plano en la página del lector ha sido eliminada por completo.**
+- **✅ La funcionalidad de auto-scroll en la página del lector ahora funciona correctamente.**
 - **🚨 PROBLEMA CRÍTICO EN quran-data-api:** Error persistente de TypeScript `Property 'startIndex' is missing` debido a duplicación del cliente de Prisma en dos ubicaciones:
-    - ❌ `apps/quran-data-api/api/generated/prisma/` (ubicación antigua - PERSISTE)
-    - ✅ `apps/quran-data-api/prisma/generated/client/` (ubicación nueva - correcta)
+- ❌ `apps/quran-data-api/api/generated/prisma/` (ubicación antigua - PERSISTE)
+- ✅ `apps/quran-data-api/prisma/generated/client/` (ubicación nueva - correcta)
 - **Causa Raíz:** La carpeta `api/generated/` no se elimina completamente a pesar de múltiples intentos con `rm -rf`, causando conflicto de tipos en TypeScript.
 - **Estado Actual:** Build local falla, despliegue en Vercel bloqueado.
 
@@ -41,9 +43,10 @@
 - Los archivos del banco de memoria (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `progress.md`) han sido actualizados para reflejar estos cambios.
 
 ## Problemas conocidos
-- Ninguno actualmente.
+- La funcionalidad de desenfoque/primer plano en la página del lector ha sido pospuesta para una implementación futura.
 
 ## Evolución de las decisiones del proyecto
 - Se decidió implementar la funcionalidad completa de marcadores, lo que representa un cambio de alcance con respecto a la versión inicial.
 - Se decidió cambiar la interacción de marcado de un clic en un icono a una pulsación larga en la tarjeta del verso para simplificar la UI del lector.
 - Se decidió añadir un botón de marcadores dedicado en la página de suras para facilitar el acceso a los marcadores.
+- Se decidió eliminar temporalmente la funcionalidad de desenfoque/primer plano debido a problemas persistentes de implementación y apilamiento.
