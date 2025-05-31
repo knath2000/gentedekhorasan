@@ -1,17 +1,18 @@
-// @ts-check
+:start_line:1
+-------
+import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel/serverless';
 import preact from '@astrojs/preact';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel';
 import clerk from '@clerk/astro';
-import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'server',
+  adapter: vercel(),
   integrations: [
     tailwind(),
     preact(),
-    clerk(),
-    vercel()
+    clerk()
   ],
   vite: {
     ssr: {
