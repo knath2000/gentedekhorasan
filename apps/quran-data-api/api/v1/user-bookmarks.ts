@@ -13,7 +13,7 @@ const prisma = new PrismaClient({ adapter });
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS DINÁMICO
   const allowedOrigins = [
-    'https://quranexpo-web.vercel.app',
+    'https://quranastroweb.vercel.app',
     'http://localhost:4321',
     'http://localhost:3000'
   ];
