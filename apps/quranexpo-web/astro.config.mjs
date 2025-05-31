@@ -2,14 +2,18 @@
 import preact from '@astrojs/preact';
 import tailwind from '@astrojs/tailwind';
 import clerk from '@clerk/astro';
+:start_line:5
+-------
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
-  output: 'static', // ✅ Cambiar a static
+  output: 'server',
   integrations: [
     tailwind(),
     preact(),
-    clerk()
+    clerk(),
+    vercel()
   ],
   vite: {
     ssr: {
