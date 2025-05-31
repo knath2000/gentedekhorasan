@@ -1,13 +1,9 @@
 // @ts-check
 import preact from '@astrojs/preact';
 import tailwind from '@astrojs/tailwind';
-import clerk from '@clerk/astro';
-:start_line:5
--------
-:start_line:5
--------
-import { defineConfig } from 'astro/config';
 import vercel from '@astrojs/vercel';
+import clerk from '@clerk/astro';
+import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'server',
