@@ -1,8 +1,18 @@
 import type { Bookmark, Surah, Verse } from '../types/quran';
 
 // The API base URL is hardcoded to match the quranexpo2 native app
+import { logger } from '../utils/logger';
+
+// Caché para traducciones de versos
+const verseTranslationCache = new Map<string, Verse>();
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
+
+function getCacheKey(surahId: number, ayahId: number, translator: string): string {
+  return `${surahId}-${ayahId}-${translator}`;
+}
+
 const API_BASE_URL = 'https://gentedekhorasan.vercel.app/api/v1'; // Updated to external API
-console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
+logger.info('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 
 /**
  * Fetches the list of all Surahs from the API
@@ -42,7 +52,7 @@ export async function fetchSurahList(): Promise<Surah[]> {
     }));
   } catch (error) {
     // Log the error for debugging
-    console.error('Error in fetchSurahList:', error);
+    logger.error('Error in fetchSurahList:', error);
     
     // Re-throw the error to be handled by the caller
     throw error;
@@ -66,7 +76,7 @@ export async function fetchSurahById(surahId: number): Promise<Surah | null> {
     // Return the Surah or null if not found
     return surah || null;
   } catch (error) {
-    console.error(`Error in fetchSurahById for surahId ${surahId}:`, error);
+    logger.error(`Error in fetchSurahById for surahId ${surahId}:`, error);
     throw error;
   }
 }
@@ -127,7 +137,7 @@ export async function fetchVersesForSurah(
     
     return versesWithTranslations;
   } catch (error) {
-    console.error(`Error in fetchVersesForSurah for surahId ${surahId}:`, error);
+    logger.error(`Error in fetchVersesForSurah for surahId ${surahId}:`, error);
     throw error;
   }
 }
@@ -145,6 +155,14 @@ export async function fetchSingleTranslatedVerse(
   ayahId: number,
   translator: string = "en.yusufali"
 ): Promise<Verse | null> {
+  const cacheKey = getCacheKey(surahId, ayahId, translator);
+  const cachedVerse = verseTranslationCache.get(cacheKey);
+
+  if (cachedVerse) {
+    logger.debug(`Serving verse ${surahId}:${ayahId} from cache.`);
+    return cachedVerse;
+  }
+
   try {
     // Use the same API endpoint as quranexpo2 native app
     const response = await fetch(
@@ -171,21 +189,37 @@ export async function fetchSingleTranslatedVerse(
     }
     
     // Convert API format to our Verse format
-    return {
+    const verse: Verse = {
       id: data.id || parseInt(`${surahId}${ayahId}`), // Use API's ID or generate one
       surahId: surahId,
       numberInSurah: ayahId,
       verseText: data.text || '', // Renamed 'text' to 'verseText'
       translation: data.translation || ''
     };
+
+    // Cache the fetched verse
+    verseTranslationCache.set(cacheKey, verse);
+    // Simple cache invalidation: clear after TTL (for a more robust solution, use a dedicated cache library)
+    setTimeout(() => {
+      verseTranslationCache.delete(cacheKey);
+      logger.debug(`Cache for verse ${surahId}:${ayahId} cleared.`);
+    }, CACHE_TTL);
+
+    return verse;
   } catch (error) {
     // Log the error for debugging
-    console.error(`Error in fetchSingleTranslatedVerse for ${surahId}:${ayahId}:`, error);
+    logger.error(`Error in fetchSingleTranslatedVerse for ${surahId}:${ayahId}:`, error);
     
     // Re-throw the error to be handled by the caller (no silent failures)
     throw error;
   }
 }
+
+/**
+ * Caché para descripciones de Surah
+ */
+const surahDescriptionCache = new Map<number, { description: string, timestamp: number }>();
+const SURAH_DESCRIPTION_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
 
 /**
  * Fetches the description for a specific Surah from the API
@@ -194,6 +228,12 @@ export async function fetchSingleTranslatedVerse(
  * @throws Error If the API request fails
  */
 export async function fetchSurahDescription(surahId: number): Promise<string | null> {
+  const cachedData = surahDescriptionCache.get(surahId);
+  if (cachedData && (Date.now() - cachedData.timestamp < SURAH_DESCRIPTION_CACHE_TTL)) {
+    logger.debug(`Serving Surah description for ${surahId} from cache.`);
+    return cachedData.description;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/get-surah-description?surahId=${surahId}`);
 
@@ -205,9 +245,16 @@ export async function fetchSurahDescription(surahId: number): Promise<string | n
     }
 
     const data = await response.json();
-    return data.description || null;
+    const description = data.description || null;
+
+    if (description) {
+      surahDescriptionCache.set(surahId, { description, timestamp: Date.now() });
+      logger.debug(`Surah description for ${surahId} cached.`);
+    }
+    
+    return description;
   } catch (error) {
-    console.error(`Error in fetchSurahDescription for surahId ${surahId}:`, error);
+    logger.error(`Error in fetchSurahDescription for surahId ${surahId}:`, error);
     throw error;
   }
 }
@@ -234,7 +281,7 @@ export async function fetchBookmarks(userId: string, token: string): Promise<Boo
     }
     return data as Bookmark[];
   } catch (error) {
-    console.error(`Error in fetchBookmarks for user ${userId}:`, error);
+    logger.error(`Error in fetchBookmarks for user ${userId}:`, error);
     throw error;
   }
 }
@@ -259,14 +306,14 @@ export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' 
     };
     
     // ✅ DEBUGGING - Verificar token y headers
-    console.log('=== FRONTEND API CALL DEBUG ===');
-    console.log('Token received:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
-    console.log('API URL:', `${API_BASE_URL}/user-bookmarks`);
-    console.log('Headers to send:', {
+    logger.debug('=== FRONTEND API CALL DEBUG ===');
+    logger.debug('Token received:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
+    logger.debug('API URL:', `${API_BASE_URL}/user-bookmarks`);
+    logger.debug('Headers to send:', {
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token.substring(0, 20)}...` : 'NO AUTH HEADER'
     });
-    console.log('Body to send:', { ...bookmarkData, userId, timestamp: new Date().toISOString() });
+    logger.debug('Body to send:', { ...bookmarkData, userId, timestamp: new Date().toISOString() });
     
     const response = await fetch(`${API_BASE_URL}/user-bookmarks`, {
       method: 'POST',
@@ -277,51 +324,51 @@ export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' 
       body: JSON.stringify({ ...bookmarkData, userId, timestamp: new Date().toISOString() }),
     });
     
-    console.log('Response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    logger.debug('Response status:', response.status);
+    logger.debug('Response headers:', Object.fromEntries(response.headers.entries()));
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.log('Error response body:', errorText);
+      logger.error('Error response body:', errorText);
       throw new Error(`API error: Failed to add bookmark for user ${userId}. Status: ${response.status}`);
     }
     
     const data = await response.json();
     return data as Bookmark;
   } catch (error) {
-    console.error(`Error in addBookmark for user ${userId}:`, error);
+    logger.error(`Error in addBookmark for user ${userId}:`, error);
     throw error;
   }
 }
 
 /**
- * Updates an existing bookmark for a user.
- * @param userId The ID of the user.
- * @param bookmarkId The ID of the bookmark to update.
- * @param updatedBookmark The updated bookmark object.
- * @param token The authentication token.
- * @returns A Promise resolving to the updated Bookmark object.
- * @throws Error If the API request fails.
- */
+* Updates an existing bookmark for a user.
+* @param userId The ID of the user.
+* @param bookmarkId The ID of the bookmark to update.
+* @param updatedBookmark The updated bookmark object.
+* @param token The authentication token.
+* @returns A Promise resolving to the updated Bookmark object.
+* @throws Error If the API request fails.
+*/
 export async function updateBookmark(userId: string, bookmarkId: string, updatedBookmark: Partial<Bookmark>, token: string): Promise<Bookmark> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks?id=${bookmarkId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(updatedBookmark),
-    });
-    if (!response.ok) {
-      throw new Error(`API error: Failed to update bookmark ${bookmarkId} for user ${userId}. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data as Bookmark;
-  } catch (error) {
-    console.error(`Error in updateBookmark ${bookmarkId} for user ${userId}:`, error);
-    throw error;
-  }
+try {
+const response = await fetch(`${API_BASE_URL}/user-bookmarks?id=${bookmarkId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  },
+  body: JSON.stringify({ notes: updatedBookmark.notes }), // Asegurar que solo se envíe 'notes'
+});
+if (!response.ok) {
+  throw new Error(`API error: Failed to update bookmark ${bookmarkId} for user ${userId}. Status: ${response.status}`);
+}
+const data = await response.json();
+return data as Bookmark;
+} catch (error) {
+logger.error(`Error in updateBookmark ${bookmarkId} for user ${userId}:`, error);
+throw error;
+}
 }
 
 /**
@@ -345,7 +392,7 @@ export async function deleteBookmark(userId: string, bookmarkId: string, token: 
     }
     return true;
   } catch (error) {
-    console.error(`Error in deleteBookmark ${bookmarkId} for user ${userId}:`, error);
+    logger.error(`Error in deleteBookmark ${bookmarkId} for user ${userId}:`, error);
     throw error;
   }
 }

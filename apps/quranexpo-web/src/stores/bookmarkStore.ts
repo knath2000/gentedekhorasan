@@ -126,35 +126,38 @@ export async function removeBookmark(userId: string, bookmarkId: string) {
 
 // Función para actualizar la nota de un marcador
 export async function updateBookmarkNote(userId: string, bookmarkId: string, notes: string) {
-  const currentBookmarks = bookmarks.get();
-  const bookmarkToUpdate = currentBookmarks.find(b => b.id === bookmarkId);
+const currentBookmarks = bookmarks.get();
+const bookmarkToUpdate = currentBookmarks.find(b => b.id === bookmarkId);
 
-  if (!bookmarkToUpdate) {
-    console.log(`Bookmark not found locally for note update: ${bookmarkId}`);
-    return;
-  }
+if (!bookmarkToUpdate) {
+console.log(`Bookmark not found locally for note update: ${bookmarkId}`);
+return;
+}
 
-  const auth = $authStore.get();
-  const token = await auth.session?.getToken();
+const auth = $authStore.get();
+const token = await auth.session?.getToken();
 
-  if (!token) {
-    console.warn('No authentication token available, cannot update bookmark note.');
-    return;
-  }
+if (!token) {
+console.warn('No authentication token available, cannot update bookmark note.');
+return;
+}
 
-  bookmarksLoading.set(true);
-  try {
-    const updatedBookmark = await updateBookmarkApi(userId, bookmarkId, { notes }, token);
-    const updatedBookmarksList = currentBookmarks.map(b =>
-      b.id === bookmarkId ? { ...b, notes: updatedBookmark.notes } : b
-    );
-    bookmarks.set(updatedBookmarksList);
-    console.log(`Bookmark note updated via API for: ${bookmarkId}`);
-  } catch (error) {
-    console.error(`Error updating bookmark note for ${bookmarkId} via API:`, error);
-  } finally {
-    bookmarksLoading.set(false);
-  }
+bookmarksLoading.set(true);
+try {
+console.log(`[bookmarkStore] Calling updateBookmarkApi for bookmarkId: ${bookmarkId} with notes: ${notes}`);
+const updatedBookmark = await updateBookmarkApi(userId, bookmarkId, { notes }, token);
+console.log(`[bookmarkStore] API returned updated bookmark:`, updatedBookmark);
+const updatedBookmarksList = currentBookmarks.map(b =>
+  b.id === bookmarkId ? { ...b, notes: notes } : b
+);
+bookmarks.set(updatedBookmarksList);
+console.log(`[bookmarkStore] Bookmarks store updated. New notes for ${bookmarkId}: ${notes}`);
+console.log(`Updated bookmark details:`, updatedBookmark);
+} catch (error) {
+console.error(`Error updating bookmark note for ${bookmarkId} via API:`, error);
+} finally {
+bookmarksLoading.set(false);
+}
 }
 
 // Función para verificar si un verso está marcado

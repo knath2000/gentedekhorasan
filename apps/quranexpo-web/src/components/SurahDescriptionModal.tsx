@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { fetchSurahDescription } from '../services/apiClient';
 import type { Surah } from '../types/quran';
+import { logger } from '../utils/logger';
 
 interface SurahDescriptionModalProps {
   surah: Surah;
@@ -23,21 +24,34 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
   }
 
   // Cargar la descripción de la API
-  useEffect(() => {
-    if (isOpen && surah) {
-      setIsLoading(true);
-      setError(null);
-      fetchSurahDescription(surah.number)
-        .then(data => {
-          setDescription(data);
-        })
-        .catch(err => {
-          console.error("Failed to fetch surah description:", err);
-          setError("Failed to load description.");
-        })
-        .finally(() => setIsLoading(false));
+  const loadDescription = useCallback(async () => {
+    if (!surah) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await fetchSurahDescription(surah.number);
+      setDescription(data);
+      logger.info(`Description for Surah ${surah.number} loaded.`);
+    } catch (err) {
+      logger.error("Failed to fetch surah description:", err);
+      setError("Failed to load description.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [isOpen, surah?.number]); // Depende de isOpen y surah.number
+  }, [surah?.number]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadDescription();
+      // Focus the modal or close button when opened
+      closeButtonRef.current?.focus();
+      // Disable body scroll
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Enable body scroll
+      document.body.style.overflow = '';
+    }
+  }, [isOpen, loadDescription]);
 
   useEffect(() => {
     if (isOpen) {
@@ -97,11 +111,13 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
   return (
     <>
       <div // Backdrop mejorado
-        className={`fixed inset-0 bg-skyDeepBlue/85 backdrop-blur-2xl z-40 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+        className={`fixed inset-0 bg-skyDeepBlue/40 backdrop-blur-2xl z-90 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+        style={{ backdropFilter: 'blur(5px)' }}
         onClick={onClose}
+        aria-hidden={!isOpen} // Ocultar del árbol de accesibilidad cuando no está visible
       />
       <div
-        className={`fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2
+        className={`fixed top-1/2 left-1/2 z-100 transform -translate-x-1/2 -translate-y-1/2
           glassmorphism-strong shadow-2xl p-6 w-full max-w-lg max-h-[80vh]
           flex flex-col items-center transition-all duration-300 ease-out
           ${isOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'}
@@ -111,6 +127,8 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
         aria-labelledby="modal-title"
         tabIndex={-1}
         ref={modalRef}
+        // Asegurarse de que el modal no sea navegable por teclado cuando está invisible
+        aria-hidden={!isOpen}
       >
         <button className="absolute top-4 right-4 text-white/70 hover:text-desertHighlightGold text-2xl font-bold transition-colors duration-200" onClick={onClose} aria-label="Close modal" ref={closeButtonRef}>
           ×
