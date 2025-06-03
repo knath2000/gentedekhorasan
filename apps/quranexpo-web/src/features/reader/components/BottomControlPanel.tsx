@@ -1,5 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-preact';
-import { SkipIcon, StopIcon } from './icons/AudioIcons';
+import { SkipIcon, StopIcon } from '../../../components/icons/AudioIcons';
 
 interface BottomControlPanelProps {
   onStop: () => void;
@@ -9,31 +8,11 @@ interface BottomControlPanelProps {
   currentSurahNumber?: number;
   currentVerseNumber?: number;
   totalVerses?: number;
-  currentPage: number;
-  totalPages: number;
-  goToPreviousPage: () => void;
-  goToNextPage: () => void;
-  showNavigation?: boolean;
   isModalOpen?: boolean;
 }
 
-const BottomControlPanel = ({
-  onStop,
-  onSkip,
-  isAudioActive,
-  isModalOpen = false,
-  currentSurahName,
-  currentSurahNumber,
-  currentVerseNumber,
-  totalVerses,
-  currentPage,
-  totalPages,
-  goToPreviousPage,
-  goToNextPage,
-  showNavigation = true,
-}: BottomControlPanelProps) => {
-  const panelHeightClass = isAudioActive ? 'h-64' : 'h-28';
-  const audioControlsVisibility = isAudioActive ? 'flex' : 'hidden';
+const BottomControlPanel = ({ onStop, onSkip, isAudioActive, isModalOpen = false, currentSurahName, currentSurahNumber, currentVerseNumber, totalVerses }: BottomControlPanelProps) => {
+  const panelHeightClass = isAudioActive ? 'h-64' : 'h-28'; // Keep existing logic if necessary, or refactor for modularity
 
   return (
     <div
@@ -58,7 +37,7 @@ const BottomControlPanel = ({
           </div>
           
           {/* Botones de audio */}
-          <div className={`flex items-center ${showNavigation ? 'justify-between' : 'justify-center'} w-full mb-4`}>
+          <div className={`flex items-center justify-center w-full mb-4`}>
             <div className="flex items-center space-x-4">
               <button
                 onClick={onStop}
@@ -76,30 +55,6 @@ const BottomControlPanel = ({
               </button>
             </div>
           </div>
-        </div>
-      )}
-      
-      {showNavigation && totalPages > 1 && (
-        <div className="flex items-center space-x-6 text-white pt-2 border-t border-white/10">
-          <button
-            onClick={goToPreviousPage}
-            disabled={currentPage === 1}
-            className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-40 transition-all duration-200 active:scale-90"
-            aria-label="Previous page"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <span className="font-englishBold text-xl text-white/90 drop-shadow-md">
-            {currentPage} / {totalPages}
-          </span>
-          <button
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-            className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-40 transition-all duration-200 active:scale-90"
-            aria-label="Next page"
-          >
-            <ChevronRight size={20} />
-          </button>
         </div>
       )}
     </div>

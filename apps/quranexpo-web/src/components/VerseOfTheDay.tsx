@@ -1,108 +1,8 @@
-import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-import type { DisplayVerse } from '../types/quran';
-import { fetchRandomVerse } from '../services/surahService';
-
-// Inline SVG for Share Icon
-const ShareIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    class="mr-2"
-    width="18px"
-    height="18px"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-    <polyline points="16 6 12 2 8 6"></polyline>
-    <line x1="12" y1="2" x2="12" y2="15"></line>
-  </svg>
-);
-
-// Cache key constants
-const CACHE_KEY = 'verseOfTheDay';
-const CACHE_TIMESTAMP_KEY = 'verseOfTheDayTimestamp';
+import useVerseOfTheDay from '../hooks/useVerseOfTheDay';
+import ShareIcon from './icons/ShareIcon'; // Importar el componente ShareIcon
 
 const VerseOfTheDay = () => {
-  const [verse, setVerse] = useState<DisplayVerse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getVerse = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Check if we have a cached verse for today
-        const today = new Date().toDateString();
-        
-        // Check localStorage for cached data if available
-        if (typeof window !== 'undefined') {
-          // We'll disable caching during development to ensure we test the API properly
-          const isDevelopment = import.meta.env.DEV;
-          const cachedTimestamp = isDevelopment ? null : localStorage.getItem(CACHE_TIMESTAMP_KEY);
-          
-          if (cachedTimestamp === today && !isDevelopment) {
-            const cachedVerseData = localStorage.getItem(CACHE_KEY);
-            if (cachedVerseData) {
-              try {
-                const parsedData = JSON.parse(cachedVerseData);
-                setVerse(parsedData);
-                setLoading(false);
-                return;
-              } catch (parseError) {
-                console.error("Failed to parse cached verse data:", parseError);
-                // Continue to fetch new verse
-              }
-            }
-          }
-        }
-
-        // Fetch a new verse if cache is not available or expired
-        const fetchedVerse = await fetchRandomVerse();
-        
-        if (fetchedVerse && fetchedVerse.surahNumber !== 0) {
-          console.log("Fetched verse:", fetchedVerse);
-          setVerse(fetchedVerse);
-          
-          // Cache the verse if localStorage is available
-          if (typeof window !== 'undefined') {
-            try {
-              localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedVerse));
-              localStorage.setItem(CACHE_TIMESTAMP_KEY, today);
-            } catch (storageError) {
-              console.warn("Could not cache verse:", storageError);
-              // Continue without caching
-            }
-          }
-        } else {
-          // If we got a malformed response, set an error
-          setError('Could not fetch a verse. Please try again later.');
-        }
-      } catch (e) {
-        console.error('Failed to fetch or cache verse of the day:', e);
-        // Set a more descriptive error message based on the error
-        if (e instanceof Error) {
-          setError(`Error fetching verse: ${e.message}`);
-        } else {
-          setError('An error occurred while fetching the verse. Please try again later.');
-        }
-        
-        // No fallback to cached verse on API error - as requested
-        // Clear any existing verse to ensure only the error is shown
-        setVerse(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getVerse();
-  }, []);
+  const { verse, loading, error, refetch } = useVerseOfTheDay();
 
   // Handle share functionality
   const handleShare = async () => {
@@ -121,8 +21,8 @@ const VerseOfTheDay = () => {
         await navigator.clipboard.writeText(textToCopy);
         alert('Verse copied to clipboard!');
       }
-    } catch (error) {
-      console.error('Error sharing verse:', error);
+    } catch (shareError) {
+      console.error('Error sharing verse:', shareError);
     }
   };
 
@@ -193,7 +93,7 @@ const VerseOfTheDay = () => {
                     onClick={handleShare}
                     class="flex items-center px-5 py-2.5 bg-desertWarmOrange text-buttonPrimaryText font-englishSemiBold text-sm rounded-full hover:bg-desertWarmOrange/90 transition-colors duration-150 shadow-md focus:outline-none focus:ring-2 focus:ring-desertHighlightGold focus:ring-opacity-50"
                   >
-                    <ShareIcon />
+                    <ShareIcon className="mr-2" width="18px" height="18px" />
                     Share
                   </button>
                 </div>

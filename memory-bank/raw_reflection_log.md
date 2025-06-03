@@ -1,31 +1,26 @@
 ---
-Date: 2025-05-29
-TaskRef: "Migración de styled-components y resolución de errores en monorepo"
+Date: 2025-05-31
+TaskRef: "Implementar funcionalidad de notas en la página de marcadores"
 
 Learnings:
-- La incompatibilidad de `styled-components/native` con Hermes Engine es un problema recurrente y difícil de resolver con configuraciones.
-- La unificación de versiones de React en un monorepo con pnpm hoisting es crucial para evitar conflictos de versiones.
-- La eliminación completa de `styled-components` y la migración a `StyleSheet` nativo es la solución más robusta para problemas de compatibilidad con Hermes.
-- Es fundamental verificar todas las importaciones y usos de la librería a migrar en todo el codebase.
-- Los errores de TypeScript relacionados con tipos de tema (`radii`, `shadows`, `textPrimary`, `cardBackground`, `desertHighlightGold`, `white`, `desertSandGold`) surgen cuando la estructura del tema en `src/theme/theme.ts` no coincide con el tema simple definido en `src/theme/nativeTheme.js` y usado por `ThemeContext.js`.
-- Los errores de `JSX element class does not support attributes` y `Cannot find name 'TouchableOpacity'` ocurren cuando los componentes estilizados (`styled.Text`, `styled.TouchableOpacity`) se convierten a componentes nativos (`Text`, `TouchableOpacity`) pero no se actualiza su uso en el JSX para pasar las props `style` y `children` correctamente.
-- La definición duplicada de componentes (`AnimatedBackground`) en el mismo archivo causa errores de `Cannot redeclare block-scoped variable`.
-- La importación de `Head` de `next/head` y el contenido HTML/web en componentes de React Native (`_layout.tsx`) causan errores de runtime en la aplicación nativa.
+- La funcionalidad de notas en la página de marcadores ya tenía una base sólida en el frontend y la API.
+- El modelo `UserBookmark` en Prisma ya incluía el campo `notes`.
+- Los endpoints de la API para CRUD de bookmarks ya estaban implementados, incluyendo el soporte para notas.
+- La interfaz de usuario para editar notas en `BookmarkListContainer.tsx` ya estaba completa.
+- Se identificó un mismatch en los parámetros de la API para la función de actualización (`bookmarkId` en frontend vs `id` en API).
+- Se identificó una inconsistencia en la respuesta de la API PUT (retornaba un mensaje en lugar del bookmark actualizado).
+- La solución inicial implicó corregir el parámetro de la URL en `apiClient.ts` y modificar la respuesta de la API en `user-bookmarks.ts` para retornar el objeto `Bookmark` actualizado.
+- Se hizo la función `handleSaveNote` en `BookmarkListContainer.tsx` asíncrona y se añadió `await` y `try/catch`.
 
 Difficulties:
-- La persistencia de las referencias a `styled-components` a pesar de los intentos de eliminación.
-- La complejidad de depurar errores de runtime en Hermes debido a su estricta validación.
-- La necesidad de una limpieza profunda de cachés y `node_modules` para asegurar que los cambios se apliquen correctamente.
-- La necesidad de migrar manualmente cada componente que usaba `styled-components` a `StyleSheet` nativo.
+- Identificar el mismatch exacto en los parámetros de la URL y la respuesta de la API requirió una revisión detallada de ambos lados (frontend y backend).
+- A pesar de las correcciones, la nota se actualiza correctamente en la base de datos (TursoDB), pero la interfaz de usuario en la página de marcadores sigue mostrando "No notes yet. Click to add." o la nota anterior, lo que indica un problema en la actualización del estado local o en cómo el componente `BookmarkListContainer.tsx` está leyendo el estado del store.
 
 Successes:
-- Se identificó la causa raíz de los problemas de compatibilidad con Hermes y `styled-components`.
-- Se unificaron las versiones de React en el monorepo a React 18.
-- Se corrigieron los problemas de `_layout.tsx` relacionados con importaciones web y typos en variables de entorno.
-- Se inició la migración de componentes de `styled-components` a `StyleSheet` nativo.
+- La base de datos se actualiza correctamente.
 
 Improvements_Identified_For_Consolidation:
-- Protocolo de migración de librerías de estilo: Incluir pasos para búsqueda exhaustiva, eliminación de dependencias, limpieza de caché y migración de componentes.
-- Guía de compatibilidad de Hermes: Documentar problemas comunes y soluciones para el motor Hermes en React Native.
-- Estructura de temas en monorepos: Definir una estrategia clara para la gestión de temas y tipos en proyectos con múltiples plataformas.
+- Patrón de depuración: Verificar siempre la consistencia de los parámetros y las respuestas entre el frontend y el backend, especialmente en operaciones CRUD.
+- Considerar la posibilidad de que la API siempre devuelva el objeto completo después de una operación de actualización para simplificar la lógica del frontend.
+- **Nuevo aprendizaje**: Investigar a fondo cómo el componente `BookmarkListContainer.tsx` consume el estado del store `bookmarks` y cómo se propaga la actualización de `notes` dentro del store. Posible problema de inmutabilidad o de re-renderizado del componente.
 ---

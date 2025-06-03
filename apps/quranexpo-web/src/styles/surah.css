@@ -1,0 +1,245 @@
+/* src/styles/surah.css */
+
+/* Estilos para el padding seguro en la página de Surah */
+.surah-page-main {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
+/* Estilos para el botón de configuración flotante */
+.settings-button-fixed {
+  position: fixed;
+  top: 2rem; /* top-8 */
+  right: 2rem; /* right-8 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem; /* w-12 */
+  height: 3rem; /* h-12 */
+  border-radius: 9999px; /* rounded-full */
+  background-color: rgba(255, 255, 255, 0.1); /* bg-white/10 */
+  color: white;
+  transition: all 0.2s ease-in-out; /* transition-all duration-200 */
+  backdrop-filter: blur(0.5rem); /* backdrop-blur-sm */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* border border-white/20 */
+  z-index: 9999;
+}
+
+.settings-button-fixed:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* hover:bg-white/20 */
+}
+
+.settings-button-fixed:active {
+  transform: scale(0.9); /* active:scale-90 */
+}
+
+/* Animación de fade-in para elementos */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animation-delay-100ms {
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Estilos para ReaderVerseCard */
+.verse-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  overflow: hidden;
+  padding: 1rem; /* p-4 */
+  margin-bottom: 0.75rem; /* mb-3 */
+  border-radius: 0.75rem; /* rounded-xl */
+  cursor: pointer;
+  background-color: rgba(100, 116, 139, 0.6); /* bg-skyPurple/60 */
+  backdrop-filter: blur(1rem); /* backdrop-blur-xl */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border border-white/10 */
+  transition: all 0.3s ease-in-out; /* transition-all duration-300 ease-in-out */
+}
+
+.verse-card .glassmorphism {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.verse-card .verse-number-circle {
+  position: relative;
+  z-index: 10;
+  background-color: #FFCF7B; /* bg-desertHighlightGold */
+  border-radius: 9999px; /* rounded-full */
+  width: 2.25rem; /* w-9 */
+  height: 2.25rem; /* h-9 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1rem; /* mr-4 */
+  flex-shrink: 0;
+}
+
+.verse-card .verse-number-circle span {
+  color: #202040; /* text-skyDeepBlue */
+  font-weight: 700; /* font-englishBold */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.verse-card .verse-text-container {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+}
+
+.verse-card .arabic-text {
+  color: #E0E0E0; /* text-textArabic */
+  font-family: 'NotoNaskhArabic-Regular', sans-serif; /* font-arabicRegular */
+  font-size: 1.875rem; /* text-3xl */
+  text-align: right;
+  margin-bottom: 0.5rem; /* mb-2 */
+  line-height: 1.625; /* leading-relaxed */
+}
+
+.verse-card .english-translation {
+  color: #B0B0B0; /* text-textSecondary */
+  font-family: 'Montserrat-Regular', sans-serif; /* font-englishRegular */
+  font-size: 1rem; /* text-base */
+  font-style: italic;
+  text-align: center;
+}
+
+/* Estilos para el reproductor de audio dentro de la tarjeta de verso */
+.verse-card .audio-controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  space-x: 0.5rem; /* space-x-2 */
+  margin-top: 0.5rem; /* mt-2 */
+}
+
+.verse-card .audio-time {
+  font-size: 0.75rem; /* text-xs */
+  color: #B0B0B0; /* text-textSecondary */
+  background-color: rgba(32, 32, 64, 0.4); /* bg-skyDeepBlue/40 */
+  padding-left: 0.25rem; /* px-1 */
+  padding-right: 0.25rem; /* px-1 */
+  border-radius: 0.25rem; /* rounded */
+}
+
+.verse-card .audio-progress-bar {
+  flex: 1;
+  height: 0.25rem; /* h-1 */
+  background-color: rgba(32, 32, 64, 0.5); /* bg-skyIndigo/50 */
+  border-radius: 0.5rem; /* rounded-lg */
+  appearance: none;
+  cursor: pointer;
+  /* Custom track styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  height: 8px; /* Ajustado para una mejor visibilidad */
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: background 0.1s linear;
+}
+
+/* Estilos para el thumb del input range */
+.verse-card .audio-progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px; /* Tamaño del thumb */
+  height: 16px; /* Tamaño del thumb */
+  border-radius: 50%;
+  background: #FFCF7B; /* Color del thumb */
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  margin-top: -4px; /* Ajuste vertical */
+}
+
+.verse-card .audio-progress-bar::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFCF7B;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Estilo para el error de audio */
+.verse-card .audio-error {
+  margin-top: 0.5rem; /* mt-2 */
+  color: #EF4444; /* text-red-500 */
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem; /* text-xs */
+}
+
+.verse-card .audio-error svg {
+  margin-right: 0.25rem; /* mr-1 */
+}
+
+/* Animaciones de audio */
+.verse-border-gradient-flow {
+  animation: border-flow 4s linear infinite;
+}
+
+.verse-audio-loading {
+  animation: pulse-glow 1.5s infinite alternate;
+}
+
+.verse-audio-playing {
+  animation: pulse-glow-subtle 2s infinite alternate;
+}
+
+.verse-body-gradient-shift {
+  animation: text-gradient-shift 3s ease-in-out infinite alternate;
+}
+
+@keyframes border-flow {
+  0% {
+    border-color: rgba(255, 207, 123, 0.5); /* desertHighlightGold */
+  }
+  50% {
+    border-color: rgba(255, 165, 0, 0.5); /* desertWarmOrange */
+  }
+  100% {
+    border-color: rgba(255, 207, 123, 0.5);
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 207, 123, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(255, 207, 123, 0);
+  }
+}
+
+@keyframes pulse-glow-subtle {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 207, 123, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 5px rgba(255, 207, 123, 0);
+  }
+}
+
+@keyframes text-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
