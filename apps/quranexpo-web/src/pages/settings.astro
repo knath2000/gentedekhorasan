@@ -33,6 +33,14 @@ import Layout from '../layouts/Layout.astro';
             storeKey="showTranslation"
             settingKey="showTranslation"
           />
+          
+          <SettingsToggle
+            client:only="preact"
+            label="Show AI Translation"
+            description="Display AI-generated translation"
+            storeKey="showAITranslation"
+            settingKey="showAITranslation"
+          />
         </div>
       </div>
       

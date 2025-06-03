@@ -10,6 +10,10 @@ import { ErrorIcon } from './icons/AudioIcons';
 interface ReaderVerseCardProps {
   verse: Verse;
   showTranslation: boolean;
+  showAITranslation: boolean; // Nueva prop
+  aiTranslation?: string; // Nueva prop
+  isLoadingAITranslation?: boolean; // Nueva prop
+  aiTranslationError?: string | null; // Nueva prop
   isActiveAudio?: boolean;
   isPlayingAudio?: boolean;
   isLoadingAudio?: boolean;
@@ -24,6 +28,10 @@ interface ReaderVerseCardProps {
 export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(({
   verse,
   showTranslation = true,
+  showAITranslation = false, // Valor por defecto
+  aiTranslation = '', // Valor por defecto
+  isLoadingAITranslation = false, // Valor por defecto
+  aiTranslationError = null, // Valor por defecto
   isActiveAudio = false,
   isPlayingAudio = false,
   isLoadingAudio = false,
@@ -159,9 +167,30 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
         
         {/* English translation (if enabled) */}
         {showTranslation && verse.translation && (
-          <p className="text-textSecondary font-englishRegular text-base italic text-center">
+          <p className="text-textSecondary font-englishRegular text-base italic text-center mb-2">
             {verse.translation}
           </p>
+        )}
+
+        {/* AI Translation (if enabled) */}
+        {showAITranslation && (
+          <div className="mt-2">
+            {isLoadingAITranslation ? (
+              <div className="flex justify-center items-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-desertWarmOrange"></div>
+                <span className="text-textSecondary text-sm ml-2">Generating AI translation...</span>
+              </div>
+            ) : aiTranslationError ? (
+              <div className="text-red-500 flex items-center text-sm">
+                <ErrorIcon size={12} className="text-red-500 mr-1" />
+                <span>{aiTranslationError}</span>
+              </div>
+            ) : aiTranslation && (
+              <p className="text-textPrimary font-englishRegular text-base text-center border-t border-white/10 pt-2">
+                {aiTranslation}
+              </p>
+            )}
+          </div>
         )}
 
         {isActiveAudio && (

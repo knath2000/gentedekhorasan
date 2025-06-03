@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { useAutoScroll } from '../hooks/useAutoScroll'; // Import useAutoScroll
 import { usePagination } from '../hooks/usePagination';
 import { useVersePlayer } from '../hooks/useVersePlayer';
-import { fetchSurahById, fetchVersesForSurah } from '../services/apiClient';
-import { audioActive, autoplayEnabled, showTranslation } from '../stores/settingsStore';
+import { fetchSurahById, fetchVersesForSurah, getAITranslation } from '../services/apiClient';
+import { audioActive, autoplayEnabled, showAITranslation, showTranslation } from '../stores/settingsStore';
 import type { Surah, Verse } from '../types/quran';
 import { getVerseKey } from '../utils/audioUtils';
 import BottomControlPanel from './BottomControlPanel';
@@ -30,9 +30,14 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  setIsDescriptionModalOpen(isOpen);
  };
   
- // Use showTranslation and autoplayEnabled from the store
+ // Use showTranslation, autoplayEnabled, and showAITranslation from the store
  const $showTranslation = useStore(showTranslation);
  const $autoplayEnabled = useStore(autoplayEnabled);
+ const $showAITranslation = useStore(showAITranslation); // Nuevo store para traducción de IA
+
+ const [aiTranslations, setAiTranslations] = useState<Map<string, string>>(new Map());
+ const [isLoadingAITranslation, setIsLoadingAITranslation] = useState(false);
+ const [aiTranslationError, setAiTranslationError] = useState<string | null>(null);
 
  // Audio player state and functions
  const {
@@ -136,6 +141,26 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  }
  }, [surahId]);
 
+ // Efecto para cargar la traducción de IA cuando showAITranslation es true o el verso actual cambia
+ useEffect(() => {
+   if ($showAITranslation && currentVerse && !aiTranslations.has(getVerseKey(currentVerse.surahId, currentVerse.numberInSurah))) {
+     const fetchTranslation = async () => {
+       setIsLoadingAITranslation(true);
+       setAiTranslationError(null);
+       try {
+         const translation = await getAITranslation(currentVerse.surahId, currentVerse.numberInSurah, currentVerse.verseText);
+         setAiTranslations(prev => new Map(prev).set(getVerseKey(currentVerse.surahId, currentVerse.numberInSurah), translation));
+       } catch (err: any) {
+         console.error('Error fetching AI translation:', err);
+         setAiTranslationError(err.message || 'Failed to fetch AI translation.');
+       } finally {
+         setIsLoadingAITranslation(false);
+       }
+     };
+     fetchTranslation();
+   }
+ }, [$showAITranslation, currentVerse, aiTranslations]);
+
  const handleVerseAudioToggle = (verse: Verse) => {
  const index = verses.findIndex((v: Verse) =>
  v.surahId === verse.surahId && v.numberInSurah === verse.numberInSurah
@@ -221,6 +246,10 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
                ref={(el: HTMLDivElement | null) => setVerseRef(firstVerseIndex + index, el)} // Pass ref to ReaderVerseCard
                verse={verse}
                showTranslation={$showTranslation}
+               showAITranslation={$showAITranslation} // Pasar la prop showAITranslation
+               aiTranslation={aiTranslations.get(getVerseKey(verse.surahId, verse.numberInSurah))} // Pasar la traducción de IA
+               isLoadingAITranslation={isLoadingAITranslation && currentVerseKey === getVerseKey(verse.surahId, verse.numberInSurah)} // Estado de carga para el verso activo
+               aiTranslationError={aiTranslationError && currentVerseKey === getVerseKey(verse.surahId, verse.numberInSurah) ? aiTranslationError : null} // Error para el verso activo
                isActiveAudio={isActiveAudio}
                isPlayingAudio={isActiveAudio && isPlaying}
                isLoadingAudio={isLoadingAudio}

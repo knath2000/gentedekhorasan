@@ -8,6 +8,7 @@ export interface AppSettings {
   showTranslation: boolean;
   audioActive: boolean;
   surahSortOrder: SurahSortOrder;
+  showAITranslation: boolean; // Nueva propiedad
 }
 
 // Default settings
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   showTranslation: true,
   audioActive: false,
   surahSortOrder: 'canonical', // Default sort order
+  showAITranslation: false, // Valor por defecto
 };
 
 // Create persistent atoms for each setting
@@ -70,4 +72,17 @@ export function setSurahSortOrder(order: SurahSortOrder) {
 
 export function setAudioActive(active: boolean) {
   audioActive.set(active);
+}
+
+export const showAITranslation = persistentAtom<boolean>(
+  'settings.showAITranslation',
+  DEFAULT_SETTINGS.showAITranslation,
+  {
+    encode: JSON.stringify,
+    decode: JSON.parse
+  }
+);
+
+export function toggleAITranslation() {
+  showAITranslation.set(!showAITranslation.get());
 }

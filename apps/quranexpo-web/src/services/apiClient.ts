@@ -349,3 +349,39 @@ export async function deleteBookmark(userId: string, bookmarkId: string, token: 
     throw error;
   }
 }
+
+/**
+ * Fetches AI-generated translation for a specific verse.
+ * @param surahId The ID of the Surah.
+ * @param verseNumber The number of the verse within the Surah.
+ * @param verseText The Arabic text of the verse to translate.
+ * @returns A Promise resolving to the AI-generated translation string.
+ * @throws Error If the API request fails.
+ */
+export async function getAITranslation(surahId: number, verseNumber: number, verseText: string): Promise<string> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ai-translate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ surahId, verseNumber, verseText }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('AI Translation API error:', errorData);
+      throw new Error(`API error: Failed to fetch AI translation. Status: ${response.status}, Details: ${errorData.error || 'Unknown error'}`);
+    }
+
+    const data = await response.json();
+    if (!data || typeof data.translation !== 'string') {
+      throw new Error('API returned invalid data structure for AI translation');
+    }
+
+    return data.translation;
+  } catch (error) {
+    console.error(`Error in getAITranslation for ${surahId}:${verseNumber}:`, error);
+    throw error;
+  }
+}

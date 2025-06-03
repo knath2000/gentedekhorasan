@@ -1,11 +1,11 @@
 import { useStore } from '@nanostores/preact';
-import { autoplayEnabled, showTranslation } from '../stores/settingsStore.ts';
+import { autoplayEnabled, showAITranslation, showTranslation } from '../stores/settingsStore.ts';
 
 interface ToggleSwitchProps {
   label: string;
   description: string; // Add description prop
-  settingKey: 'autoplay' | 'translation' | 'autoplayEnabled' | 'showTranslation'; // Update settingKey to match new storeKeys
-  storeKey: 'autoplayEnabled' | 'showTranslation'; // Add storeKey prop
+  settingKey: 'autoplay' | 'translation' | 'autoplayEnabled' | 'showTranslation' | 'showAITranslation'; // Update settingKey to match new storeKeys
+  storeKey: 'autoplayEnabled' | 'showTranslation' | 'showAITranslation'; // Add storeKey prop
   class?: string;
 }
 
@@ -15,6 +15,8 @@ const SettingsToggle = ({ label, description, settingKey, storeKey, class: class
     store = autoplayEnabled;
   } else if (storeKey === 'showTranslation') {
     store = showTranslation;
+  } else if (storeKey === 'showAITranslation') {
+    store = showAITranslation;
   } else {
     console.error(`Unknown storeKey: ${storeKey}`);
     return null;
