@@ -1,6 +1,31 @@
+import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node'; // Importar ClerkExpressRequireAuth
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
+  // Aplicar el middleware de autenticación de Clerk
+  const requireAuth = ClerkExpressRequireAuth();
+  await new Promise((resolve, reject) => {
+    requireAuth(request, response, (err: any) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(null);
+    });
+  }).catch(err => {
+    console.error('Clerk authentication error:', err);
+    // Si la autenticación falla, Clerk ya debería haber enviado una respuesta 401/403.
+    // Si no, enviamos una respuesta de error genérica.
+    if (!response.headersSent) {
+      return response.status(401).json({ error: 'Unauthorized', details: err.message });
+    }
+    return; // Salir si la respuesta ya fue enviada
+  });
+
+  // Si la respuesta ya fue enviada por el middleware de Clerk, salir
+  if (response.headersSent) {
+    return;
+  }
+
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Method Not Allowed' });
   }

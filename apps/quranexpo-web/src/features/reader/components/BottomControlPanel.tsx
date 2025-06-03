@@ -9,9 +9,29 @@ interface BottomControlPanelProps {
   currentVerseNumber?: number;
   totalVerses?: number;
   isModalOpen?: boolean;
+  // Nuevas props para paginación
+  currentPage: number;
+  totalPages: number;
+  goToPreviousPage: () => void;
+  goToNextPage: () => void;
+  showNavigation: boolean;
 }
 
-const BottomControlPanel = ({ onStop, onSkip, isAudioActive, isModalOpen = false, currentSurahName, currentSurahNumber, currentVerseNumber, totalVerses }: BottomControlPanelProps) => {
+const BottomControlPanel = ({
+  onStop,
+  onSkip,
+  isAudioActive,
+  isModalOpen = false,
+  currentSurahName,
+  currentSurahNumber,
+  currentVerseNumber,
+  totalVerses,
+  currentPage, // Desestructurar
+  totalPages, // Desestructurar
+  goToPreviousPage, // Desestructurar
+  goToNextPage, // Desestructurar
+  showNavigation, // Desestructurar
+}: BottomControlPanelProps) => {
   const panelHeightClass = isAudioActive ? 'h-64' : 'h-28'; // Keep existing logic if necessary, or refactor for modularity
 
   return (
@@ -55,6 +75,27 @@ const BottomControlPanel = ({ onStop, onSkip, isAudioActive, isModalOpen = false
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Controles de paginación */}
+      {showNavigation && (
+        <div className="flex items-center justify-center space-x-4 text-white font-englishRegular text-base">
+          <button
+            onClick={goToPreviousPage}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded-lg bg-skyDeepBlue/60 hover:bg-skyDeepBlue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button
+            onClick={goToNextPage}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 rounded-lg bg-skyDeepBlue/60 hover:bg-skyDeepBlue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

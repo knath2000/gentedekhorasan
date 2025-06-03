@@ -21,7 +21,7 @@ interface ReaderVerseCardProps {
   onAudioPress?: () => void;
   currentTime?: number;
   duration?: number;
-  onSeek?: (event: Event) => void;
+  onSeek?: (value: number) => void; // CAMBIADO: Aceptar un número directamente
   className?: string;
 }
 
@@ -201,7 +201,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
               min="0"
               max={duration}
               value={currentTime}
-              onInput={onSeek}
+              onInput={(e) => onSeek((e.target as HTMLInputElement).valueAsNumber)} // Extraer el valor numérico
               step="0.01" // Ajustado para una granularidad más fina
               className="flex-1 h-1 bg-skyIndigo/50 rounded-lg appearance-none cursor-pointer range-sm"
               style={{

@@ -6,22 +6,27 @@
 - La interfaz de usuario para añadir/eliminar marcadores y editar notas está presente.
 - La integración con TursoDB para marcadores y notas está establecida.
 - La nota se guarda correctamente en la base de datos (TursoDB).
+- La característica de traducción de IA ha sido implementada en el frontend y backend.
+- Se han resuelto los errores de tiempo de ejecución relacionados con la invocación de Hooks y la hidratación.
+- Se han resuelto los conflictos de fusión de Git y los cambios se han empujado al repositorio remoto.
 
 ## Lo que queda por construir
-- **Resolver el problema de actualización de la interfaz de usuario para las notas:** La nota se guarda en la base de datos, pero no se muestra correctamente en la página de marcadores.
-- Verificación exhaustiva y testing de la funcionalidad de notas después de que se resuelva el problema de la UI.
+- **Resolver el problema de que la lista de versos no se muestra en la página del lector.**
+- Investigar los errores de TypeScript "Cannot find module" en `ReaderContainer.tsx` si persisten y afectan la funcionalidad.
+- Verificación exhaustiva y testing de la funcionalidad de notas y traducción de IA.
 - Implementación de cualquier mejora o característica adicional que surja del testing.
 
 ## Estado Actual
-- Se han aplicado las correcciones iniciales para la funcionalidad de notas en la página de marcadores (hacer `handleSaveNote` asíncrona, `await` en `updateBookmarkNote`).
-- Se corrigió el mismatch de parámetros en la llamada a la API para actualizar marcadores.
-- Se modificó la API para que retorne el objeto `Bookmark` actualizado.
-- **Tarea en pausa hasta mañana.**
+- Se ha completado la implementación de la característica de traducción de IA.
+- Se han corregido los errores de tiempo de ejecución en la página del lector.
+- Se han resuelto los conflictos de Git.
+- **Problema actual:** La lista de versos no se muestra en la página del lector.
 
 ## Problemas Conocidos
-- **La interfaz de usuario no se actualiza con la nota guardada:** A pesar de que la base de datos se actualiza correctamente, la página de marcadores sigue mostrando "No notes yet. Click to add." o la nota anterior. Esto indica un problema en la actualización del estado local o en cómo el componente `BookmarkListContainer.tsx` está leyendo el estado del store.
+- **La lista de versos no se muestra en la página del lector:** A pesar de las correcciones de hidratación y Hooks, la página del lector no muestra los versos. Esto requiere una depuración más profunda de la lógica de carga de datos y las condicionales de renderizado en `ReaderContainer.tsx`.
+- Los errores de TypeScript "Cannot find module" en `ReaderContainer.tsx` persisten, aunque las rutas de importación parecen correctas. Esto podría ser un problema de configuración del entorno de desarrollo o un falso positivo.
 
 ## Evolución de las Decisiones del Proyecto
-- La decisión de usar TursoDB para el almacenamiento de notas se ha reafirmado debido a su integración existente y eficiencia.
-- Se ha priorizado la corrección de errores de integración sobre la implementación de nuevas características para asegurar la estabilidad.
-- El problema actual sugiere una desconexión entre la actualización del store y la re-renderización del componente, lo que será el foco de la próxima sesión.
+- La decisión de usar TursoDB para el almacenamiento de notas se ha reafirmado.
+- Se ha priorizado la corrección de errores de tiempo de ejecución y la resolución de conflictos de Git para estabilizar el codebase.
+- El enfoque actual es diagnosticar y resolver el problema de renderizado de la lista de versos en la página del lector.
