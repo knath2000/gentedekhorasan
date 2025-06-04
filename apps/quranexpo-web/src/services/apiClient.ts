@@ -1,7 +1,7 @@
 import type { Bookmark, Surah, Verse } from '../types/quran';
 
 // The API base URL is hardcoded to match the quranexpo2 native app
-const API_BASE_URL = '/api'; // Usar el proxy de desarrollo
+const API_BASE_URL = ''; // Usar el proxy de desarrollo
 console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 
 /**

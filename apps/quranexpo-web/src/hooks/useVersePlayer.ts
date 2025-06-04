@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { audioActive, autoplayEnabled, setAudioActive } from '../stores/settingsStore';
 import type { Verse } from '../types/quran';

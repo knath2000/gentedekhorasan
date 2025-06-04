@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useRef } from 'react';
 
 interface UseAutoScrollProps {
   activeVerseIndex: number | null;

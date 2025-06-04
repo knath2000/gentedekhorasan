@@ -1,6 +1,6 @@
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 import clerk from '@clerk/astro';
 import { defineConfig } from 'astro/config';
 
@@ -14,10 +14,10 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': {
-        target: 'https://gentedekhorasan.vercel.app/api',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api/v1'),
+      '/v1': { // Cambiar la clave del proxy a /v1
+        target: 'https://gentedekhorasan.vercel.app/api/v1', // Apuntar directamente a la base de la API
+        changeOrigin: true, // Mantener changeOrigin
+        // Eliminar rewrite ya que la URL ya contendrá /v1
       },
     },
   },
