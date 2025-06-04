@@ -3,6 +3,7 @@ import Background from '../components/Background.tsx';
 import VerseOfTheDay from '../components/VerseOfTheDay.tsx';
 import { BookmarkIcon } from '../components/icons/BookmarkIcon.tsx'; // Importar el nuevo icono
 import '../styles/global.css'; // Importar estilos globales
+import '../styles/home.css'; // Importar estilos de la página de inicio
 ---
 
 <html lang="en">
@@ -18,7 +19,7 @@ import '../styles/global.css'; // Importar estilos globales
 		<Background />
 		{/* Adjusted padding to account for new bottom nav height (60px) and safe areas */}
 		{/* Using env(safe-area-inset-bottom) for iOS safe area */}
-		<main class="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden" style="padding-bottom: env(safe-area-inset-bottom, 0px); padding-top: env(safe-area-inset-top, 20px);">
+		<main class="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden main-content">
 			<h1 class="text-3xl font-englishBold text-textPrimary mb-6 text-center tracking-wide sm:text-4xl animate-sequence-1">
 				Luminous Verses
 			</h1>

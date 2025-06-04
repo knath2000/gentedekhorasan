@@ -10,7 +10,14 @@ import { ErrorIcon } from './icons/AudioIcons';
 interface ReaderVerseCardProps {
   verse: Verse;
   showTranslation: boolean;
+<<<<<<< HEAD
   useAiTranslation?: boolean;
+=======
+  showAITranslation: boolean; // Nueva prop
+  aiTranslation?: string; // Nueva prop
+  isLoadingAITranslation?: boolean; // Nueva prop
+  aiTranslationError?: string | null; // Nueva prop
+>>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
   isActiveAudio?: boolean;
   isPlayingAudio?: boolean;
   isLoadingAudio?: boolean;
@@ -18,14 +25,21 @@ interface ReaderVerseCardProps {
   onAudioPress?: () => void;
   currentTime?: number;
   duration?: number;
-  onSeek?: (event: Event) => void;
+  onSeek?: (value: number) => void; // CAMBIADO: Aceptar un número directamente
   className?: string;
 }
 
 export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(({
   verse,
   showTranslation = true,
+<<<<<<< HEAD
   useAiTranslation = false,
+=======
+  showAITranslation = false, // Valor por defecto
+  aiTranslation = '', // Valor por defecto
+  isLoadingAITranslation = false, // Valor por defecto
+  aiTranslationError = null, // Valor por defecto
+>>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
   isActiveAudio = false,
   isPlayingAudio = false,
   isLoadingAudio = false,
@@ -161,9 +175,35 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
         
         {/* English translation (if enabled) */}
         {showTranslation && verse.translation && (
+<<<<<<< HEAD
           <p className="text-textSecondary font-englishRegular text-base italic text-center">
             {useAiTranslation ? `[AI] ${verse.translation}` : verse.translation}
+=======
+          <p className="text-textSecondary font-englishRegular text-base italic text-center mb-2">
+            {verse.translation}
+>>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
           </p>
+        )}
+
+        {/* AI Translation (if enabled) */}
+        {showAITranslation && (
+          <div className="mt-2">
+            {isLoadingAITranslation ? (
+              <div className="flex justify-center items-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-desertWarmOrange"></div>
+                <span className="text-textSecondary text-sm ml-2">Generating AI translation...</span>
+              </div>
+            ) : aiTranslationError ? (
+              <div className="text-red-500 flex items-center text-sm">
+                <ErrorIcon size={12} className="text-red-500 mr-1" />
+                <span>{aiTranslationError}</span>
+              </div>
+            ) : aiTranslation && (
+              <p className="text-textPrimary font-englishRegular text-base text-center border-t border-white/10 pt-2">
+                {aiTranslation}
+              </p>
+            )}
+          </div>
         )}
 
         {isActiveAudio && (
@@ -174,7 +214,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
               min="0"
               max={duration}
               value={currentTime}
-              onInput={onSeek}
+              onInput={(e) => onSeek((e.target as HTMLInputElement).valueAsNumber)} // Extraer el valor numérico
               step="0.01" // Ajustado para una granularidad más fina
               className="flex-1 h-1 bg-skyIndigo/50 rounded-lg appearance-none cursor-pointer range-sm"
               style={{

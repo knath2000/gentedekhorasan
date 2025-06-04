@@ -1,5 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-preact';
-import { SkipIcon, StopIcon } from './icons/AudioIcons';
+import { SkipIcon, StopIcon } from '../../../components/icons/AudioIcons';
 
 interface BottomControlPanelProps {
   onStop: () => void;
@@ -9,12 +8,13 @@ interface BottomControlPanelProps {
   currentSurahNumber?: number;
   currentVerseNumber?: number;
   totalVerses?: number;
+  isModalOpen?: boolean;
+  // Nuevas props para paginación
   currentPage: number;
   totalPages: number;
   goToPreviousPage: () => void;
   goToNextPage: () => void;
-  showNavigation?: boolean;
-  isModalOpen?: boolean;
+  showNavigation: boolean;
 }
 
 const BottomControlPanel = ({
@@ -26,14 +26,13 @@ const BottomControlPanel = ({
   currentSurahNumber,
   currentVerseNumber,
   totalVerses,
-  currentPage,
-  totalPages,
-  goToPreviousPage,
-  goToNextPage,
-  showNavigation = true,
+  currentPage, // Desestructurar
+  totalPages, // Desestructurar
+  goToPreviousPage, // Desestructurar
+  goToNextPage, // Desestructurar
+  showNavigation, // Desestructurar
 }: BottomControlPanelProps) => {
-  const panelHeightClass = isAudioActive ? 'h-64' : 'h-28';
-  const audioControlsVisibility = isAudioActive ? 'flex' : 'hidden';
+  const panelHeightClass = isAudioActive ? 'h-64' : 'h-28'; // Keep existing logic if necessary, or refactor for modularity
 
   return (
     <div
@@ -58,7 +57,7 @@ const BottomControlPanel = ({
           </div>
           
           {/* Botones de audio */}
-          <div className={`flex items-center ${showNavigation ? 'justify-between' : 'justify-center'} w-full mb-4`}>
+          <div className={`flex items-center justify-center w-full mb-4`}>
             <div className="flex items-center space-x-4">
               <button
                 onClick={onStop}
@@ -78,27 +77,24 @@ const BottomControlPanel = ({
           </div>
         </div>
       )}
-      
-      {showNavigation && totalPages > 1 && (
-        <div className="flex items-center space-x-6 text-white pt-2 border-t border-white/10">
+
+      {/* Controles de paginación */}
+      {showNavigation && (
+        <div className="flex items-center justify-center space-x-4 text-white font-englishRegular text-base">
           <button
             onClick={goToPreviousPage}
             disabled={currentPage === 1}
-            className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-40 transition-all duration-200 active:scale-90"
-            aria-label="Previous page"
+            className="px-3 py-1 rounded-lg bg-skyDeepBlue/60 hover:bg-skyDeepBlue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronLeft size={20} />
+            Previous
           </button>
-          <span className="font-englishBold text-xl text-white/90 drop-shadow-md">
-            {currentPage} / {totalPages}
-          </span>
+          <span>Page {currentPage} of {totalPages}</span>
           <button
             onClick={goToNextPage}
             disabled={currentPage === totalPages}
-            className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-40 transition-all duration-200 active:scale-90"
-            aria-label="Next page"
+            className="px-3 py-1 rounded-lg bg-skyDeepBlue/60 hover:bg-skyDeepBlue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronRight size={20} />
+            Next
           </button>
         </div>
       )}

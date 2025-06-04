@@ -1,6 +1,7 @@
 import { useRef, useState } from 'preact/hooks';
-import type { Surah } from '../types/quran';
-import SurahDescriptionModal from './SurahDescriptionModal';
+import Portal from '../../../components/Portal'; // Ruta actualizada
+import SurahDescriptionModal from '../../../components/SurahDescriptionModal'; // Ruta actualizada
+import type { Surah } from '../../../types/quran'; // Ruta actualizada
 
 interface ReaderSurahHeaderProps {
   surah: Surah | null;
@@ -66,7 +67,13 @@ const ReaderSurahHeader = ({ surah, onModalStateChange, isPageInFocusMode = fals
         {surah.transliterationName}
       </h2>
 
-      <SurahDescriptionModal surah={surah} isOpen={isModalOpen} onClose={closeModal} />
+      {isModalOpen && (
+        <Portal>
+          <>
+            <SurahDescriptionModal surah={surah} isOpen={isModalOpen} onClose={closeModal} />
+          </>
+        </Portal>
+      )}
     </div>
   );
 };

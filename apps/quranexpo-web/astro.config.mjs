@@ -5,7 +5,7 @@ import clerk from '@clerk/astro';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  output: 'server',
+  output: 'server',  // Ensure SSR is enabled
   adapter: vercel(),
   integrations: [
     tailwind(),
@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   vite: {
     ssr: {
-      noExternal: ['@tanstack/react-virtual']
+      noExternal: ['@tanstack/react-virtual', '@nanostores/preact']  // Add Nanostores to SSR exclusions if needed
     },
     resolve: {
       alias: {

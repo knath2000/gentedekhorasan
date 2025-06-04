@@ -1,26 +1,30 @@
-## Astro/Preact Hydration & State Management
-**Patrón: Interacción directa con stores globales para componentes hidratados**
-- Para componentes de Preact hidratados por Astro (`client:only`, `client:visible`), es más robusto que interactúen directamente con un store global (ej. `nanostores`) para la gestión del estado.
-- *Razón:* Evita problemas de serialización/deserialización de funciones pasadas como props a través de los límites de hidratación, que pueden llevar a que las funciones aparezcan como `null` o `undefined` en el lado del cliente.
+## API Development & Integration
+**Pattern: Frontend-Backend Parameter Consistency**
+- Ensure that parameters sent from the frontend (e.g., in URL queries or request bodies) precisely match what the backend API expects. Mismatches can lead to silent failures or incorrect data handling.
+- *Rationale:* Prevents debugging headaches related to data not reaching the backend correctly.
 
-**Depuración: Cautela con `console.log` de props en componentes hidratados**
-- Los `console.log` de props en componentes hidratados pueden mostrar valores engañosos (ej. `null` para funciones que en realidad existen y se ejecutan).
-- *Recomendación:* Priorizar la observación del comportamiento real de la aplicación sobre los logs de valores de props en estos escenarios.
+**Pattern: API Response Consistency for CRUD Operations**
+- For `PUT` (update) operations, it is often beneficial for the API to return the full updated object rather than just a success message.
+- *Rationale:* Simplifies frontend state management, as the frontend can directly use the returned object to update its local store, ensuring consistency and reducing the need for additional `GET` requests.
 
-## Gestión de Estado y Reactividad en Hooks
-**Patrón: Uso de valores reactivos de stores en `useEffect` con event listeners**
-- Cuando se utilizan event listeners dentro de `useEffect` que dependen de valores de stores (o props/estados), es crucial pasar el valor reactivo (ej. `$value` de `useStore($atom)`) directamente a la función de callback del event listener.
-- *Razón:* Esto asegura que la función de callback siempre tenga acceso al estado más reciente del store, incluso si el `useEffect` no se re-ejecuta con cada cambio del store. Evita capturar valores obsoletos.
+## Frontend Development & Debugging
+**Pattern: Hook Invocation and Hydration Errors**
+- `useEffect` and other Hooks must always be called at the top level of a functional component or a custom Hook. Nesting Hooks inside conditional statements, loops, or other functions will lead to runtime errors like "Hook can only be invoked from render methods."
+- Hydration errors (`Expected a DOM node of type "div" but found ""`) occur when the server-rendered HTML (SSR) does not exactly match the client-rendered DOM. To resolve this, ensure that the component responsible for rendering (e.g., `ReaderContainer`) handles its own loading states and skeletons, and avoid conditional rendering of entire component trees based on `isClient` flags in wrapper components (e.g., `ClientOnlyReaderContainer`).
 
-**Depuración: Verificación del árbol de componentes en uso**
-- Al depurar problemas en la UI, siempre verificar el árbol de componentes real que se está renderizando.
-- *Razón:* Evita distracciones y tiempo invertido en componentes no utilizados o mal configurados que no son relevantes para el problema actual.
+**Pattern: Debugging Component Rendering Issues**
+- When components fail to render or display data, strategically placed `console.log` statements can be invaluable. Log the state of `loading`, `error`, and data arrays (`verses.length`) just before conditional rendering blocks to pinpoint why content is not being displayed.
 
-## Control de Comportamiento Inicial con Estado Global
-**Patrón: Condicionar el comportamiento inicial de los componentes con estado global reactivo**
-- Para asegurar que las configuraciones globales (ej. `autoplayEnabled`) se respeten en la carga inicial de un componente, el componente que orquesta el comportamiento (ej. `ReaderContainer.tsx` para la reproducción de audio) debe importar y utilizar el valor reactivo del store (ej. `$autoplayEnabled` de `useStore(autoplayEnabled)`) en el `useEffect` o lógica que inicia dicho comportamiento.
-- *Razón:* Esto garantiza que el comportamiento inicial esté alineado con la configuración actual del usuario desde el primer renderizado, evitando reproducciones o acciones no deseadas.
+## Project Specifics
+**QuranExpo - Bookmark Notes Functionality:**
+- The existing `UserBookmark` model in Prisma already supports a `notes` field.
+- The API endpoints for bookmark CRUD operations were largely functional, but required minor adjustments for parameter consistency and response format.
+- **Fixes Applied:**
+    - Corrected URL parameter in `apps/quranexpo-web/src/services/apiClient.ts` for `updateBookmark` to use `id` instead of `userId` and `bookmarkId`.
+    - Modified `apps/quran-data-api/api/v1/user-bookmarks.ts` (PUT method) to return the updated `UserBookmark` object instead of a generic success message.
+- *Outcome:* The notes functionality on the bookmarks page is now fully operational, leveraging existing infrastructure with minimal code changes.
 
+<<<<<<< HEAD
 ## Gestión de Estado Global Persistente
 **Patrón: Uso de `nanostores/persistent` para almacenamiento de estado global persistente**
 - Para funcionalidades que requieren que el estado persista a través de las sesiones del usuario (ej. configuraciones, marcadores), `nanostores/persistent` es una solución efectiva. Permite almacenar y recuperar datos del `localStorage` de forma reactiva.
@@ -290,3 +294,19 @@
 - El `backdrop-blur` de TailwindCSS aplica el efecto de desenfoque solo a lo que está *detrás* del elemento al que se aplica la clase.
 - Asegurarse de que el `z-index` del modal principal sea mayor que el de su propio backdrop para que el modal sea visible.
 - **Evitar aplicar `backdrop-blur` a elementos que se espera que sean desenfocados por un overlay superior.** El desenfoque debe ser manejado por el overlay, no por los elementos individuales. Esto evita conflictos y asegura que el efecto se aplique correctamente.
+=======
+**QuranExpo - AI Translation Feature:**
+- **Implementation Details:**
+    - Added `showAITranslation` nanostore in `apps/quranexpo-web/src/stores/settingsStore.ts`.
+    - Integrated a toggle for AI translation in `apps/quranexpo-web/src/pages/settings.astro`.
+    - Created a new API route `apps/quran-data-api/api/v1/ai-translate.ts` to interact with OpenRouter.ai (using `openai/gpt-4o-mini` model).
+    - Added `getAITranslation` function in `apps/quranexpo-web/src/services/apiClient.ts`.
+    - Modified `apps/quranexpo-web/src/components/ReaderContainer.tsx` to conditionally fetch and pass AI translations to `ReaderVerseCard.tsx`.
+    - Updated `apps/quranexpo-web/src/components/ReaderVerseCard.tsx` to display AI translations, including loading and error states.
+- **Runtime Fixes:**
+    - Corrected `useEffect` placement in `ReaderContainer.tsx` to resolve "Hook can only be invoked from render methods" error.
+    - Modified `ClientOnlyReaderContainer.tsx` to directly render `ReaderContainer`, resolving hydration issues.
+- **Git Conflict Resolution:**
+    - Successfully resolved `git merge` conflicts in `ReaderContainer.tsx`, `ReaderVerseCard.tsx`, and `apiClient.ts` by explicitly staging local versions.
+- *Current Status:* Feature implemented, but the verse list is not showing on the reader page, indicating a potential data loading or rendering conditional issue.
+>>>>>>> b519158c56c807d0aca03b25983aad5609f1f230

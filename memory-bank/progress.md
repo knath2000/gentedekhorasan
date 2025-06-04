@@ -1,5 +1,6 @@
-## Progreso de la Sesión Actual:
+# Progreso del Proyecto
 
+<<<<<<< HEAD
 ### Funcionalidades Implementadas:
 - **Implementación del Modelo de Traducción AI 'google/gemini-2.0-flash-exp:free':**
     - Se modificó el endpoint de traducción AI en `apps/quran-data-api/api/v1/ai-translate.ts` para usar el nuevo modelo.
@@ -22,13 +23,35 @@
     - **BottomControlPanel.tsx:** Se añadió la prop `isModalOpen?: boolean;` a la interfaz y al componente, y se aplicaron clases condicionales (`${isModalOpen ? 'opacity-0 invisible translate-y-4' : 'opacity-100 visible translate-y-0'}`) para ocultar/mostrar el panel con una transición suave.
     - **Data Attributes:** Los `data attributes` (`data-bottom-panel`, `data-surah-header`, `data-verse-card`) fueron eliminados de sus respectivos componentes ya que ya no son necesarios con la nueva estrategia de blur.
     - La jerarquía final de `z-index` ahora es: Contenido principal (sin z-index o z-0 implícito) < `z-10` (BottomControlPanel) < `z-40` (Backdrop del modal) < `z-50` (Modal principal).
+=======
+## Lo que funciona
+- La funcionalidad de marcadores está operativa.
+- La API para marcadores (CRUD) está funcionando.
+- La interfaz de usuario para añadir/eliminar marcadores y editar notas está presente.
+- La integración con TursoDB para marcadores y notas está establecida.
+- La nota se guarda correctamente en la base de datos (TursoDB).
+- La característica de traducción de IA ha sido implementada en el frontend y backend.
+- Se han resuelto los errores de tiempo de ejecución relacionados con la invocación de Hooks y la hidratación.
+- Se han resuelto los conflictos de fusión de Git y los cambios se han empujado al repositorio remoto.
+>>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
 
-- **Cambio de Títulos de Surahs a Transliteración Inglesa:** Se modificaron `ReactSurahCard.tsx`, `SurahDescriptionModal.tsx` y `ReaderSurahHeader.tsx` para usar `surah.transliterationName` en lugar de `surah.englishName` para los títulos de las surahs, buscando mayor autenticidad y consistencia. Se actualizó el log de debug en `SurahListContainer.tsx`.
+## Lo que queda por construir
+- **Resolver el problema de que la lista de versos no se muestra en la página del lector.**
+- Investigar los errores de TypeScript "Cannot find module" en `ReaderContainer.tsx` si persisten y afectan la funcionalidad.
+- Verificación exhaustiva y testing de la funcionalidad de notas y traducción de IA.
+- Implementación de cualquier mejora o característica adicional que surja del testing.
 
-- **Corrección del Problema de Transliteración:** Se simplificó `SurahListContainer.tsx` para eliminar la dependencia de `fetchTransliterationNames()` y el `transliterationMap`, confiando únicamente en el `tname` proporcionado directamente por `fetchSurahList()`. Se eliminó el archivo `/api/transliterations.ts` y la función `fetchTransliterationNames()` de `apiClient.ts`.
+## Estado Actual
+- Se ha completado la implementación de la característica de traducción de IA.
+- Se han corregido los errores de tiempo de ejecución en la página del lector.
+- Se han resuelto los conflictos de Git.
+- **Problema actual:** La lista de versos no se muestra en la página del lector.
 
-- **Ajuste del Tamaño del Panel de Navegación:** Se modificó `apps/quranexpo-web/src/components/BottomControlPanel.tsx` para eliminar el ancho fijo (`w-[calc(100%-2rem)]` y `max-w-md`) y ajustar el padding horizontal (`px-6`) del `div` principal, permitiendo que el panel se ajuste mejor a los botones de navegación.
+## Problemas Conocidos
+- **La lista de versos no se muestra en la página del lector:** A pesar de las correcciones de hidratación y Hooks, la página del lector no muestra los versos. Esto requiere una depuración más profunda de la lógica de carga de datos y las condicionales de renderizado en `ReaderContainer.tsx`.
+- Los errores de TypeScript "Cannot find module" en `ReaderContainer.tsx` persisten, aunque las rutas de importación parecen correctas. Esto podría ser un problema de configuración del entorno de desarrollo o un falso positivo.
 
+<<<<<<< HEAD
 - **Implementación de Autenticación con Clerk:**
     - **Instalación:** Se instaló `@clerk/astro` y `@astrojs/node`.
     - **Variables de Entorno:** Se agregaron `PUBLIC_CLERK_PUBLISHABLE_KEY` y `CLERK_SECRET_KEY` al `.env.local`.
@@ -65,3 +88,9 @@
     - Asegurarse de que los bookmarks de localStorage se migran correctamente a la base de datos.
 - **Verificación de la Integración Frontend de Bookmarks (futuro):**
     - Actualizar la UI para interactuar con la nueva API de bookmarks.
+=======
+## Evolución de las Decisiones del Proyecto
+- La decisión de usar TursoDB para el almacenamiento de notas se ha reafirmado.
+- Se ha priorizado la corrección de errores de tiempo de ejecución y la resolución de conflictos de Git para estabilizar el codebase.
+- El enfoque actual es diagnosticar y resolver el problema de renderizado de la lista de versos en la página del lector.
+>>>>>>> b519158c56c807d0aca03b25983aad5609f1f230

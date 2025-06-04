@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useEffect } from 'preact/hooks';
-import type { Verse } from '../types/quran';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import type { Verse } from '../../../types/quran'; // Ruta actualizada
 
 interface PaginationState {
   currentPage: number;

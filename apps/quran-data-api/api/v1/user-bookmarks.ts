@@ -213,7 +213,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (bookmark.count === 0) {
           return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
         }
-        return res.status(200).json({ message: 'Bookmark updated successfully' });
+        const updatedBookmark = await prisma.userBookmark.findUnique({
+          where: { id }
+        });
+        return res.status(200).json(updatedBookmark);
       } catch (error) {
         console.error('Error updating bookmark:', error);
         return res.status(500).json({ error: 'Failed to update bookmark' });
@@ -223,19 +226,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'DELETE') {
       try {
         const { id } = req.query;
+        console.log('=== DELETE REQUEST DEBUG ===');
+        console.log('Bookmark ID received (req.query.id):', id);
+        console.log('Authenticated User ID:', userId);
+
         if (!id || typeof id !== 'string') {
+          console.error('Validation failed: Bookmark ID is missing or not a string.');
           return res.status(400).json({ error: 'Bookmark ID is required' });
         }
+        
         const bookmark = await prisma.userBookmark.deleteMany({
           where: { id, userId }
         });
+
+        console.log('Prisma deleteMany result:', bookmark);
+
         if (bookmark.count === 0) {
+          console.warn(`Bookmark with ID ${id} not found for user ${userId} or unauthorized.`);
           return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
         }
+        
+        console.log(`Bookmark ${id} deleted successfully for user ${userId}.`);
         return res.status(204).end();
-      } catch (error) {
-        console.error('Error deleting bookmark:', error);
-        return res.status(500).json({ error: 'Failed to delete bookmark' });
+      } catch (error: any) {
+        console.error('=== DELETE ERROR DETAILS ===');
+        console.error('Error type:', error.constructor.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        if (error.code) {
+          console.error('Prisma error code:', error.code);
+          console.error('Prisma error meta:', error.meta);
+        }
+        return res.status(500).json({ error: 'Failed to delete bookmark', details: error.message, code: error.code || 'UNKNOWN' });
       }
     }
 
