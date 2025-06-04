@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { fetchSurahDescription } from '../services/apiClient';
 import type { Surah } from '../types/quran';
-<<<<<<< HEAD
-import Portal from './Portal'; // Importar Portal
-=======
 import { logger } from '../utils/logger';
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
+import Portal from './Portal';
 
 interface SurahDescriptionModalProps {
   surah: Surah;
@@ -117,14 +114,10 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
   }
 
   return (
-    <Portal> {/* Envolver con Portal */}
+    <Portal>
       <div // Backdrop mejorado
-<<<<<<< HEAD
-        className={`fixed inset-0 bg-black/70 z-40 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-=======
         className={`fixed inset-0 bg-skyDeepBlue/40 backdrop-blur-2xl z-90 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         style={{ backdropFilter: 'blur(5px)' }}
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
         onClick={onClose}
         aria-hidden={!isOpen} // Ocultar del árbol de accesibilidad cuando no está visible
       />

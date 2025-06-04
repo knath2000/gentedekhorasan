@@ -191,14 +191,10 @@ async function handler(req, res) {
                 if (bookmark.count === 0) {
                     return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
                 }
-<<<<<<< HEAD
-                return res.status(200).json({ message: 'Bookmark updated successfully' });
-=======
                 const updatedBookmark = await prisma.userBookmark.findUnique({
                     where: { id }
                 });
                 return res.status(200).json(updatedBookmark);
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
             }
             catch (error) {
                 console.error('Error updating bookmark:', error);
@@ -208,30 +204,16 @@ async function handler(req, res) {
         if (req.method === 'DELETE') {
             try {
                 const { id } = req.query;
-<<<<<<< HEAD
-                if (!id || typeof id !== 'string') {
-=======
                 console.log('=== DELETE REQUEST DEBUG ===');
                 console.log('Bookmark ID received (req.query.id):', id);
                 console.log('Authenticated User ID:', userId);
                 if (!id || typeof id !== 'string') {
                     console.error('Validation failed: Bookmark ID is missing or not a string.');
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
                     return res.status(400).json({ error: 'Bookmark ID is required' });
                 }
                 const bookmark = await prisma.userBookmark.deleteMany({
                     where: { id, userId }
                 });
-<<<<<<< HEAD
-                if (bookmark.count === 0) {
-                    return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
-                }
-                return res.status(204).end();
-            }
-            catch (error) {
-                console.error('Error deleting bookmark:', error);
-                return res.status(500).json({ error: 'Failed to delete bookmark' });
-=======
                 console.log('Prisma deleteMany result:', bookmark);
                 if (bookmark.count === 0) {
                     console.warn(`Bookmark with ID ${id} not found for user ${userId} or unauthorized.`);
@@ -250,7 +232,6 @@ async function handler(req, res) {
                     console.error('Prisma error meta:', error.meta);
                 }
                 return res.status(500).json({ error: 'Failed to delete bookmark', details: error.message, code: error.code || 'UNKNOWN' });
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
             }
         }
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);

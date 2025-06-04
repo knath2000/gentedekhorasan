@@ -1,4 +1,5 @@
 ---
+import { Fragment } from 'preact';
 import AiTranslationsToggle from '../components/AiTranslationsToggle.tsx'; // Importar el nuevo componente
 import AuthSectionReact from '../components/AuthSectionReact.tsx';
 import BackButton from '../components/BackButton.tsx';
@@ -35,17 +36,9 @@ import Layout from '../layouts/Layout.astro';
             settingKey="showTranslation"
           />
           
-<<<<<<< HEAD
-          <AiTranslationsToggle client:only="preact" /> {/* Nuevo componente */}
-=======
-          <SettingsToggle
-            client:only="preact"
-            label="Show AI Translation"
-            description="Display AI-generated translation"
-            storeKey="showAITranslation"
-            settingKey="showAITranslation"
-          />
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
+          <Fragment>
+            <AiTranslationsToggle client:only="preact" /> {/* Nuevo componente */}
+          </Fragment>
         </div>
       </div>
       

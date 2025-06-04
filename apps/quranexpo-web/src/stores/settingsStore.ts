@@ -2,20 +2,6 @@ import { persistentAtom } from '@nanostores/persistent';
 
 export type SurahSortOrder = 'canonical' | 'revelation' | 'length-asc' | 'length-desc' | 'revelation-location';
 
-<<<<<<< HEAD
-// Almacenar booleanos como strings 'true' o 'false'
-export const showTranslation = persistentAtom<string>('showTranslation', 'true');
-export const autoplayEnabled = persistentAtom<string>('autoplayEnabled', 'false');
-export const audioActive = persistentAtom<string>('audioActive', 'false');
-export const surahSortOrder = persistentAtom<SurahSortOrder>('surahSortOrder', 'canonical');
-export const aiTranslationsEnabled = persistentAtom<string>('aiTranslationsEnabled', 'false'); // Nuevo estado para traducciones de IA
-
-export const setShowTranslation = (show: boolean) => showTranslation.set(String(show));
-export const setAutoplayEnabled = (enabled: boolean) => autoplayEnabled.set(String(enabled));
-export const setAudioActive = (active: boolean) => audioActive.set(String(active));
-export const setSurahSortOrder = (order: SurahSortOrder) => surahSortOrder.set(order);
-export const setAiTranslationsEnabled = (enabled: boolean) => aiTranslationsEnabled.set(String(enabled)); // Nueva función para actualizar el estado
-=======
 export interface AppSettings {
   autoplayEnabled: boolean;
   showTranslation: boolean;
@@ -99,4 +85,3 @@ export const showAITranslation = persistentAtom<boolean>(
 export function toggleAITranslation() {
   showAITranslation.set(!showAITranslation.get());
 }
->>>>>>> b519158c56c807d0aca03b25983aad5609f1f230
