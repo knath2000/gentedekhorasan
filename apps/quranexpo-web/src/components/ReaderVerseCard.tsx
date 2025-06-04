@@ -10,6 +10,7 @@ import { ErrorIcon } from './icons/AudioIcons';
 interface ReaderVerseCardProps {
   verse: Verse;
   showTranslation: boolean;
+  useAiTranslation?: boolean;
   isActiveAudio?: boolean;
   isPlayingAudio?: boolean;
   isLoadingAudio?: boolean;
@@ -24,6 +25,7 @@ interface ReaderVerseCardProps {
 export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(({
   verse,
   showTranslation = true,
+  useAiTranslation = false,
   isActiveAudio = false,
   isPlayingAudio = false,
   isLoadingAudio = false,
@@ -160,7 +162,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
         {/* English translation (if enabled) */}
         {showTranslation && verse.translation && (
           <p className="text-textSecondary font-englishRegular text-base italic text-center">
-            {verse.translation}
+            {useAiTranslation ? `[AI] ${verse.translation}` : verse.translation}
           </p>
         )}
 

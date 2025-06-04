@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { fetchSurahDescription } from '../services/apiClient';
 import type { Surah } from '../types/quran';
+import Portal from './Portal'; // Importar Portal
 
 interface SurahDescriptionModalProps {
   surah: Surah;
@@ -94,10 +95,14 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
 
   // Renderizar el modal solo si isOpen es true, pero siempre con la misma estructura DOM
   // La visibilidad se controla con clases CSS
+  if (!isOpen) {
+    return null; // No renderizar nada si no está abierto, el Portal manejará la inserción/eliminación
+  }
+
   return (
-    <>
+    <Portal> {/* Envolver con Portal */}
       <div // Backdrop mejorado
-        className={`fixed inset-0 bg-skyDeepBlue/85 backdrop-blur-2xl z-40 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+        className={`fixed inset-0 bg-black/70 z-40 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         onClick={onClose}
       />
       <div
@@ -133,7 +138,7 @@ const SurahDescriptionModal = ({ surah, isOpen, onClose }: SurahDescriptionModal
           )}
         </div>
       </div>
-    </>
+    </Portal>
   );
 };
 

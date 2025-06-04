@@ -4,7 +4,7 @@ import { useAutoScroll } from '../hooks/useAutoScroll'; // Import useAutoScroll
 import { usePagination } from '../hooks/usePagination';
 import { useVersePlayer } from '../hooks/useVersePlayer';
 import { fetchSurahById, fetchVersesForSurah } from '../services/apiClient';
-import { audioActive, autoplayEnabled, showTranslation } from '../stores/settingsStore';
+import { aiTranslationsEnabled, audioActive, autoplayEnabled, showTranslation } from '../stores/settingsStore';
 import type { Surah, Verse } from '../types/quran';
 import { getVerseKey } from '../utils/audioUtils';
 import BottomControlPanel from './BottomControlPanel';
@@ -33,6 +33,7 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
  // Use showTranslation and autoplayEnabled from the store
  const $showTranslation = useStore(showTranslation);
  const $autoplayEnabled = useStore(autoplayEnabled);
+ const $aiTranslationsEnabled = useStore(aiTranslationsEnabled);
 
  // Audio player state and functions
  const {
@@ -221,6 +222,7 @@ const ReaderContainer = ({ surahId }: ReaderContainerProps) => {
                ref={(el: HTMLDivElement | null) => setVerseRef(firstVerseIndex + index, el)} // Pass ref to ReaderVerseCard
                verse={verse}
                showTranslation={$showTranslation}
+               useAiTranslation={$aiTranslationsEnabled === 'true'}
                isActiveAudio={isActiveAudio}
                isPlayingAudio={isActiveAudio && isPlaying}
                isLoadingAudio={isLoadingAudio}

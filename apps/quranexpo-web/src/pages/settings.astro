@@ -1,4 +1,5 @@
 ---
+import AiTranslationsToggle from '../components/AiTranslationsToggle.tsx'; // Importar el nuevo componente
 import AuthSectionReact from '../components/AuthSectionReact.tsx';
 import BackButton from '../components/BackButton.tsx';
 import SettingsToggle from '../components/SettingsToggle.tsx';
@@ -33,6 +34,8 @@ import Layout from '../layouts/Layout.astro';
             storeKey="showTranslation"
             settingKey="showTranslation"
           />
+          
+          <AiTranslationsToggle client:only="preact" /> {/* Nuevo componente */}
         </div>
       </div>
       

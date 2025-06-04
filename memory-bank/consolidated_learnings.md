@@ -187,21 +187,44 @@
 - *Implementación:* Utilizar colores semitransparentes o tonos oscuros que se mezclen con el fondo, en lugar de blancos o grises claros por defecto.
 
 ## Modales y Accesibilidad
-**Patrón: Implementación de Modales Accesibles (Glassmorphism)**
+**Patrón: Implementación de Modales Accesibles**
 - Para implementar modales accesibles, es crucial utilizar atributos ARIA (`role="dialog"`, `aria-modal="true"`, `aria-labelledby"`), gestionar el foco (focus trap, restauración de foco al cerrar), y permitir el cierre con teclado (ESC) y click en el backdrop.
-- Los estilos glassmorphism se pueden lograr con `background`, `backdrop-filter`, `border-radius` y `box-shadow`.
+- **Uso de Portales**: Para asegurar que los modales se muestren correctamente por encima de todo el contenido, independientemente de su posición en el árbol DOM, se debe utilizar un Portal (ej. `preact/compat`'s `createPortal`). Esto saca el modal de contextos de apilamiento restrictivos.
+
+**Patrón: Estilizado de Backdrops de Modal**
+- El backdrop de un modal puede atenuar y/o desenfocar el contenido de la página detrás.
+- **Atenuación**: Se logra con un color de fondo semitransparente (ej. `bg-black/70`).
+- **Desenfoque (`backdrop-blur`)**: Se logra con la propiedad `backdrop-filter: blur()` (ej. Tailwind's `backdrop-blur-2xl`). Para que el desenfoque sea visible, el color de fondo del backdrop debe ser transparente o semitransparente.
+- **Eliminación de Efectos**: Para eliminar un efecto de desenfoque o color, se deben quitar las clases de Tailwind CSS correspondientes (ej. `backdrop-blur-2xl` o `bg-color/opacity`).
 
 **Proceso: Creación de componentes modales**
 - Es una buena práctica encapsular la lógica y la UI de un modal en un componente separado para mejorar la modularidad y la reutilización.
 
 **Depuración: Verificación de tipos de TypeScript**
 - Siempre verificar las propiedades de los tipos de TypeScript (ej. `Surah`) para asegurar que se utilizan las propiedades correctas y evitar errores de compilación.
+- **Errores de Tipografía**: Errores como `Cannot find name 'focusableableElements'` indican errores tipográficos en el código que deben ser corregidos directamente.
 
 ## Coherencia Visual en Modales
 **Patrón: Integración visual de modales con el tema de la aplicación**
 - Para que un modal se integre visualmente con el resto de la aplicación, debe replicar los tokens de diseño (colores, tipografía, sombras, bordes, fondos) de los componentes existentes (ej. tarjetas, headers).
 - *Razón:* Asegura una experiencia de usuario coherente y premium, evitando que el modal se vea "flotante" o ajeno al tema.
 - *Implementación:* Utilizar las mismas clases de utilidad de TailwindCSS o variables CSS ya definidas para otros componentes, y aplicar la misma estructura de `glassmorphism` si es el patrón de diseño de la aplicación.
+
+## Generación de Contenido con LLMs
+**Proceso: Generación y almacenamiento de descripciones de suras**
+- Para generar descripciones de suras, se puede utilizar la API de OpenRouter con modelos como Gemini 2.5 Flash Preview 5-20, aplicando prompts claros y concisos.
+- *Validación:* Es crucial validar y limpiar la salida del LLM (ej. limitar la longitud, eliminar caracteres especiales) para asegurar la calidad del contenido.
+- *Almacenamiento:* Los resultados deben guardarse localmente en un formato adecuado para la base de datos de destino (ej. JSON para upsert batch en TursoDB).
+- *Consideraciones:* Manejar la clave API como variable de entorno y aplicar retrasos entre llamadas para evitar rate limits.
+- *Estructura del script:* Un script de Node.js/TypeScript independiente con su propio `package.json` y `tsconfig.json` es ideal para esta tarea en un monorepo.
+
+## Interacción de Usuario y Accesibilidad
+**Patrón: Restricción del área de click en elementos interactivos**
+- Para asegurar que el área de click de un elemento interactivo (ej. un título que abre un modal) sea precisa y no se extienda más allá del texto, es crucial aplicar los handlers de eventos y atributos de accesibilidad directamente al elemento de texto (ej. `h1`, `h2`, `span`) en lugar de a un contenedor padre con padding/margen excesivo.
+- Utilizar clases de TailwindCSS como `cursor-pointer` y manejar eventos de teclado (`onKeyDown` para `Enter` y `Space`) mejora la accesibilidad y la experiencia de usuario.
+
+**Proceso: Resolución de contradicciones en planes de implementación**
+- Cuando un plan contiene instrucciones contradictorias (ej. "trigger en título árabe o inglés" vs "no handler en div padre"), es importante analizar el objetivo final y tomar la decisión más lógica y que cumpla con las mejores prácticas (en este caso, aplicar handlers a ambos elementos de texto individualmente).
 
 ## Generación de Contenido con LLMs
 **Proceso: Generación y almacenamiento de descripciones de suras**

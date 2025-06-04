@@ -23,6 +23,11 @@
     - Actualizar la UI para interactuar con la nueva API de bookmarks.
 
 ### Acciones Tomadas Recientemente:
+- **Implementación del Modelo de Traducción AI 'google/gemini-2.0-flash-exp:free':**
+    - Se modificó el endpoint de traducción AI en `apps/quran-data-api/api/v1/ai-translate.ts` para usar el nuevo modelo.
+    - Se actualizó la configuración de la API para soportar el nuevo modelo.
+    - Se ajustaron los componentes frontend para manejar las respuestas del nuevo modelo.
+
 - **Resolución de Conflictos de Versiones de React:**
     - Se diagnosticó un conflicto de versiones de React (React 19 en `quranexpo-web` y React 18 en `quranexpo-native`) debido al `hoisting` de pnpm.
     - Se unificaron las versiones de React en todo el monorepo a React 18.2.x.

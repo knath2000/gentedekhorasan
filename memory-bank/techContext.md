@@ -28,6 +28,12 @@
 
 ## 2. Key Technologies & Libraries (Monorepo Level)
 
+-   **AI Translation:**
+    -   **Model:** 'google/gemini-2.0-flash-exp:free'
+    -   **Endpoint:** `apps/quran-data-api/api/v1/ai-translate.ts`
+    -   **Configuration:** API key management and rate limiting
+    -   **Integration:** Seamless connection with frontend components
+
 -   **Database Interaction:**
     -   `@prisma/client`: Cliente de Prisma ORM para interactuar con la base de datos.
     -   `@prisma/adapter-neon`: Adaptador de Prisma para Neon Database.

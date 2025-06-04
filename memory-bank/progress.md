@@ -1,6 +1,11 @@
 ## Progreso de la Sesión Actual:
 
 ### Funcionalidades Implementadas:
+- **Implementación del Modelo de Traducción AI 'google/gemini-2.0-flash-exp:free':**
+    - Se modificó el endpoint de traducción AI en `apps/quran-data-api/api/v1/ai-translate.ts` para usar el nuevo modelo.
+    - Se actualizó la configuración de la API para soportar el nuevo modelo.
+    - Se ajustaron los componentes frontend para manejar las respuestas del nuevo modelo.
+
 - **Trigger de Popup de Descripción de Sura:** Se implementó el trigger del popup de descripción de sura para que se active solo al hacer click o presionar Enter/Espacio sobre el texto del título árabe o inglés en `ReaderSurahHeader.tsx`.
 - **Redimensionamiento y Scroll del Popup de Descripción:** Se redimensionó el `SurahDescriptionModal` (`max-w-lg`, `max-h-[80vh]`) y se hizo su contenido scrollable (`overflow-y-auto`).
 - **Importación de Descripciones de Suras a TursoDB:** Se creó un script (`scripts/import-surah-descriptions/index.ts`) para importar 114 descripciones de suras desde un archivo JSON a TursoDB.
