@@ -1,5 +1,4 @@
-import { h } from 'preact';
-import { Settings } from 'lucide-preact';
+import { Settings } from 'lucide-react';
 
 interface SettingsButtonProps {
   className?: string;

@@ -9,9 +9,10 @@
   ],
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
+    "jsxImportSource": "react",
     "paths": {
       "@clerk/clerk-react": ["./node_modules/@clerk/clerk-react"]
-    }
+    },
+    "types": ["react", "react-dom"]
   }
 }

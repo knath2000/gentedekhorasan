@@ -1,7 +1,6 @@
 import { $authStore } from '@clerk/astro/client';
 import { useStore } from '@nanostores/react';
-import { forwardRef, type Ref } from 'preact/compat'; // Import forwardRef and type Ref from 'preact/compat'
-import { useRef } from 'preact/hooks';
+import { forwardRef, type Ref, useRef } from 'react'; // Import forwardRef, Ref and useRef from 'react'
 import { fetchSurahById } from '../services/apiClient';
 import { addBookmark, isBookmarked, removeBookmark } from '../stores/bookmarkStore';
 import type { Verse } from '../types/quran';
@@ -38,7 +37,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
   const isLongPress = useRef(false);
   const auth = useStore($authStore); // Obtener el estado de autenticación
 
-  const handleTouchStart = (e: TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     longPressTimer.current = window.setTimeout(async () => {
       isLongPress.current = true;
       if (!auth.userId) {
@@ -66,7 +65,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
     isLongPress.current = false;
   };
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     longPressTimer.current = window.setTimeout(async () => {
       isLongPress.current = true;
       if (!auth.userId) {
@@ -94,7 +93,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
     isLongPress.current = false;
   };
 
-  const handleClick = (e: Event) => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isLongPress.current) {
       e.preventDefault(); // Prevenir el clic si fue una pulsación larga
       return;
@@ -172,7 +171,7 @@ export const ReaderVerseCard = forwardRef<HTMLDivElement, ReaderVerseCardProps>(
               min="0"
               max={duration}
               value={currentTime}
-              onInput={onSeek}
+              onInput={onSeek as unknown as React.FormEventHandler<HTMLInputElement>}
               step="0.01" // Ajustado para una granularidad más fina
               className="flex-1 h-1 bg-skyIndigo/50 rounded-lg appearance-none cursor-pointer range-sm"
               style={{

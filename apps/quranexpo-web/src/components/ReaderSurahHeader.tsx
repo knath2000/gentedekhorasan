@@ -1,4 +1,4 @@
-import { useRef, useState } from 'preact/hooks';
+import { useRef, useState } from 'react';
 import type { Surah } from '../types/quran';
 import SurahDescriptionModal from './SurahDescriptionModal';
 
@@ -34,7 +34,7 @@ const ReaderSurahHeader = ({ surah, onModalStateChange, isPageInFocusMode = fals
     arabicTitleRef.current?.focus();
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLHeadingElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       openModal();
     }

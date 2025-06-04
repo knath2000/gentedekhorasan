@@ -1,7 +1,7 @@
 import type { Bookmark, Surah, Verse } from '../types/quran';
 
 // The API base URL is hardcoded to match the quranexpo2 native app
-const API_BASE_URL = 'https://gentedekhorasan.vercel.app/api/v1'; // Updated to external API
+const API_BASE_URL = '/api'; // Usar el proxy de desarrollo
 console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 
 /**
@@ -147,6 +147,7 @@ export async function fetchSingleTranslatedVerse(
 ): Promise<Verse | null> {
   try {
     // Use the same API endpoint as quranexpo2 native app
+    console.log(`API Client: Fetching verse from URL: ${API_BASE_URL}/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`);
     const response = await fetch(
       `${API_BASE_URL}/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`
     );

@@ -1,6 +1,6 @@
 import { $authStore } from '@clerk/astro/client';
-import { useStore } from '@nanostores/preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useStore } from '@nanostores/react';
+import { useEffect, useState } from 'react';
 import { fetchSurahById } from '../services/apiClient';
 import { bookmarks, removeBookmark, updateBookmarkNote } from '../stores/bookmarkStore';
 import type { Bookmark } from '../types/quran'; // Importar Bookmark desde types/quran

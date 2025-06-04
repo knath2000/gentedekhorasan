@@ -1,10 +1,11 @@
-import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import SettingsToggle from './SettingsToggle';
 
 interface ClientOnlySettingsToggleProps {
   label: string;
+  description: string;
   settingKey: 'autoplay' | 'translation';
+  storeKey: 'showTranslation' | 'autoplayEnabled';
   class?: string;
 }
 
@@ -25,7 +26,7 @@ const ClientOnlySettingsToggle = (props: ClientOnlySettingsToggleProps) => {
     );
   }
 
-  return h(SettingsToggle, props);
+  return <SettingsToggle {...props} />;
 };
 
 export default ClientOnlySettingsToggle;

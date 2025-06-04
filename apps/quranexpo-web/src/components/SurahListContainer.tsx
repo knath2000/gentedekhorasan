@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import { fetchSurahList } from '../services/apiClient';
 import { surahSortOrder } from '../stores/settingsStore';
 import type { Surah } from '../types/quran';

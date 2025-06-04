@@ -1,5 +1,5 @@
-import { useStore } from '@nanostores/preact';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useStore } from '@nanostores/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAutoScroll } from '../hooks/useAutoScroll'; // Import useAutoScroll
 import { usePagination } from '../hooks/usePagination';
 import { useVersePlayer } from '../hooks/useVersePlayer';

@@ -6,20 +6,20 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Settings - QuranExpo">
-  <main class="min-h-screen bg-gradient-to-br from-skyLightBlue via-skyMediumBlue to-skyDeepBlue p-4">
-    <BackButton client:load />
-    <div class="max-w-md mx-auto pt-8 space-y-6">
+  <main className="min-h-screen bg-gradient-to-br from-skyLightBlue via-skyMediumBlue to-skyDeepBlue p-4">
+    <BackButton  />
+    <div className="max-w-md mx-auto pt-8 space-y-6">
       
       <!-- Account Section -->
       <AuthSectionReact client:only="react" />
       
       <!-- App Settings Section -->
-      <div class="bg-glassmorphism-strong backdrop-blur-md rounded-xl p-6 border border-white/20">
-        <h2 class="text-xl font-semibold text-textPrimary mb-4">App Settings</h2>
+      <div className="bg-glassmorphism-strong backdrop-blur-md rounded-xl p-6 border border-white/20">
+        <h2 className="text-xl font-semibold text-textPrimary mb-4">App Settings</h2>
         
-        <div class="space-y-4">
+        <div className="space-y-4">
           <SettingsToggle
-            client:only="preact"
+            
             label="Autoplay"
             description="Automatically play next ayah"
             storeKey="autoplayEnabled"
@@ -27,7 +27,7 @@ import Layout from '../layouts/Layout.astro';
           />
           
           <SettingsToggle
-            client:only="preact"
+            
             label="Show Translation"
             description="Display English translation"
             storeKey="showTranslation"

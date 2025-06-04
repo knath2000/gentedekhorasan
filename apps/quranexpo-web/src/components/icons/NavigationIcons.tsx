@@ -1,4 +1,3 @@
-import { h } from 'preact';
 
 interface IconProps {
   className?: string;

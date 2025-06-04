@@ -1,6 +1,5 @@
-import { h } from 'preact';
-import { useState, useRef, useEffect } from 'preact/hooks';
-import { surahSortOrder, setSurahSortOrder, type SurahSortOrder } from '../stores/settingsStore';
+import { useEffect, useRef, useState } from 'react';
+import { setSurahSortOrder, surahSortOrder, type SurahSortOrder } from '../stores/settingsStore';
 
 interface SortMenuProps {}
 

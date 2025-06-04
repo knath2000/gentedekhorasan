@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { ArrowLeftIcon } from './icons/NavigationIcons';
 
 interface BackButtonProps {

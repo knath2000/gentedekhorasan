@@ -1,4 +1,4 @@
-import preact from '@astrojs/preact';
+import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel/serverless';
 import clerk from '@clerk/astro';
@@ -9,19 +9,25 @@ export default defineConfig({
   adapter: vercel(),
   integrations: [
     tailwind(),
-    preact(),
+    react(),
     clerk()
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://gentedekhorasan.vercel.app/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api/v1'),
+      },
+    },
+  },
   vite: {
     ssr: {
       noExternal: ['@tanstack/react-virtual']
     },
     resolve: {
       alias: {
-        'react': 'preact/compat',
-        'react-dom/test-utils': 'preact/test-utils',
-        'react-dom': 'preact/compat',
-        'react/jsx-runtime': 'preact/jsx-runtime',
+        // Eliminar alias de Preact
       },
     },
   }

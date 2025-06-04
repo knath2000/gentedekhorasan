@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import type { Surah } from '../types/quran';
 
 interface SurahCardProps {

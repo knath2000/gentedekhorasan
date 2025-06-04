@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-preact';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SkipIcon, StopIcon } from './icons/AudioIcons';
 
 interface BottomControlPanelProps {

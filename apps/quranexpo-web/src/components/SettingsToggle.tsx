@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 import { autoplayEnabled, showTranslation } from '../stores/settingsStore.ts';
 
 interface ToggleSwitchProps {

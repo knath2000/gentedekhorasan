@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/preact';
-import { useCallback, useEffect, useReducer, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { audioActive, autoplayEnabled, setAudioActive } from '../stores/settingsStore';
 import type { Verse } from '../types/quran';
 import { getVerseAudioUrl } from '../utils/audioUtils';
