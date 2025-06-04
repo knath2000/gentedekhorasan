@@ -12,7 +12,7 @@ console.log('API_BASE_URL en apiClient.ts:', API_BASE_URL);
 export async function fetchSurahList(): Promise<Surah[]> {
   try {
     // Use the metadata API endpoint from quranexpo2 native app
-    const response = await fetch(`${API_BASE_URL}/get-metadata?type=surah-list`);
+    const response = await fetch(`${API_BASE_URL}/v1/get-metadata?type=surah-list`);
     
     // Handle non-OK responses
     if (!response.ok) {
@@ -91,7 +91,7 @@ export async function fetchVersesForSurah(
     const surahName = surahData.englishName;
 
     // Fetch Arabic verses
-    const arabicVersesResponse = await fetch(`${API_BASE_URL}/get-verses?surah=${surahId}`);
+    const arabicVersesResponse = await fetch(`${API_BASE_URL}/v1/get-verses?surah=${surahId}`);
     
     if (!arabicVersesResponse.ok) {
       throw new Error(`API error: Failed to fetch Arabic verses for Surah ${surahId}. Status: ${arabicVersesResponse.status}`);
@@ -147,9 +147,9 @@ export async function fetchSingleTranslatedVerse(
 ): Promise<Verse | null> {
   try {
     // Use the same API endpoint as quranexpo2 native app
-    console.log(`API Client: Fetching verse from URL: ${API_BASE_URL}/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`);
+    console.log(`API Client: Fetching verse from URL: ${API_BASE_URL}/v1/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`);
     const response = await fetch(
-      `${API_BASE_URL}/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`
+      `${API_BASE_URL}/v1/get-translated-verse?surah=${surahId}&ayah=${ayahId}&translator=${translator}`
     );
     
     // Handle non-OK responses
@@ -196,7 +196,7 @@ export async function fetchSingleTranslatedVerse(
  */
 export async function fetchSurahDescription(surahId: number): Promise<string | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/get-surah-description?surahId=${surahId}`);
+    const response = await fetch(`${API_BASE_URL}/v1/get-surah-description?surahId=${surahId}`);
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -221,7 +221,7 @@ export async function fetchSurahDescription(surahId: number): Promise<string | n
  */
 export async function fetchBookmarks(userId: string, token: string): Promise<Bookmark[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks?userId=${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user-bookmarks?userId=${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -262,14 +262,14 @@ export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' 
     // ✅ DEBUGGING - Verificar token y headers
     console.log('=== FRONTEND API CALL DEBUG ===');
     console.log('Token received:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
-    console.log('API URL:', `${API_BASE_URL}/user-bookmarks`);
+    console.log('API URL:', `${API_BASE_URL}/v1/user-bookmarks`);
     console.log('Headers to send:', {
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token.substring(0, 20)}...` : 'NO AUTH HEADER'
     });
     console.log('Body to send:', { ...bookmarkData, userId, timestamp: new Date().toISOString() });
     
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user-bookmarks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -306,7 +306,7 @@ export async function addBookmark(userId: string, bookmark: Omit<Bookmark, 'id' 
  */
 export async function updateBookmark(userId: string, bookmarkId: string, updatedBookmark: Partial<Bookmark>, token: string): Promise<Bookmark> {
   try {
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks?id=${bookmarkId}`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user-bookmarks?id=${bookmarkId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -335,7 +335,7 @@ export async function updateBookmark(userId: string, bookmarkId: string, updated
  */
 export async function deleteBookmark(userId: string, bookmarkId: string, token: string): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE_URL}/user-bookmarks?id=${bookmarkId}`, { // Corregido el parámetro de consulta a 'id'
+    const response = await fetch(`${API_BASE_URL}/v1/user-bookmarks?id=${bookmarkId}`, { // Corregido el parámetro de consulta a 'id'
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
