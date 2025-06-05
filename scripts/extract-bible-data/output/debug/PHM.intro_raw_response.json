@@ -1,0 +1,34 @@
+{
+  "id": "PHM.intro",
+  "bibleId": "bba9f40183526463-01",
+  "number": "intro",
+  "bookId": "PHM",
+  "reference": "Philemon",
+  "copyright": "The Holy Bible, Berean Standard Bible, BSB is produced in cooperation with Bible Hub, Discovery Bible, OpenBible.com, and the Berean Bible Translation Committee. This text of God's Word has been dedicated to the public domain",
+  "verseCount": 0,
+  "content": [
+    {
+      "name": "para",
+      "type": "tag",
+      "attrs": {
+        "style": "mt1"
+      },
+      "items": [
+        {
+          "text": "Philemon",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "next": {
+    "id": "PHM.1",
+    "number": "1",
+    "bookId": "PHM"
+  },
+  "previous": {
+    "id": "TIT.3",
+    "number": "3",
+    "bookId": "TIT"
+  }
+}

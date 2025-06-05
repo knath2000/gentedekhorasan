@@ -1,0 +1,34 @@
+{
+  "id": "JHN.intro",
+  "bibleId": "bba9f40183526463-01",
+  "number": "intro",
+  "bookId": "JHN",
+  "reference": "John",
+  "copyright": "The Holy Bible, Berean Standard Bible, BSB is produced in cooperation with Bible Hub, Discovery Bible, OpenBible.com, and the Berean Bible Translation Committee. This text of God's Word has been dedicated to the public domain",
+  "verseCount": 0,
+  "content": [
+    {
+      "name": "para",
+      "type": "tag",
+      "attrs": {
+        "style": "mt1"
+      },
+      "items": [
+        {
+          "text": "John",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "next": {
+    "id": "JHN.1",
+    "number": "1",
+    "bookId": "JHN"
+  },
+  "previous": {
+    "id": "LUK.24",
+    "number": "24",
+    "bookId": "LUK"
+  }
+}

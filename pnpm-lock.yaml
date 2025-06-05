@@ -15,6 +15,22 @@ importers:
         specifier: ~5.8.3
         version: 5.8.3
 
+  apps/bible-data-api:
+    dependencies:
+      '@libsql/client':
+        specifier: ^0.6.0
+        version: 0.6.2
+      '@vercel/node':
+        specifier: ^3.0.7
+        version: 3.2.29
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.17.52
+      typescript:
+        specifier: ^5.3.3
+        version: 5.8.3
+
   apps/quran-data-api:
     dependencies:
       '@clerk/backend':
@@ -887,14 +903,14 @@ packages:
   '@libsql/client@0.15.7':
     resolution: {integrity: sha512-2rKekOBINDKXGwB0I5qeTDuom2944hEkWkjN8O41j95/HRKP+3sk/fq6/PoPJSuwY3pgWAS8vyby+FgOyPnIVQ==}
 
-  '@libsql/client@0.8.1':
-    resolution: {integrity: sha512-xGg0F4iTDFpeBZ0r4pA6icGsYa5rG6RAG+i/iLDnpCAnSuTqEWMDdPlVseiq4Z/91lWI9jvvKKiKpovqJ1kZWA==}
+  '@libsql/client@0.6.2':
+    resolution: {integrity: sha512-xRNfRLv/dOCbV4qd+M0baQwGmvuZpMd2wG2UAPs8XmcdaPvu5ErkcaeITkxlm3hDEJVabQM1cFhMBxsugWW9fQ==}
 
   '@libsql/core@0.15.7':
     resolution: {integrity: sha512-hW1++8iKAEnb7Y3EZ2zXRR+1K0MKdRT7SLaNgFkfwz6CmiIBY3sYN7VSftNS7IR6xKRvFBpoz10CC63NoFGkaQ==}
 
-  '@libsql/core@0.8.1':
-    resolution: {integrity: sha512-u6nrj6HZMTPsgJ9EBhLzO2uhqhlHQJQmVHV+0yFLvfGf3oSP8w7TjZCNUgu1G8jHISx6KFi7bmcrdXW9lRt++A==}
+  '@libsql/core@0.6.2':
+    resolution: {integrity: sha512-c2P4M+4u/4b2L02A0KjggO3UW51rGkhxr/7fzJO0fEAqsqrWGxuNj2YtRkina/oxfYvAof6xjp8RucNoIV/Odw==}
 
   '@libsql/darwin-arm64@0.3.19':
     resolution: {integrity: sha512-rmOqsLcDI65zzxlUOoEiPJLhqmbFsZF6p4UJQ2kMqB+Kc0Rt5/A1OAdOZ/Wo8fQfJWjR1IbkbpEINFioyKf+nQ==}
@@ -1469,6 +1485,9 @@ packages:
     resolution: {integrity: sha512-heiJGj2qt5qTv6yiShH9f6KRAoZGj+lz61GQ+lBRL4lhvUmKI9A51KYlQTnsUd9ymdFlKHBlvmPeG+yGz2Qsbg==}
     engines: {node: '>=16.14'}
 
+  '@vercel/build-utils@8.7.0':
+    resolution: {integrity: sha512-ofZX+ABiW76u5khIyYyH5xK5KSuiAteqRu5hz2k1a2WHLwF7VpeBg8gdFR+HwbVnNkHtkMA64ya5Dd/lNoABkw==}
+
   '@vercel/build-utils@8.8.0':
     resolution: {integrity: sha512-4jkeJ/Xr0epojgfiyQufB8vC0ubE9SCfA9I2BGcOIKcf65C25juSvuYwaLixnjZXHUTO4Y9W7fdgiLUk55MgbA==}
 
@@ -1499,6 +1518,9 @@ packages:
     resolution: {integrity: sha512-6lLqMNX3TuycBPABycx7A9F1bHQR7kiQln6abjFbPrf5C/05qHM9M5E4PeTE59c7z8g6vHnx1Ioihb2AQl7BTA==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@vercel/node@3.2.29':
+    resolution: {integrity: sha512-WRVYidBqtRyYUw36v/WyUB2v97PsiV2+LepUiOPWcW9UpszQGGT2DAzsXOYqWveXMJKFhx0aETR6Nn6i+Yps1Q==}
 
   '@vercel/node@4.0.0':
     resolution: {integrity: sha512-vSBe3Q1ggdMvXZwno/msl6kdoS/9p9AuLKJ9YJ4mwmwIBz9BsIYnweYKr6Ignel7pz41dxzimf+SBuLjq0kjQg==}
@@ -3100,6 +3122,9 @@ packages:
 
   path-to-regexp@6.1.0:
     resolution: {integrity: sha512-h9DqehX3zZZDCEm+xbfU0ZmwCGFCAAraPJWMXJ4+v32NjZJilVg3k1TcKsRgIb8IQ/izZSaydDc1OhJCZvs2Dw==}
+
+  path-to-regexp@6.2.1:
+    resolution: {integrity: sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==}
 
   path-to-regexp@6.3.0:
     resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
@@ -4841,13 +4866,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@libsql/client@0.8.1':
+  '@libsql/client@0.6.2':
     dependencies:
-      '@libsql/core': 0.8.1
+      '@libsql/core': 0.6.2
       '@libsql/hrana-client': 0.6.2
       js-base64: 3.7.7
       libsql: 0.3.19
-      promise-limit: 2.7.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -4856,7 +4880,7 @@ snapshots:
     dependencies:
       js-base64: 3.7.7
 
-  '@libsql/core@0.8.1':
+  '@libsql/core@0.6.2':
     dependencies:
       js-base64: 3.7.7
 
@@ -4945,7 +4969,7 @@ snapshots:
       detect-libc: 2.0.4
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.6.9
+      node-fetch: 2.7.0
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -5072,7 +5096,7 @@ snapshots:
 
   '@prisma/adapter-libsql@6.8.2':
     dependencies:
-      '@libsql/client': 0.8.1
+      '@libsql/client': 0.6.2
       '@prisma/driver-adapter-utils': 6.8.2
       async-mutex: 0.5.0
     transitivePeerDependencies:
@@ -5400,6 +5424,8 @@ snapshots:
       undici: 5.29.0
     optional: true
 
+  '@vercel/build-utils@8.7.0': {}
+
   '@vercel/build-utils@8.8.0': {}
 
   '@vercel/edge-config-fs@0.1.0': {}
@@ -5447,6 +5473,34 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - rollup
+      - supports-color
+
+  '@vercel/node@3.2.29':
+    dependencies:
+      '@edge-runtime/node-utils': 2.3.0
+      '@edge-runtime/primitives': 4.1.0
+      '@edge-runtime/vm': 3.2.0
+      '@types/node': 16.18.11
+      '@vercel/build-utils': 8.7.0
+      '@vercel/error-utils': 2.0.3
+      '@vercel/nft': 0.27.3
+      '@vercel/static-config': 3.0.0
+      async-listen: 3.0.0
+      cjs-module-lexer: 1.2.3
+      edge-runtime: 2.5.9
+      es-module-lexer: 1.4.1
+      esbuild: 0.14.47
+      etag: 1.8.1
+      node-fetch: 2.6.9
+      path-to-regexp: 6.2.1
+      ts-morph: 12.0.0
+      ts-node: 10.9.1(@types/node@16.18.11)(typescript@4.9.5)
+      typescript: 4.9.5
+      undici: 5.28.4
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - encoding
       - supports-color
 
   '@vercel/node@4.0.0':
@@ -7300,6 +7354,8 @@ snapshots:
       minipass: 7.1.2
 
   path-to-regexp@6.1.0: {}
+
+  path-to-regexp@6.2.1: {}
 
   path-to-regexp@6.3.0: {}
 

@@ -1,0 +1,25 @@
+{
+  "name": "extract-bible-data",
+  "version": "1.0.0",
+  "description": "Script to extract Bible data from api.bible and import into TursoDB",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "extract": "npm run build && npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.4.0",
+    "@types/axios": "^0.14.4",
+    "@types/dotenv": "^8.2.3",
+    "axios": "^1.6.5",
+    "dotenv": "^16.4.1"
+  }
+}

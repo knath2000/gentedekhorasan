@@ -1,0 +1,24 @@
+{
+  "name": "import-bible-data",
+  "version": "1.0.0",
+  "description": "Script to import Bible data into TursoDB from a JSON file",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "import": "npm run build && npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.8.3",
+    "@types/sqlite3": "^3.1.11"
+    },
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "sqlite3": "^5.1.7",
+    "sqlite": "^5.1.1"
+  }
+}

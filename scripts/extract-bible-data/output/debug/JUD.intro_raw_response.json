@@ -1,0 +1,34 @@
+{
+  "id": "JUD.intro",
+  "bibleId": "bba9f40183526463-01",
+  "number": "intro",
+  "bookId": "JUD",
+  "reference": "Jude",
+  "copyright": "The Holy Bible, Berean Standard Bible, BSB is produced in cooperation with Bible Hub, Discovery Bible, OpenBible.com, and the Berean Bible Translation Committee. This text of God's Word has been dedicated to the public domain",
+  "verseCount": 0,
+  "content": [
+    {
+      "name": "para",
+      "type": "tag",
+      "attrs": {
+        "style": "mt1"
+      },
+      "items": [
+        {
+          "text": "Jude",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "next": {
+    "id": "JUD.1",
+    "number": "1",
+    "bookId": "JUD"
+  },
+  "previous": {
+    "id": "3JN.1",
+    "number": "1",
+    "bookId": "3JN"
+  }
+}
