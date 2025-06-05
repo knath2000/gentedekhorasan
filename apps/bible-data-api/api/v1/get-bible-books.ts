@@ -3,8 +3,21 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 
 const TURSO_DATABASE_URL = process.env.TURSO_DATABASE_URL;
 const TURSO_AUTH_TOKEN = process.env.TURSO_AUTH_TOKEN;
+const ALLOWED_CORS_ORIGIN = process.env.ALLOWED_CORS_ORIGIN;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Set CORS headers dynamically
+  if (ALLOWED_CORS_ORIGIN) {
+    res.setHeader('Access-Control-Allow-Origin', ALLOWED_CORS_ORIGIN);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  
   if (!TURSO_DATABASE_URL || !TURSO_AUTH_TOKEN) {
     return res.status(500).json({ error: 'Database configuration is missing.' });
   }
