@@ -1,8 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.config = void 0;
 exports.default = handler;
 const backend_1 = require("@clerk/backend");
 const prisma_1 = require("../lib/prisma");
+exports.config = {
+    runtime: 'edge',
+};
 async function handler(req, res) {
     // CORS DINÁMICO
     const allowedOrigins = [
@@ -74,11 +78,12 @@ async function handler(req, res) {
         console.log('=== AUTH SUCCESS ===');
         console.log('Authenticated user:', userId);
         if (req.method === 'GET') {
-            const prisma = (0, prisma_1.createPrismaClient)();
             try {
-                const bookmarks = await prisma.userBookmark.findMany({
+                const bookmarks = await prisma_1.prisma.userBookmark.findMany({
                     where: { userId },
-                    orderBy: { createdAt: 'desc' }
+                    orderBy: { createdAt: 'desc' },
+                    // @ts-ignore
+                    timeout: 5000 // 5 seconds timeout
                 });
                 return res.status(200).json(bookmarks);
             }
@@ -87,11 +92,10 @@ async function handler(req, res) {
                 return res.status(500).json({ error: 'Failed to fetch bookmarks' });
             }
             finally {
-                await prisma.$disconnect();
+                await prisma_1.prisma.$disconnect();
             }
         }
         if (req.method === 'POST') {
-            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 console.log('=== POST REQUEST DEBUG ===');
                 console.log('Request body:', req.body);
@@ -119,7 +123,7 @@ async function handler(req, res) {
                 console.log('Prisma connection assumed to be active.');
                 // ✅ VERIFICAR DUPLICATE CONSTRAINT
                 console.log('Checking for existing bookmark...');
-                const existingBookmark = await prisma.userBookmark.findFirst({
+                const existingBookmark = await prisma_1.prisma.userBookmark.findFirst({
                     where: {
                         userId: userId,
                         surahId: surahId,
@@ -143,7 +147,7 @@ async function handler(req, res) {
                     translation: translation.substring(0, 50) + '...',
                     notes: notes || ''
                 });
-                const bookmark = await prisma.userBookmark.create({
+                const bookmark = await prisma_1.prisma.userBookmark.create({
                     data: {
                         userId,
                         surahId,
@@ -175,20 +179,21 @@ async function handler(req, res) {
                 });
             }
             finally {
-                await prisma.$disconnect();
+                await prisma_1.prisma.$disconnect();
             }
         }
         if (req.method === 'PUT') {
-            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 const { id } = req.query;
                 const { notes } = req.body;
                 if (!id || typeof id !== 'string') {
                     return res.status(400).json({ error: 'Bookmark ID is required' });
                 }
-                const bookmark = await prisma.userBookmark.updateMany({
+                const bookmark = await prisma_1.prisma.userBookmark.updateMany({
                     where: { id, userId },
-                    data: { notes }
+                    data: { notes },
+                    // @ts-ignore
+                    timeout: 5000 // 5 seconds timeout
                 });
                 if (bookmark.count === 0) {
                     return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
@@ -200,18 +205,19 @@ async function handler(req, res) {
                 return res.status(500).json({ error: 'Failed to update bookmark' });
             }
             finally {
-                await prisma.$disconnect();
+                await prisma_1.prisma.$disconnect();
             }
         }
         if (req.method === 'DELETE') {
-            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 const { id } = req.query;
                 if (!id || typeof id !== 'string') {
                     return res.status(400).json({ error: 'Bookmark ID is required' });
                 }
-                const bookmark = await prisma.userBookmark.deleteMany({
-                    where: { id, userId }
+                const bookmark = await prisma_1.prisma.userBookmark.deleteMany({
+                    where: { id, userId },
+                    // @ts-ignore
+                    timeout: 5000 // 5 seconds timeout
                 });
                 if (bookmark.count === 0) {
                     return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
@@ -223,7 +229,7 @@ async function handler(req, res) {
                 return res.status(500).json({ error: 'Failed to delete bookmark' });
             }
             finally {
-                await prisma.$disconnect();
+                await prisma_1.prisma.$disconnect();
             }
         }
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);

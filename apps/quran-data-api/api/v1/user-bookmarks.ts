@@ -1,6 +1,11 @@
 import { verifyToken } from '@clerk/backend';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createPrismaClient } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
+
+
+export const config = {
+  runtime: 'edge',
+};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS DINÁMICO
@@ -83,11 +88,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('Authenticated user:', userId);
 
     if (req.method === 'GET') {
-      const prisma = createPrismaClient();
       try {
         const bookmarks = await prisma.userBookmark.findMany({
           where: { userId },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
+          // @ts-ignore
+          timeout: 5000 // 5 seconds timeout
         });
         return res.status(200).json(bookmarks);
       } catch (error) {
@@ -99,7 +105,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'POST') {
-      const prisma = createPrismaClient();
       try {
         console.log('=== POST REQUEST DEBUG ===');
         console.log('Request body:', req.body);
@@ -198,7 +203,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'PUT') {
-      const prisma = createPrismaClient();
       try {
         const { id } = req.query;
         const { notes } = req.body;
@@ -207,7 +211,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         const bookmark = await prisma.userBookmark.updateMany({
           where: { id, userId },
-          data: { notes }
+          data: { notes },
+          // @ts-ignore
+          timeout: 5000 // 5 seconds timeout
         });
         if (bookmark.count === 0) {
           return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
@@ -222,14 +228,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'DELETE') {
-      const prisma = createPrismaClient();
       try {
         const { id } = req.query;
         if (!id || typeof id !== 'string') {
           return res.status(400).json({ error: 'Bookmark ID is required' });
         }
         const bookmark = await prisma.userBookmark.deleteMany({
-          where: { id, userId }
+          where: { id, userId },
+          // @ts-ignore
+          timeout: 5000 // 5 seconds timeout
         });
         if (bookmark.count === 0) {
           return res.status(404).json({ error: 'Bookmark not found or unauthorized' });

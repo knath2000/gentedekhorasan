@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.config = void 0;
 exports.default = handler;
 const prisma_1 = require("../lib/prisma");
+exports.config = {
+    runtime: 'edge',
+};
 async function handler(req, res) {
     console.log('get-metadata API handler invoked.');
-    const prisma = (0, prisma_1.createPrismaClient)(); // New instance per call
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for development
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -18,7 +21,7 @@ async function handler(req, res) {
         switch (type) {
             case 'surah-list':
                 console.log('Fetching surah-list...');
-                const surahs = await prisma.quranSurah.findMany({
+                const surahs = await prisma_1.prisma.quranSurah.findMany({
                     orderBy: { number: 'asc' },
                     select: {
                         number: true,
@@ -30,7 +33,10 @@ async function handler(req, res) {
                         chronologicalOrder: true,
                         rukus: true,
                         startIndex: true
-                    }
+                    },
+                    // Add a timeout to the query
+                    // @ts-ignore
+                    timeout: 5000 // 5 seconds timeout
                 });
                 console.log('Successfully fetched surahs.');
                 return res.status(200).json(surahs.map((s) => ({
@@ -46,8 +52,10 @@ async function handler(req, res) {
                 })));
             case 'sajdas':
                 console.log('Fetching sajdas...');
-                const sajdas = await prisma.quranSajda.findMany({
-                    orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }]
+                const sajdas = await prisma_1.prisma.quranSajda.findMany({
+                    orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }],
+                    // @ts-ignore
+                    timeout: 5000 // 5 seconds timeout
                 });
                 console.log('Successfully fetched sajdas.');
                 return res.status(200).json(sajdas);
@@ -64,6 +72,6 @@ async function handler(req, res) {
         return res.status(500).json({ error: 'Internal Server Error', details: error.message || 'Unknown error' });
     }
     finally {
-        await prisma.$disconnect(); // Always disconnect
+        await prisma_1.prisma.$disconnect(); // Always disconnect
     }
 }

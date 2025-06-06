@@ -1,10 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QuranSurah } from '../../prisma/generated/client'; // Import from generated client path
-import { createPrismaClient } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
+
+export const config = {
+  runtime: 'edge',
+};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('get-metadata API handler invoked.');
-  const prisma = createPrismaClient(); // New instance per call
 
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for development
@@ -34,7 +37,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             chronologicalOrder: true,
             rukus: true,
             startIndex: true
-          }
+          },
+          // Add a timeout to the query
+          // @ts-ignore
+          timeout: 5000 // 5 seconds timeout
         })
         console.log('Successfully fetched surahs.');
         return res.status(200).json(surahs.map((s: QuranSurah) => ({
@@ -52,7 +58,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case 'sajdas':
         console.log('Fetching sajdas...');
         const sajdas = await prisma.quranSajda.findMany({
-          orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }]
+          orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }],
+          // @ts-ignore
+          timeout: 5000 // 5 seconds timeout
         })
         console.log('Successfully fetched sajdas.');
         return res.status(200).json(sajdas);
