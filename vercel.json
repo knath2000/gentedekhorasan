@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "apps/quran-data-api/api/dist/v1/*.js": {
-      "runtime": "@vercel/node@22"
+      "runtime": "@vercel/node"
     }
   }
 }
