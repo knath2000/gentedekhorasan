@@ -4,7 +4,7 @@
   "outputDirectory": "apps/quranexpo-web/dist",
   "functions": {
     "apps/quran-data-api/api/v1/*.ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "@vercel/node"
     }
   },
   "rewrites": [
