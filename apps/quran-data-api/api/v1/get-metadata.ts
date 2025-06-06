@@ -80,6 +80,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     return res.status(500).json({ error: 'Internal Server Error', details: error.message || 'Unknown error' });
   } finally {
-    await prisma.$disconnect(); // Always disconnect
+    // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
   }
 }

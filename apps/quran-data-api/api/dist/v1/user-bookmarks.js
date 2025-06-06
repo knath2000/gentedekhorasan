@@ -86,7 +86,7 @@ async function handler(req, res) {
                 return res.status(500).json({ error: 'Failed to fetch bookmarks' });
             }
             finally {
-                await prisma_1.prisma.$disconnect();
+                // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
             }
         }
         if (req.method === 'POST') {
@@ -173,7 +173,7 @@ async function handler(req, res) {
                 });
             }
             finally {
-                await prisma_1.prisma.$disconnect();
+                // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
             }
         }
         if (req.method === 'PUT') {
@@ -197,7 +197,7 @@ async function handler(req, res) {
                 return res.status(500).json({ error: 'Failed to update bookmark' });
             }
             finally {
-                await prisma_1.prisma.$disconnect();
+                // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
             }
         }
         if (req.method === 'DELETE') {
@@ -219,7 +219,7 @@ async function handler(req, res) {
                 return res.status(500).json({ error: 'Failed to delete bookmark' });
             }
             finally {
-                await prisma_1.prisma.$disconnect();
+                // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
             }
         }
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);

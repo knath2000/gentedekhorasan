@@ -1,12 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  output          = "./generated/client"  // Cambiar de "../api/generated/prisma"
-  binaryTargets   = ["native", "rhel-openssl-3.0.x", "darwin-arm64"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development
+  output          = "./generated/client"
+  binaryTargets   = ["native", "rhel-openssl-3.0.x", "darwin-arm64"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

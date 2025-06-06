@@ -82,6 +82,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -136,6 +139,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -188,7 +196,8 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../..",
   "clientVersion": "5.16.2",
@@ -196,7 +205,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
@@ -206,8 +215,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"./generated/client\" // Cambiar de \"../api/generated/prisma\"\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"] // Add rhel-openssl-3.0.x for Vercel and darwin-arm64 for local development\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n\nmodel UserBookmark {\n  id          String   @id @default(cuid())\n  userId      String\n  surahId     Int\n  verseNumber Int\n  verseText   String\n  surahName   String\n  translation String\n  notes       String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@unique([userId, surahId, verseNumber])\n  @@map(\"user_bookmarks\")\n}\n",
-  "inlineSchemaHash": "5e74041480da1e8a33b3a1f085f94b41d5d5b5c8286083def6044eec649a1793",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"./generated/client\"\n  binaryTargets   = [\"native\", \"rhel-openssl-3.0.x\", \"darwin-arm64\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel EnYusufali {\n  index Int    @id\n  sura  Int\n  aya   Int\n  text  String\n\n  @@map(\"en_yusufali\")\n}\n\nmodel QuranSajda {\n  sajdaId     Int     @id @default(autoincrement()) @map(\"sajda_id\")\n  surahNumber Int     @map(\"surah_number\")\n  ayahNumber  Int     @map(\"ayah_number\")\n  type        String?\n\n  @@map(\"quran_sajdas\")\n}\n\nmodel QuranSurah {\n  number             Int    @id\n  arabicName         String @map(\"arabic_name\")\n  transliteration    String\n  englishName        String @map(\"english_name\")\n  ayas               Int\n  revelationType     String @map(\"revelation_type\")\n  chronologicalOrder Int    @map(\"chronological_order\")\n  rukus              Int\n  startIndex         Int?   @map(\"start_index\") // Add this line\n\n  @@map(\"quran_surahs\")\n}\n\nmodel QuranText {\n  id   Int    @id @default(autoincrement())\n  sura Int\n  aya  Int\n  text String\n\n  @@map(\"quran_text\")\n}\n\nmodel UserBookmark {\n  id          String   @id @default(cuid())\n  userId      String\n  surahId     Int\n  verseNumber Int\n  verseText   String\n  surahName   String\n  translation String\n  notes       String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@unique([userId, surahId, verseNumber])\n  @@map(\"user_bookmarks\")\n}\n",
+  "inlineSchemaHash": "2e9a0b7cdb334029bda860a242b05abb4ef16b556197a1a94b025279e56ec70f",
   "copyEngine": true
 }
 

@@ -95,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('Error fetching bookmarks:', error);
         return res.status(500).json({ error: 'Failed to fetch bookmarks' });
       } finally {
-        await prisma.$disconnect();
+        // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
       }
     }
 
@@ -193,7 +193,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           code: error.code || 'UNKNOWN'
         });
       } finally {
-        await prisma.$disconnect();
+        // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
       }
     }
 
@@ -216,7 +216,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('Error updating bookmark:', error);
         return res.status(500).json({ error: 'Failed to update bookmark' });
       } finally {
-        await prisma.$disconnect();
+        // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
       }
     }
 
@@ -237,7 +237,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('Error deleting bookmark:', error);
         return res.status(500).json({ error: 'Failed to delete bookmark' });
       } finally {
-        await prisma.$disconnect();
+        // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
       }
     }
 

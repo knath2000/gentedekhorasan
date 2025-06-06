@@ -73,6 +73,6 @@ async function handler(req, res) {
         return res.status(500).json({ error: 'Internal Server Error', details: error.message || 'Unknown error' });
     }
     finally {
-        await prisma_1.prisma.$disconnect(); // Always disconnect
+        // await prisma.$disconnect(); // Disconnecting is not recommended for serverless functions with connection pooling
     }
 }
