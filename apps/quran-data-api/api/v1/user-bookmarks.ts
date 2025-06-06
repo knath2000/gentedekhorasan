@@ -88,9 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       try {
         const bookmarks = await prisma.userBookmark.findMany({
           where: { userId },
-          orderBy: { createdAt: 'desc' },
-          // @ts-ignore
-          timeout: 5000 // 5 seconds timeout
+          orderBy: { createdAt: 'desc' }
         });
         return res.status(200).json(bookmarks);
       } catch (error) {
@@ -208,9 +206,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         const bookmark = await prisma.userBookmark.updateMany({
           where: { id, userId },
-          data: { notes },
-          // @ts-ignore
-          timeout: 5000 // 5 seconds timeout
+          data: { notes }
         });
         if (bookmark.count === 0) {
           return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
@@ -231,9 +227,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(400).json({ error: 'Bookmark ID is required' });
         }
         const bookmark = await prisma.userBookmark.deleteMany({
-          where: { id, userId },
-          // @ts-ignore
-          timeout: 5000 // 5 seconds timeout
+          where: { id, userId }
         });
         if (bookmark.count === 0) {
           return res.status(404).json({ error: 'Bookmark not found or unauthorized' });

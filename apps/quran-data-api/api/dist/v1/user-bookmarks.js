@@ -77,9 +77,7 @@ async function handler(req, res) {
             try {
                 const bookmarks = await prisma_1.prisma.userBookmark.findMany({
                     where: { userId },
-                    orderBy: { createdAt: 'desc' },
-                    // @ts-ignore
-                    timeout: 5000 // 5 seconds timeout
+                    orderBy: { createdAt: 'desc' }
                 });
                 return res.status(200).json(bookmarks);
             }
@@ -187,9 +185,7 @@ async function handler(req, res) {
                 }
                 const bookmark = await prisma_1.prisma.userBookmark.updateMany({
                     where: { id, userId },
-                    data: { notes },
-                    // @ts-ignore
-                    timeout: 5000 // 5 seconds timeout
+                    data: { notes }
                 });
                 if (bookmark.count === 0) {
                     return res.status(404).json({ error: 'Bookmark not found or unauthorized' });
@@ -211,9 +207,7 @@ async function handler(req, res) {
                     return res.status(400).json({ error: 'Bookmark ID is required' });
                 }
                 const bookmark = await prisma_1.prisma.userBookmark.deleteMany({
-                    where: { id, userId },
-                    // @ts-ignore
-                    timeout: 5000 // 5 seconds timeout
+                    where: { id, userId }
                 });
                 if (bookmark.count === 0) {
                     return res.status(404).json({ error: 'Bookmark not found or unauthorized' });

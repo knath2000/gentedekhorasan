@@ -30,9 +30,6 @@ async function handler(req, res) {
                         rukus: true,
                         startIndex: true
                     },
-                    // Add a timeout to the query
-                    // @ts-ignore
-                    timeout: 5000 // 5 seconds timeout
                 });
                 console.log('Successfully fetched surahs.');
                 return res.status(200).json(surahs.map((s) => ({
@@ -49,9 +46,7 @@ async function handler(req, res) {
             case 'sajdas':
                 console.log('Fetching sajdas...');
                 const sajdas = await prisma_1.prisma.quranSajda.findMany({
-                    orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }],
-                    // @ts-ignore
-                    timeout: 5000 // 5 seconds timeout
+                    orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }]
                 });
                 console.log('Successfully fetched sajdas.');
                 return res.status(200).json(sajdas);
