@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    {
+      "src": "apps/quranexpo-web/package.json",
+      "use": "@vercel/astro"
+    },
+    {
+      "src": "apps/quran-data-api/api/**/*.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/apps/quran-data-api/api/$1"
+    }
+  ]
+}
