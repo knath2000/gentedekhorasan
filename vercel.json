@@ -1,16 +1,16 @@
 {
   "installCommand": "pnpm install --store=node_modules/.pnpm",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "apps/quranexpo-web/dist",
+  "outputDirectory": "dist",
   "functions": {
-    "apps/quran-data-api/api/v1/*.ts": {
+    "../quran-data-api/api/v1/*.ts": {
       "runtime": "@vercel/node"
     }
   },
   "rewrites": [
     {
       "source": "/api/v1/(.*)",
-      "destination": "/apps/quran-data-api/api/v1/$1"
+      "destination": "/api/v1/$1"
     }
   ]
 }
