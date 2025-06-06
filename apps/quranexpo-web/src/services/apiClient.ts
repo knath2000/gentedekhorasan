@@ -1,7 +1,7 @@
 import type { BibleBook } from '../types/bible';
 import type { Bookmark, Surah, Verse } from '../types/quran';
 
-const QURAN_API_BASE_URL = import.meta.env.PUBLIC_QURAN_API_BASE_URL;
+const QURAN_API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 const BIBLE_API_BASE_URL = import.meta.env.PUBLIC_BIBLE_API_BASE_URL;
 
 /**
