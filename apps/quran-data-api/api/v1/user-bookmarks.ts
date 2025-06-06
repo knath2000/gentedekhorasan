@@ -1,16 +1,6 @@
 import { verifyToken } from '@clerk/backend';
-import { createClient } from '@libsql/client'; // Import createClient
-import { PrismaLibSQL } from '@prisma/adapter-libsql'; // Import PrismaLibSQL
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '../../prisma/generated/client';
-
-// ✅ CONFIGURACIÓN CORRECTA PARA TURSO
-const driver = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-});
-const adapter = new PrismaLibSQL(driver); // Pass the driver instance to the adapter
-const prisma = new PrismaClient({ adapter });
+import { createPrismaClient } from '../lib/prisma';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS DINÁMICO
@@ -93,6 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('Authenticated user:', userId);
 
     if (req.method === 'GET') {
+      const prisma = createPrismaClient();
       try {
         const bookmarks = await prisma.userBookmark.findMany({
           where: { userId },
@@ -102,10 +93,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } catch (error) {
         console.error('Error fetching bookmarks:', error);
         return res.status(500).json({ error: 'Failed to fetch bookmarks' });
+      } finally {
+        await prisma.$disconnect();
       }
     }
 
     if (req.method === 'POST') {
+      const prisma = createPrismaClient();
       try {
         console.log('=== POST REQUEST DEBUG ===');
         console.log('Request body:', req.body);
@@ -198,10 +192,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           details: error.message,
           code: error.code || 'UNKNOWN'
         });
+      } finally {
+        await prisma.$disconnect();
       }
     }
 
     if (req.method === 'PUT') {
+      const prisma = createPrismaClient();
       try {
         const { id } = req.query;
         const { notes } = req.body;
@@ -219,10 +216,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } catch (error) {
         console.error('Error updating bookmark:', error);
         return res.status(500).json({ error: 'Failed to update bookmark' });
+      } finally {
+        await prisma.$disconnect();
       }
     }
 
     if (req.method === 'DELETE') {
+      const prisma = createPrismaClient();
       try {
         const { id } = req.query;
         if (!id || typeof id !== 'string') {
@@ -238,6 +238,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       } catch (error) {
         console.error('Error deleting bookmark:', error);
         return res.status(500).json({ error: 'Failed to delete bookmark' });
+      } finally {
+        await prisma.$disconnect();
       }
     }
 

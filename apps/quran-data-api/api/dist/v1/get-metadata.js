@@ -4,6 +4,7 @@ exports.default = handler;
 const prisma_1 = require("../lib/prisma");
 async function handler(req, res) {
     console.log('get-metadata API handler invoked.');
+    const prisma = (0, prisma_1.createPrismaClient)(); // New instance per call
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for development
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -17,7 +18,7 @@ async function handler(req, res) {
         switch (type) {
             case 'surah-list':
                 console.log('Fetching surah-list...');
-                const surahs = await prisma_1.prisma.quranSurah.findMany({
+                const surahs = await prisma.quranSurah.findMany({
                     orderBy: { number: 'asc' },
                     select: {
                         number: true,
@@ -45,7 +46,7 @@ async function handler(req, res) {
                 })));
             case 'sajdas':
                 console.log('Fetching sajdas...');
-                const sajdas = await prisma_1.prisma.quranSajda.findMany({
+                const sajdas = await prisma.quranSajda.findMany({
                     orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }]
                 });
                 console.log('Successfully fetched sajdas.');
@@ -61,5 +62,8 @@ async function handler(req, res) {
             console.error('Stack trace:', error.stack);
         }
         return res.status(500).json({ error: 'Internal Server Error', details: error.message || 'Unknown error' });
+    }
+    finally {
+        await prisma.$disconnect(); // Always disconnect
     }
 }

@@ -2,16 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = handler;
 const backend_1 = require("@clerk/backend");
-const client_1 = require("@libsql/client"); // Import createClient
-const adapter_libsql_1 = require("@prisma/adapter-libsql"); // Import PrismaLibSQL
-const client_2 = require("../../prisma/generated/client");
-// ✅ CONFIGURACIÓN CORRECTA PARA TURSO
-const driver = (0, client_1.createClient)({
-    url: process.env.TURSO_DATABASE_URL,
-    authToken: process.env.TURSO_AUTH_TOKEN,
-});
-const adapter = new adapter_libsql_1.PrismaLibSQL(driver); // Pass the driver instance to the adapter
-const prisma = new client_2.PrismaClient({ adapter });
+const prisma_1 = require("../lib/prisma");
 async function handler(req, res) {
     // CORS DINÁMICO
     const allowedOrigins = [
@@ -83,6 +74,7 @@ async function handler(req, res) {
         console.log('=== AUTH SUCCESS ===');
         console.log('Authenticated user:', userId);
         if (req.method === 'GET') {
+            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 const bookmarks = await prisma.userBookmark.findMany({
                     where: { userId },
@@ -94,8 +86,12 @@ async function handler(req, res) {
                 console.error('Error fetching bookmarks:', error);
                 return res.status(500).json({ error: 'Failed to fetch bookmarks' });
             }
+            finally {
+                await prisma.$disconnect();
+            }
         }
         if (req.method === 'POST') {
+            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 console.log('=== POST REQUEST DEBUG ===');
                 console.log('Request body:', req.body);
@@ -178,8 +174,12 @@ async function handler(req, res) {
                     code: error.code || 'UNKNOWN'
                 });
             }
+            finally {
+                await prisma.$disconnect();
+            }
         }
         if (req.method === 'PUT') {
+            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 const { id } = req.query;
                 const { notes } = req.body;
@@ -199,8 +199,12 @@ async function handler(req, res) {
                 console.error('Error updating bookmark:', error);
                 return res.status(500).json({ error: 'Failed to update bookmark' });
             }
+            finally {
+                await prisma.$disconnect();
+            }
         }
         if (req.method === 'DELETE') {
+            const prisma = (0, prisma_1.createPrismaClient)();
             try {
                 const { id } = req.query;
                 if (!id || typeof id !== 'string') {
@@ -217,6 +221,9 @@ async function handler(req, res) {
             catch (error) {
                 console.error('Error deleting bookmark:', error);
                 return res.status(500).json({ error: 'Failed to delete bookmark' });
+            }
+            finally {
+                await prisma.$disconnect();
             }
         }
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);

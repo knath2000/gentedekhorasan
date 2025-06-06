@@ -1,9 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QuranSurah } from '../../prisma/generated/client'; // Import from generated client path
-import { prisma } from '../lib/prisma';
+import { createPrismaClient } from '../lib/prisma';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('get-metadata API handler invoked.');
+  const prisma = createPrismaClient(); // New instance per call
 
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for development
@@ -66,5 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('Stack trace:', error.stack);
     }
     return res.status(500).json({ error: 'Internal Server Error', details: error.message || 'Unknown error' });
+  } finally {
+    await prisma.$disconnect(); // Always disconnect
   }
 }
