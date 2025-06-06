@@ -48,8 +48,9 @@
 - Para que las funciones de API en un subdirectorio de un monorepo (`apps/quran-data-api/api/`) sean desplegadas correctamente, es crucial:
     -   Configurar `tsconfig.json` para compilar TypeScript a JavaScript en un directorio `dist` (`"outDir": "dist"`) y permitir la emisión (`"noEmit": false`).
     -   Asegurarse de que el script `build` del `package.json` de la aplicación de la API ejecute esta compilación (`tsc -p api/tsconfig.json`).
-    -   Mover la configuración de `functions` y `routes` al `vercel.json` de la **raíz del monorepo**, apuntando a los archivos JavaScript compilados en el directorio `dist` dentro del subdirectorio de la aplicación (ej. `"apps/quran-data-api/dist/api/v1/get-metadata.js"`).
-    -   El `vercel.json` anidado en el subdirectorio de la API (`apps/quran-data-api/vercel.json`) debe ser mínimo (solo `{"version": 2}`).
+    -   **Vercel `vercel.json` for simple serverless functions is NOT needed and can interfere with default routing. Remove it.**
+    -   **CORS headers must be set programmatically within the serverless function (e.g., `res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_CORS_ORIGIN)`), as `vercel.json` does not support environment variable substitution in `headers` block.**
+    -   **Vercel Deployment Protection's 'OPTIONS Allowlist' must be configured for API paths (e.g., `/api/v1`) to allow CORS preflight requests to protected deployments.**
 
 ## Depuración y Estrategias de `apply_diff`
 **Depuración: Estrategias para manejar errores de `apply_diff` (reescritura completa del archivo)**

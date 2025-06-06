@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = handler;
 const prisma_1 = require("../lib/prisma");
 async function handler(req, res) {
+    console.log('get-metadata API handler invoked.');
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for development
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -15,6 +16,7 @@ async function handler(req, res) {
     try {
         switch (type) {
             case 'surah-list':
+                console.log('Fetching surah-list...');
                 const surahs = await prisma_1.prisma.quranSurah.findMany({
                     orderBy: { number: 'asc' },
                     select: {
@@ -29,6 +31,7 @@ async function handler(req, res) {
                         startIndex: true
                     }
                 });
+                console.log('Successfully fetched surahs.');
                 return res.status(200).json(surahs.map((s) => ({
                     number: s.number,
                     name: s.arabicName,
@@ -41,16 +44,22 @@ async function handler(req, res) {
                     startIndex: s.startIndex
                 })));
             case 'sajdas':
+                console.log('Fetching sajdas...');
                 const sajdas = await prisma_1.prisma.quranSajda.findMany({
                     orderBy: [{ surahNumber: 'asc' }, { ayahNumber: 'asc' }]
                 });
+                console.log('Successfully fetched sajdas.');
                 return res.status(200).json(sajdas);
             default:
+                console.warn('Invalid metadata type:', type);
                 return res.status(400).json({ error: 'Invalid metadata type' });
         }
     }
     catch (error) {
-        console.error('Database error:', error);
-        return res.status(500).json({ error: 'Database error' });
+        console.error('API Error in get-metadata:', error.message || error);
+        if (error.stack) {
+            console.error('Stack trace:', error.stack);
+        }
+        return res.status(500).json({ error: 'Internal Server Error', details: error.message || 'Unknown error' });
     }
 }
