@@ -25,7 +25,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**"]
+      "outputs": ["dist/**", ".next/**", "build/**", "apps/quran-data-api/dist/**"]
     },
     "build:web": {
       "dependsOn": ["^build"],
