@@ -1,4 +1,16 @@
 {
   "installCommand": "pnpm install --store=node_modules/.pnpm",
-  "buildCommand": "pnpm run build"
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "apps/quranexpo-web/dist",
+  "functions": {
+    "apps/quran-data-api/api/v1/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/v1/(.*)",
+      "destination": "/apps/quran-data-api/api/v1/$1"
+    }
+  ]
 }
