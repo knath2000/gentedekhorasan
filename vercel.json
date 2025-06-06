@@ -1,9 +1,9 @@
 {
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "../quran-data-api/api/v1/*.ts": {
+    "apps/quran-data-api/dist/api/v1/*.js": {
       "runtime": "@vercel/node"
     }
   },
@@ -12,5 +12,8 @@
       "source": "/api/v1/(.*)",
       "destination": "/api/v1/$1"
     }
-  ]
+  ],
+  "env": {
+    "COREPACK_ENABLE_AUTO_PIN": "0"
+  }
 }
