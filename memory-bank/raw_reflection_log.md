@@ -335,3 +335,23 @@ Improvements_Identified_For_Consolidation:
 - NPM configuration for monorepo dependency resolution
 
 ---
+## 2025-06-06 - Vercel Function Runtime Version Fix
+
+**TaskRef:** "Fix Vercel deployment error: 'Function Runtimes must have a valid version'"
+
+**Learnings:**
+- Vercel requires explicit version numbers for function runtimes (e.g., `@vercel/node@20`, not just `@vercel/node`)
+- The error message `'Function Runtimes must have a valid version, for example now-php@1.0.0.'` indicates missing version specification in `vercel.json`
+- For Node.js functions, version should match project requirements (Node.js 20 in this case, confirmed by `engines.node: ">=20.0.0"` and `@types/node: "^20.14.10"`)
+- For monorepos, function runtime configuration in root `vercel.json` affects serverless function deployment
+
+**Successes:**
+- Quick diagnosis of the root cause through systematic analysis
+- Correct identification of Node.js 20 as the appropriate version based on project dependencies
+- Simple, targeted fix resolved the deployment issue
+
+**Improvements_Identified_For_Consolidation:**
+- Vercel runtime version specification pattern: always include explicit version numbers
+- Monorepo deployment debugging: check function runtime configuration in root `vercel.json`
+
+---
