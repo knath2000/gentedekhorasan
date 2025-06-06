@@ -1,7 +1,12 @@
 {
-  "installCommand": "node scripts/vercel-prebuild.js && npm install --legacy-peer-deps",
+  "version": 2,
+  "installCommand": "npm install --legacy-peer-deps --verbose",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "env": {
+    "COREPACK_ENABLE_AUTO_PIN": "0",
+    "FORCE_NPM": "true"
+  },
   "functions": {
     "apps/quran-data-api/dist/api/v1/*.js": {
       "runtime": "@vercel/node"
@@ -12,8 +17,5 @@
       "source": "/api/v1/(.*)",
       "destination": "/api/v1/$1"
     }
-  ],
-  "env": {
-    "COREPACK_ENABLE_AUTO_PIN": "0"
-  }
+  ]
 }

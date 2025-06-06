@@ -12,14 +12,17 @@
   ],
   "scripts": {
     "dev": "turbo dev",
-    "build": "turbo build",
+    "build": "npm run build:all",
+    "build:all": "turbo build",
     "build:web": "turbo run build --filter=@quran-monorepo/quranexpo-web",
     "build:api": "turbo run build --filter=@quran-monorepo/quran-data-api",
     "build:mobile": "turbo run build --filter=@quran-monorepo/luminous-verses-mobile",
     "dev:web": "turbo run dev --filter=@quran-monorepo/quranexpo-web",
     "dev:api": "turbo run dev --filter=@quran-monorepo/quran-data-api",
     "lint": "turbo lint",
-    "type-check": "turbo type-check"
+    "type-check": "turbo type-check",
+    "postinstall": "echo 'Running postinstall hooks for all apps...' && npm run postinstall:api",
+    "postinstall:api": "cd apps/quran-data-api && npm run postinstall"
   },
   "devDependencies": {
     "turbo": "latest",
