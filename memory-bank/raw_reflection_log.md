@@ -355,3 +355,30 @@ Improvements_Identified_For_Consolidation:
 - Monorepo deployment debugging: check function runtime configuration in root `vercel.json`
 
 ---
+---
+Date: 2025-06-06
+TaskRef: "Vercel Node.js 22 Runtime Upgrade - Final Fix for Function Runtime Version Error"
+
+Learnings:
+- Vercel build environment was automatically using Node.js 22.x despite vercel.json specifying @vercel/node@20
+- The error "Function Runtimes must have a valid version" occurred due to mismatch between Vercel's build environment (Node.js 22) and configured runtime (@vercel/node@20)
+- Build logs showing "Skipping build cache since Node.js version changed from '20.x' to '22.x'" indicated the core issue
+- Solution: Align function runtime with Vercel's actual build environment by upgrading to @vercel/node@22
+
+Successes:
+- Successfully identified the root cause as Node.js version mismatch between build environment and function runtime
+- Applied targeted fix by updating vercel.json functions runtime from @vercel/node@20 to @vercel/node@22
+- Followed systematic debugging approach using vercel-monorepo-deployment-debugging.md protocol
+
+Key Patterns:
+- When Vercel build logs show Node.js version changes, align function runtime with the actual version being used
+- Vercel may default to newer Node.js versions in build environment regardless of local project configuration
+- For monorepos: function runtime configuration must be in root vercel.json, not in individual app directories
+
+Technical Details:
+- File modified: vercel.json
+- Change: functions["apps/quran-data-api/dist/api/v1/*.js"].runtime = "@vercel/node@22"
+- Previous value: "@vercel/node@20"
+- Reason: Align with Vercel's Node.js 22.x build environment
+
+---
