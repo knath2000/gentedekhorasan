@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "functions": {
+    "api/v1/*.ts": {
+      "runtime": "nodejs@20.x"
+    }
+  },
+  "builds": [
+    {
+      "src": "api/v1/*.ts",
+      "use": "@vercel/node"
+    }
+  ]
+}
