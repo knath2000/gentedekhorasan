@@ -1,7 +1,7 @@
 # Deployment Fixes Implementation Guide
 
 ## Overview
-This guide provides step-by-step instructions to fix the deployment issues for both `quran-data-api` and `quranexpo-web`.
+This guide provides step-by-step instructions to fix the deployment asdissues for both `quran-data-api` and `quranexpo-web`.
 
 ## 🔧 Fix 1: quran-data-api Deployment
 
