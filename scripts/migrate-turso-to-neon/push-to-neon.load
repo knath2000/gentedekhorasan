@@ -1,0 +1,9 @@
+LOAD DATABASE
+    FROM postgresql://postgres:mysecretpassword@localhost/local_quran_db
+    INTO postgresql://neondb_owner:npg_aUxt8JWgcL0u@ep-floral-dream-a4mjg8km-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&options=endpoint%3Dep-floral-dream-a4mjg8km
+
+WITH
+    create tables,
+    include drop,
+    truncate,
+    disable triggers;

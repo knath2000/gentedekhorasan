@@ -123,6 +123,7 @@ When writing rules intended to directly steer Roo's AI behavior, certain convent
     * Si no estás seguro del contenido exacto, usa `read_file` primero para obtener el contenido preciso.
 
 ## 6. Content Best Practices
+* **Mandatory Tool Usage for Code Modifications:** When providing code changes or file operations in responses, ALWAYS use the appropriate tool call (e.g., `write_to_file`, `insert_content`, `search_and_replace`, `read_file`) as specified by the TOOL USE guidelines. Do not include raw code or file edits directly in chat without a tool invocation.
 
 * **Start Broad, Then Narrow:** Begin with a general overview or objective, then delve into specifics.
 * **Use Analogies or Scenarios:** If explaining a complex concept, an analogy or a use-case scenario can be helpful.

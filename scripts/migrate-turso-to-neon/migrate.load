@@ -1,0 +1,11 @@
+LOAD DATABASE
+    FROM sqlite://./temp_local.db
+    INTO postgresql://postgres:mysecretpassword@localhost/local_quran_db
+
+WITH
+    preserve index names,
+    
+    truncate,
+    disable triggers
+
+EXCLUDING TABLE NAMES LIKE '_prisma_migrations';

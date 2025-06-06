@@ -1,18 +1,5 @@
-import { createClient } from '@libsql/client';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-
-// Asegurarse de que las variables de entorno no sean undefined
-const LIBSQL_URL = process.env.LIBSQL_URL;
-const LIBSQL_AUTH_TOKEN = process.env.LIBSQL_AUTH_TOKEN;
-
-if (!LIBSQL_URL) {
-  throw new Error('LIBSQL_URL is not defined in environment variables');
-}
-
-const db = createClient({
-  url: LIBSQL_URL,
-  authToken: LIBSQL_AUTH_TOKEN,
-});
+import { prisma } from '../lib/prisma'; // Import the shared Prisma client
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   // Añadir encabezados CORS para permitir solicitudes desde cualquier origen
@@ -32,13 +19,17 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       return response.status(400).json({ error: 'surahId is required' });
     }
 
-    const result = await db.execute({
-      sql: 'SELECT description FROM surah_descriptions WHERE surah_id = ?',
-      args: [Number(surahId)],
+    const surahDescription = await prisma.surahDescription.findUnique({
+      where: {
+        surah_id: Number(surahId),
+      },
+      select: {
+        description: true,
+      },
     });
 
-    if (result.rows.length > 0) {
-      response.status(200).json({ description: result.rows[0].description });
+    if (surahDescription) {
+      response.status(200).json({ description: surahDescription.description });
     } else {
       response.status(404).json({ error: 'Description not found for this surahId' });
     }

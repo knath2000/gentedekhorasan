@@ -1,0 +1,99 @@
+[2025-06-06T03:46:51.313Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T03:46:52.446Z] Connected to NeonDB successfully.
+[2025-06-06T03:46:53.511Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T03:46:53.511Z] Starting migration for table: _prisma_migrations
+[2025-06-06T03:46:53.593Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T03:46:54.183Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T03:46:54.340Z] Error inserting record into _prisma_migrations: date/time field value out of range: "1748357738399"
+[2025-06-06T03:46:54.873Z] Error inserting record into _prisma_migrations: date/time field value out of range: "1748358348889"
+[2025-06-06T03:46:54.874Z] Migrated 0 of 2 records for _prisma_migrations.
+[2025-06-06T03:46:54.874Z] Completed migration for table: _prisma_migrations with 0 records migrated.
+[2025-06-06T03:46:54.874Z] Starting migration for table: en_yusufali
+[2025-06-06T03:46:54.954Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T03:46:55.455Z] Table en_yusufali already exists in NeonDB.
+[2025-06-06T03:49:27.265Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T03:49:27.707Z] Connected to NeonDB successfully.
+[2025-06-06T03:49:28.023Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T03:49:28.024Z] Starting migration for table: _prisma_migrations
+[2025-06-06T03:49:28.091Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T03:49:28.575Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T03:49:28.785Z] Migrated 2 of 2 records for _prisma_migrations.
+[2025-06-06T03:49:28.785Z] Completed migration for table: _prisma_migrations with 2 records migrated.
+[2025-06-06T03:49:28.786Z] Starting migration for table: en_yusufali
+[2025-06-06T03:49:28.860Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T03:49:28.934Z] Table en_yusufali already exists in NeonDB.
+[2025-06-06T03:52:32.918Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T03:52:33.380Z] Connected to NeonDB successfully.
+[2025-06-06T03:52:33.698Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T03:52:33.700Z] Starting migration for table: _prisma_migrations
+[2025-06-06T03:52:33.769Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T03:52:34.327Z] Table _prisma_migrations does not exist in NeonDB. Creating it now.
+[2025-06-06T03:52:34.492Z] Table _prisma_migrations created in NeonDB.
+[2025-06-06T03:52:34.710Z] Migrated 2 of 2 records for _prisma_migrations.
+[2025-06-06T03:52:34.710Z] Completed migration for table: _prisma_migrations with 2 records migrated.
+[2025-06-06T03:52:34.711Z] Starting migration for table: en_yusufali
+[2025-06-06T03:52:34.785Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T03:52:34.855Z] Table en_yusufali does not exist in NeonDB. Creating it now.
+[2025-06-06T03:52:34.994Z] Table en_yusufali created in NeonDB.
+[2025-06-06T03:56:00.692Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T03:56:01.339Z] Connected to NeonDB successfully.
+[2025-06-06T03:56:01.864Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T03:56:01.864Z] Quran-related tables to migrate: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, surah_descriptions, user_bookmarks
+[2025-06-06T03:56:01.865Z] Starting migration for table: _prisma_migrations
+[2025-06-06T03:56:01.933Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T03:56:02.409Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T03:56:02.545Z] Successfully migrated row for _prisma_migrations - ID: 694b0742-c141-4b51-93c7-961b809dcdb6
+[2025-06-06T03:56:02.612Z] Successfully migrated row for _prisma_migrations - ID: 6fbe1aea-9c60-4b13-9772-286ce6e1f005
+[2025-06-06T03:56:02.613Z] Migrated 2 of 2 records for _prisma_migrations.
+[2025-06-06T03:56:02.614Z] Completed migration for table: _prisma_migrations with 2 records migrated.
+[2025-06-06T03:56:02.614Z] Starting migration for table: en_yusufali
+[2025-06-06T03:56:02.707Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T03:56:02.805Z] Table en_yusufali already exists in NeonDB.
+[2025-06-06T03:59:09.724Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T03:59:10.154Z] Connected to NeonDB successfully.
+[2025-06-06T03:59:10.459Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T03:59:10.460Z] Quran-related tables to migrate: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, surah_descriptions, user_bookmarks
+[2025-06-06T03:59:10.460Z] Starting migration for table: _prisma_migrations
+[2025-06-06T03:59:10.534Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T03:59:11.028Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T03:59:11.241Z] Migrated 2 of 2 records for _prisma_migrations.
+[2025-06-06T03:59:11.242Z] Completed migration for table: _prisma_migrations with 2 records migrated.
+[2025-06-06T03:59:11.243Z] Starting migration for table: en_yusufali
+[2025-06-06T03:59:11.321Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T03:59:11.398Z] Table en_yusufali already exists in NeonDB.
+[2025-06-06T04:05:34.961Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T04:05:35.669Z] Connected to NeonDB successfully.
+[2025-06-06T04:05:36.607Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T04:05:36.608Z] Quran-related tables to migrate: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, surah_descriptions, user_bookmarks
+[2025-06-06T04:05:36.609Z] Starting migration for table: _prisma_migrations
+[2025-06-06T04:05:36.676Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T04:05:37.165Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T04:05:37.300Z] Migrated batch of 2 records for _prisma_migrations. Total migrated: 2 of 2.
+[2025-06-06T04:05:37.300Z] Completed migration for table: _prisma_migrations with 2 records migrated.
+[2025-06-06T04:05:37.301Z] Starting migration for table: en_yusufali
+[2025-06-06T04:05:37.372Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T04:05:37.439Z] Table en_yusufali already exists in NeonDB.
+[2025-06-06T04:23:04.936Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T04:23:05.455Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T04:23:05.456Z] Quran-related tables to migrate: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, surah_descriptions, user_bookmarks
+[2025-06-06T04:23:05.456Z] Starting migration for table: _prisma_migrations
+[2025-06-06T04:23:06.469Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T04:23:07.065Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T04:23:07.150Z] Migrated batch of 2 records for _prisma_migrations. Total migrated: 2 of 2.
+[2025-06-06T04:23:07.221Z] Migration failed for table _prisma_migrations: duplicate key value violates unique constraint "_prisma_migrations_pkey"
+[2025-06-06T04:23:07.222Z] Starting migration for table: en_yusufali
+[2025-06-06T04:23:07.297Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T04:23:07.434Z] Table en_yusufali already exists in NeonDB.
+[2025-06-06T04:26:37.295Z] Starting migration from TursoDB to NeonDB...
+[2025-06-06T04:26:37.791Z] Connected to NeonDB successfully.
+[2025-06-06T04:26:38.104Z] Found tables in TursoDB: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, sqlite_sequence, surah_descriptions, user_bookmarks
+[2025-06-06T04:26:38.105Z] Quran-related tables to migrate: _prisma_migrations, en_yusufali, quran_sajdas, quran_surahs, quran_text, surah_descriptions, user_bookmarks
+[2025-06-06T04:26:38.105Z] Starting migration for table: _prisma_migrations
+[2025-06-06T04:26:38.601Z] Total records to migrate in _prisma_migrations: 2
+[2025-06-06T04:26:39.167Z] Table _prisma_migrations already exists in NeonDB.
+[2025-06-06T04:26:39.242Z] Reading batch of 2 records for _prisma_migrations. Total read: 2 of 2.
+[2025-06-06T04:26:39.314Z] Error during COPY for _prisma_migrations: duplicate key value violates unique constraint "_prisma_migrations_pkey"
+[2025-06-06T04:26:39.314Z] Migration failed for table _prisma_migrations: duplicate key value violates unique constraint "_prisma_migrations_pkey"
+[2025-06-06T04:26:39.315Z] Starting migration for table: en_yusufali
+[2025-06-06T04:26:39.391Z] Total records to migrate in en_yusufali: 6236
+[2025-06-06T04:26:39.530Z] Table en_yusufali already exists in NeonDB.

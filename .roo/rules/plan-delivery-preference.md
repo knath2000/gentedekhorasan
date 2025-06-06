@@ -43,6 +43,7 @@ Instead of using `write_to_file` to create documentation files, Roo should:
 2. Present it directly in the chat response
 3. Use clear headings, code blocks, lists, and other markdown features
 4. Ensure the content is well-structured and readable in the chat interface
+5. Mandatory Tool Usage: Always use the appropriate tool (e.g., `write_to_file`, `insert_content`, `search_and_replace`, `read_file`) when making code or file changes. Do not present code modifications or file operations directly without a preceding tool invocation.
 
 ## Example
 

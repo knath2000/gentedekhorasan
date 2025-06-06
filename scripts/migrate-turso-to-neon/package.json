@@ -1,0 +1,24 @@
+{
+  "name": "migrate-turso-to-neon",
+  "version": "1.0.0",
+  "description": "Migration script to transfer data from TursoDB to NeonDB for Quran and Bible data",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "dev": "ts-node index.ts"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.4.0-pre.2",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/pg": "^8.10.9",
+    "pg-copy-streams": "^1.2.0",
+    "@types/pg-copy-streams": "^1.2.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  }
+}
