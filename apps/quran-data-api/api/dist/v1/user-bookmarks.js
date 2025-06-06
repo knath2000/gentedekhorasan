@@ -1,12 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.config = void 0;
 exports.default = handler;
 const backend_1 = require("@clerk/backend");
 const prisma_1 = require("../lib/prisma");
-exports.config = {
-    runtime: 'edge',
-};
 async function handler(req, res) {
     // CORS DINÁMICO
     const allowedOrigins = [

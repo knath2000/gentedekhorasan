@@ -3,9 +3,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { prisma } from '../lib/prisma';
 
 
-export const config = {
-  runtime: 'edge',
-};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS DINÁMICO

@@ -1,11 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.config = void 0;
 exports.default = handler;
 const prisma_1 = require("../lib/prisma");
-exports.config = {
-    runtime: 'edge',
-};
 async function handler(req, res) {
     console.log('get-metadata API handler invoked.');
     // Set CORS headers

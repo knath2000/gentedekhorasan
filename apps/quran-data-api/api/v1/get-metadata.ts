@@ -2,9 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QuranSurah } from '../../prisma/generated/client'; // Import from generated client path
 import { prisma } from '../lib/prisma';
 
-export const config = {
-  runtime: 'edge',
-};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('get-metadata API handler invoked.');
