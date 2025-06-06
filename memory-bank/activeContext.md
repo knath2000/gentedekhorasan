@@ -21,6 +21,7 @@
     - Asegurarse de que los bookmarks de localStorage se migran correctamente a la base de datos.
 - **Verificación de la Integración Frontend de Bookmarks (futuro):**
     - Actualizar la UI para interactuar con la nueva API de bookmarks.
+- **Problema de la Página de Sura (CORS y Prisma):** El problema persiste a pesar de los intentos de solución. La depuración de este problema se ha **pausado** por instrucción del usuario y se reanudará mañana.
 
 ### Acciones Tomadas Recientemente:
 - **Resolución de Conflictos de Versiones de React:**

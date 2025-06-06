@@ -54,3 +54,21 @@ Improvements_Identified_For_Consolidation:
 - Vercel deployment best practices for monorepos (no `vercel.json` for simple APIs, programmatic CORS, OPTIONS Allowlist).
 - Prisma deployment best practices on Vercel (dependencies, `postinstall` script).\n- Systematic debugging approach for persistent API errors.
 ---
+---
+Date: 2025-05-06
+TaskRef: "Persistent API Errors (CORS & 500) - Attempt 2"
+
+Learnings:
+- Moving `prisma` to `dependencies` and adding `installCommand`/`buildCommand` to root `vercel.json` did NOT resolve the `Prisma client did not initialize yet` or CORS issues.
+- The issue persists, indicating a deeper problem with the API deployment or configuration on Vercel.
+
+Difficulties:
+- The root cause of the persistent 500 error and CORS issue remains elusive.
+
+Successes:
+- Confirmed that the previous proposed solution was not effective.
+
+Improvements_Identified_For_Consolidation:
+- Further investigation into Vercel deployment logs, environment variables, and Prisma setup for monorepos is required.
+- Need to re-evaluate Vercel's build process for `pnpm` monorepos and how `postinstall` scripts are handled.
+---

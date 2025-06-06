@@ -1,27 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QuranSurah } from '../../prisma/generated/client'; // Import from generated client path
+import { setCorsHeaders } from '../lib/cors';
 import { prisma } from '../lib/prisma';
 
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('get-metadata API handler invoked.');
 
-  // Set CORS headers
-  const allowedOrigins = [
-    'https://quranastroweb.vercel.app',
-    'http://localhost:4321',
-    'http://localhost:3000'
-  ];
-  
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Max-Age', '86400');
+  setCorsHeaders(req, res);
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {

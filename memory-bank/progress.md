@@ -62,3 +62,7 @@
     - Asegurarse de que los bookmarks de localStorage se migran correctamente a la base de datos.
 - **Verificación de la Integración Frontend de Bookmarks (futuro):**
     - Actualizar la UI para interactuar con la nueva API de bookmarks.
+
+### Estado Actual del Problema "Surah page fails with webdev console logs 'clerk.browser.js:16 Clerk: Clerk has been loaded with development keys... Access to fetch at 'https://gentedekhorasan.vercel.app/api/v1/get-metadata?type=surah-list' from origin 'https://quranastroweb.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.' and vercel functions api logs 'Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.'":
+- El intento de solucionar el problema moviendo `prisma` a `dependencies` en `apps/quran-data-api/package.json` y añadiendo `installCommand` y `buildCommand` al `vercel.json` raíz **no ha tenido éxito**.
+- El problema persiste y la depuración se ha **pausado** hasta mañana por instrucción del usuario.

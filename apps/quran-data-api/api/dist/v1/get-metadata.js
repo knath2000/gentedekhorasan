@@ -1,23 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = handler;
+const cors_1 = require("../lib/cors");
 const prisma_1 = require("../lib/prisma");
 async function handler(req, res) {
     console.log('get-metadata API handler invoked.');
-    // Set CORS headers
-    const allowedOrigins = [
-        'https://quranastroweb.vercel.app',
-        'http://localhost:4321',
-        'http://localhost:3000'
-    ];
-    const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Requested-With');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400');
+    (0, cors_1.setCorsHeaders)(req, res);
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
         return res.status(200).end();

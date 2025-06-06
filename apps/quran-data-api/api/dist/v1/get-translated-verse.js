@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = handler;
+const cors_1 = require("../lib/cors");
 const prisma_1 = require("../lib/prisma");
 async function handler(req, res) {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for development
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    (0, cors_1.setCorsHeaders)(req, res);
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
         return res.status(200).end();

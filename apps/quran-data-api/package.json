@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vercel dev",
-    "build": "pnpm run build:functions",
+    "build": "prisma generate && tsc -p api/tsconfig.json",
+    "prebuild": "prisma generate",
+    "vercel-build": "prisma generate && tsc -p api/tsconfig.json",
     "build:functions": "node generate-prisma-client.js && tsc -p api/tsconfig.json",
     "start": "vercel dev",
     "lint": "eslint . --ext .ts,.tsx",
