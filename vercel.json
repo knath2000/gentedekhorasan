@@ -1,6 +1,6 @@
 {
-  "installCommand": "pnpm install --store=node_modules/.pnpm",
-  "buildCommand": "pnpm run build",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
     "../quran-data-api/api/v1/*.ts": {
