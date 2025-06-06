@@ -1,20 +1,20 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "dist/api/**/*.js": {
+    "dist/v1/**/*.js": {
       "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
     {
-      "source": "/:path*",
-      "destination": "/dist/api/:path*"
+      "source": "/v1/:path*",
+      "destination": "/dist/v1/:path*"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
-      "headers": [
+       "source": "/(.*)",
+       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "https://luminous-verses.vercel.app" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
