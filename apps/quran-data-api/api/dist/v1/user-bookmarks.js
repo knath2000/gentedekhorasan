@@ -2,14 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = handler;
 const backend_1 = require("@clerk/backend");
+const client_1 = require("@libsql/client"); // Import createClient
 const adapter_libsql_1 = require("@prisma/adapter-libsql"); // Import PrismaLibSQL
-const client_1 = require("../../prisma/generated/client");
+const client_2 = require("../../prisma/generated/client");
 // ✅ CONFIGURACIÓN CORRECTA PARA TURSO
-const adapter = new adapter_libsql_1.PrismaLibSQL({
+const driver = (0, client_1.createClient)({
     url: process.env.TURSO_DATABASE_URL,
     authToken: process.env.TURSO_AUTH_TOKEN,
 });
-const prisma = new client_1.PrismaClient({ adapter });
+const adapter = new adapter_libsql_1.PrismaLibSQL(driver); // Pass the driver instance to the adapter
+const prisma = new client_2.PrismaClient({ adapter });
 async function handler(req, res) {
     // CORS DINÁMICO
     const allowedOrigins = [

@@ -1,6 +1,6 @@
+import { createClient } from '@libsql/client'; // Import createClient
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
 import { PrismaClient } from '../../prisma/generated/client';
-// No necesitamos createClient de @libsql/client si pasamos la URL directamente al adaptador
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -14,10 +14,13 @@ if (!LIBSQL_URL) {
   throw new Error('LIBSQL_URL is not defined in environment variables');
 }
 
-const adapter = new PrismaLibSQL({
+// Create the libSQL driver instance
+const driver = createClient({
   url: LIBSQL_URL,
   authToken: LIBSQL_AUTH_TOKEN, // authToken puede ser undefined si no es necesario
 });
+
+const adapter = new PrismaLibSQL(driver); // Pass the driver instance to the adapter
 
 export const prisma = globalForPrisma.prisma ??
   new PrismaClient({ adapter });

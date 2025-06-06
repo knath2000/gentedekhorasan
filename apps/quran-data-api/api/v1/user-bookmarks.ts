@@ -1,13 +1,15 @@
 import { verifyToken } from '@clerk/backend';
+import { createClient } from '@libsql/client'; // Import createClient
 import { PrismaLibSQL } from '@prisma/adapter-libsql'; // Import PrismaLibSQL
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PrismaClient } from '../../prisma/generated/client';
 
 // ✅ CONFIGURACIÓN CORRECTA PARA TURSO
-const adapter = new PrismaLibSQL({
+const driver = createClient({
   url: process.env.TURSO_DATABASE_URL!,
   authToken: process.env.TURSO_AUTH_TOKEN!,
 });
+const adapter = new PrismaLibSQL(driver); // Pass the driver instance to the adapter
 const prisma = new PrismaClient({ adapter });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
