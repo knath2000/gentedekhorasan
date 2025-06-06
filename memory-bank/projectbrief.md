@@ -20,8 +20,8 @@ To develop and maintain a suite of interconnected applications and services rela
 
 This monorepo currently contains the following key applications/services:
 
--   **`apps/luminous-verses-expo`**: The cross-platform mobile application (Expo/React Native) for iOS and Android.
--   **`apps/quran-data-api`**: The Vercel Serverless Functions API, responsible for serving Quranic text, translations, and metadata from a Neon PostgreSQL database and Vercel Edge Config.
+-   **`apps/quranexpo-web`**: The web application (Astro) for users to connect with the Quran.
+-   **`apps/quran-data-api`**: The Vercel Serverless Functions API, responsible for serving Quranic text, translations, and metadata from a Neon PostgreSQL database.
 -   **`packages/quran-types`**: A shared package for TypeScript types and interfaces used across the monorepo.
 
 ## 4. Key Features (Monorepo Level)
@@ -34,7 +34,7 @@ This monorepo currently contains the following key applications/services:
 
 -   **Monorepo Tooling:** pnpm workspaces, TurboRepo.
 -   **API Backend:** Vercel Serverless Functions (TypeScript), Neon PostgreSQL, Prisma ORM, Vercel Edge Config.
--   **Mobile Frontend:** Expo (React Native), TypeScript.
+-   **Web Frontend:** Astro, TypeScript, Preact.
 -   **Shared Code:** TypeScript.
 
 ## 6. Success Metrics (Monorepo Level)

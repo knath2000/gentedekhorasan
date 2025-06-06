@@ -15,13 +15,11 @@
     -   **Database:** Neon PostgreSQL (serverless-first PostgreSQL).
     -   **ORM:** Prisma ORM (con `@prisma/adapter-neon` para Neon).
     -   **Edge Caching:** Vercel Edge Config.
--   **Frontend (Mobile App):**
-    -   **Platform:** Expo (managed workflow) for iOS and Android.
+-   **Frontend (Web App):**
+    -   **Framework:** Astro.
     -   **Language:** TypeScript.
-    -   **UI Framework:** React Native.
-    -   **Navigation:** Expo Router.
-    -   **Audio:** `expo-audio`.
-    -   **Animation:** Lottie (`lottie-react-native`).
+    -   **UI Frameworks:** Preact, React.
+    -   **Styling:** Tailwind CSS.
 -   **Shared Code:**
     -   **Language:** TypeScript.
     -   **Package Manager:** pnpm workspaces.
@@ -35,12 +33,11 @@
 -   **Vercel Ecosystem:**
     -   `@vercel/node`: Adaptador para funciones serverless de Node.js en Vercel.
     -   `@vercel/edge-config`: Cliente para interactuar con Vercel Edge Config.
--   **Mobile Development:**
-    -   `expo`: Core SDK para el desarrollo de aplicaciones universales.
-    -   `react-native`: Framework para construir interfaces de usuario nativas.
-    -   `expo-router`: Enrutador basado en el sistema de archivos para Expo.
-    -   `styled-components`: Para estilos basados en componentes.
-    -   `react-native-safe-area-context`: Para manejar áreas seguras en dispositivos móviles.
+-   **Web Development:**
+    -   `astro`: Framework for building content-driven websites.
+    -   `preact`: Fast 3kB alternative to React with the same modern API.
+    -   `react`: A JavaScript library for building user interfaces.
+    -   `tailwindcss`: A utility-first CSS framework for rapid UI development.
 -   **Shared Utilities:**
     -   `typescript`: Para tipado estático.
     -   `eslint`: Para linting de código.
@@ -57,11 +54,10 @@
 
 ## 4. Technical Constraints & Considerations (Monorepo Level)
 
--   **Cross-Platform Compatibility:** Mantener la compatibilidad y el rendimiento en iOS y Android para la aplicación móvil.
--   **API Performance & Scalability:** Asegurar que la API sea de alto rendimiento y pueda escalar para manejar la demanda.
--   **Database Connection Management:** Gestión eficiente de las conexiones a la base de datos en un entorno serverless (Prisma Connection Pooling).
--   **Edge Config Synchronization:** Mantener los datos de Edge Config sincronizados con la base de datos principal.
--   **Monorepo Build Times:** Optimizar los tiempos de compilación y prueba utilizando TurboRepo.
--   **Shared Code Management:** Asegurar que los cambios en los paquetes compartidos no introduzcan regresiones en los proyectos consumidores.
--   **Environment Variable Management:** Consistencia en la gestión de variables de entorno a través de los diferentes proyectos y entornos de despliegue (Vercel, Expo).
--   **CI/CD Strategy:** Implementar una estrategia de CI/CD que soporte la naturaleza del monorepo, incluyendo builds incrementales y despliegues condicionales.
+-   **Web Performance:** Optimizing the web application for fast load times and a smooth user experience.
+-   **API Performance & Scalability:** Ensuring the API is high-performance and can scale to meet demand.
+-   **Database Connection Management:** Efficiently managing database connections in a serverless environment (Prisma Connection Pooling).
+-   **Monorepo Build Times:** Optimizing build and test times using TurboRepo.
+-   **Shared Code Management:** Ensuring that changes to shared packages do not introduce regressions in consuming projects.
+-   **Environment Variable Management:** Consistent management of environment variables across different projects and deployment environments (Vercel).
+-   **CI/CD Strategy:** Implementing a CI/CD strategy that supports the monorepo's nature, including incremental builds and conditional deployments.

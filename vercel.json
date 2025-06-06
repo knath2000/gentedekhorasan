@@ -1,5 +1,6 @@
 {
-  "version": 2,
+  "installCommand": "pnpm install --store=node_modules/.pnpm",
+  "buildCommand": "pnpm run build",
   "functions": {
     "apps/quran-data-api/api/v1/get-metadata.ts": {
       "runtime": "nodejs@20.x"

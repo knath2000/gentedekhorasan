@@ -14,25 +14,14 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@clerk/backend": "^1.34.0",
-    "@clerk/nextjs": "^6.20.2",
-    "@libsql/client": "0.5.6",
-    "@neondatabase/serverless": "^1.0.0",
-    "@prisma/adapter-libsql": "5.16.2",
-    "@prisma/adapter-neon": "^6.9.0",
     "@prisma/client": "5.16.2",
-    "@vercel/edge-config": "^1.4.0",
-    "@vercel/node": "^4.0.0",
-    "bufferutil": "^4.0.9",
-    "pg": "^8.16.0",
-    "ws": "^8.18.2"
+    "prisma": "5.16.2"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
     "@types/pg": "^8.11.6",
     "@types/ws": "^8.18.1",
     "eslint": "^9.25.0",
-    "prisma": "5.16.2",
     "typescript": "~5.8.3"
   }
 }

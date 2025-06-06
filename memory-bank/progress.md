@@ -3,8 +3,10 @@
 ### Funcionalidades Implementadas:
 - **Trigger de Popup de Descripción de Sura:** Se implementó el trigger del popup de descripción de sura para que se active solo al hacer click o presionar Enter/Espacio sobre el texto del título árabe o inglés en `ReaderSurahHeader.tsx`.
 - **Redimensionamiento y Scroll del Popup de Descripción:** Se redimensionó el `SurahDescriptionModal` (`max-w-lg`, `max-h-[80vh]`) y se hizo su contenido scrollable (`overflow-y-auto`).
-- **Importación de Descripciones de Suras a TursoDB:** Se creó un script (`scripts/import-surah-descriptions/index.ts`) para importar 114 descripciones de suras desde un archivo JSON a TursoDB.
-- **Endpoint de API para Descripciones de Suras:** Se creó un nuevo endpoint de API (`apps/quran-data-api/api/v1/get-surah-description.ts`) que consulta TursoDB directamente para obtener las descripciones.
+- **Importación de Descripciones de Suras a NeonDB:** Se creó un script (`scripts/import-surah-descriptions/index.ts`) para importar 114 descripciones de suras desde un archivo JSON a NeonDB.
+- **Endpoint de API para Descripciones de Suras:** Se creó un nuevo endpoint de API (`apps/quran-data-api/api/v1/get-surah-description.ts`) que consulta NeonDB directamente para obtener las descripciones.
+- **Corrección de la Generación del Cliente de Prisma:** Se ajustó la ruta de salida del cliente de Prisma en `apps/quran-data-api/prisma/schema.prisma` a `../node_modules/.prisma/client` para asegurar su correcta inicialización en Vercel.
+- **Ajuste de la Configuración de TurboRepo:** Se actualizó `turbo.json` para incluir los artefactos de compilación de `quran-data-api` en los `outputs` de la tarea `build`, solucionando advertencias de "no output files found".
 - **Integración de Descripciones en el Popup:** El `SurahDescriptionModal` ahora obtiene las descripciones de la nueva API.
 - **Solución Definitiva para Blur Modal:** Se implementó la solución definitiva para el blur del modal, eliminando el JavaScript de blur y confiando únicamente en `backdrop-filter`.
     - **CSS:** Se eliminó la clase `.modal-blur-content` de `apps/quranexpo-web/src/styles/global.css` ya que no es necesaria.
