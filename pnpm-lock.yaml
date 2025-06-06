@@ -45,6 +45,9 @@ importers:
       '@prisma/adapter-libsql':
         specifier: ^6.8.2
         version: 6.8.2
+      '@prisma/client':
+        specifier: ^6.8.2
+        version: 6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3)
       '@vercel/edge-config':
         specifier: ^1.4.0
         version: 1.4.0
@@ -55,9 +58,6 @@ importers:
         specifier: ^8.16.0
         version: 8.16.0
     devDependencies:
-      '@prisma/client':
-        specifier: ^6.8.2
-        version: 6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3)
       '@types/node':
         specifier: ^20.14.10
         version: 20.17.52
