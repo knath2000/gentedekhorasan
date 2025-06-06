@@ -3,7 +3,7 @@
   "buildCommand": "pnpm run build",
   "functions": {
     "apps/quran-data-api/api/v1/*.ts": {
-      "runtime": "nodejs@20.x"
+      "runtime": "nodejs18.x"
     }
   }
 }
