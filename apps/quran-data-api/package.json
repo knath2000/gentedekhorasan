@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vercel dev",
     "build": "pnpm run build:functions",
-    "build:functions": "prisma generate --schema=./prisma/schema.prisma && tsc -p api/tsconfig.json",
+    "build:functions": "node generate-prisma-client.js && tsc -p api/tsconfig.json",
     "start": "vercel dev",
     "lint": "eslint . --ext .ts,.tsx",
     "generate": "prisma generate",
