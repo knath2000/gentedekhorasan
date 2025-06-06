@@ -1,4 +1,33 @@
-## Contexto Activo: Problemas de UI, Autenticación y Almacenamiento de Datos
+## Contexto Activo: Migración a Despliegue Unificado COMPLETADA ✅
+
+### ✅ MIGRACIÓN COMPLETADA: Despliegue Unificado de Monorepo
+**Fecha:** 6 de junio, 2025
+**Estado:** Exitosamente migrado de despliegues separados a arquitectura unificada
+
+**Cambios Implementados:**
+- ✅ **Variables de Entorno Actualizadas:**
+  - `apps/quranexpo-web/.env`: `PUBLIC_QURAN_API_BASE_URL=/api/v1`
+  - `apps/quranexpo-web/.env.local`: `PUBLIC_QURAN_API_BASE_URL=/api/v1`
+- ✅ **Configuración Limpiada:**
+  - Eliminado `apps/quran-data-api/vercel.json` (ya no necesario)
+  - Mantenido `vercel.json` en raíz con configuración correcta para despliegue unificado
+- ✅ **Arquitectura Final:**
+  - Frontend: `quranexpo-web` (Astro + Preact + Tailwind)
+  - Backend: `quran-data-api` funciones serverless desplegadas junto al frontend
+  - API Endpoints: Accesibles en `/api/v1/*` desde el mismo dominio
+  - Base de Datos: Neon PostgreSQL con Prisma ORM
+
+**Próximos Pasos para Despliegue:**
+1. Hacer push de cambios al repositorio
+2. Configurar Vercel Dashboard:
+   - Asegurar que el proyecto se despliega desde la raíz del monorepo
+   - Configurar variables de entorno requeridas (`DATABASE_URL`, claves de Clerk)
+   - Eliminar cualquier proyecto API separado si existe
+3. Probar endpoints de API después del despliegue
+
+---
+
+## Contexto Activo Previo: Problemas de UI, Autenticación y Almacenamiento de Datos
 
 ### Problemas Pendientes:
 - **Migración completa de `styled-components` en `quranexpo-native`:**
