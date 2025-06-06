@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "node scripts/vercel-prebuild.js && npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
